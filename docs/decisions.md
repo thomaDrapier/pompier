@@ -1,0 +1,77 @@
+# Journal des décisions
+
+## Règles du journal
+
+- Chaque décision a un identifiant unique et croissant (D-001, D-002…).
+- Une décision n'est jamais réécrite ni supprimée : si elle change, on ajoute une nouvelle décision qui indique « Remplace D-xxx », et on passe l'ancienne au statut « remplacée par D-yyy ».
+- Origine « projet Claude » : décision métier ou fonctionnelle, prise avec le porteur du projet. Claude Code la recopie fidèlement et ne la modifie jamais.
+- Origine « Claude Code » : décision technique. Si elle a un impact métier, elle a le statut « à valider » jusqu'à validation dans le projet Claude.
+- Le cahier des charges (`docs/cahier_des_charges.md`) fait foi. Une décision validée qui le modifie y est reportée dans la même branche `docs/…` (statut « intégrée au cahier des charges vX.Y »). Toute contradiction entre une décision et le cahier des charges est signalée au porteur du projet, jamais tranchée silencieusement.
+- Visibilité : le projet Claude ne lit que la branche `main`. Une décision n'est connue du projet Claude qu'après fusion dans `main` et synchronisation manuelle (« Sync now »).
+
+## Modèle
+
+```markdown
+## D-XXX — Titre court
+- **Date** : JJ/MM/AAAA
+- **Origine** : projet Claude | Claude Code
+- **Contexte** : question posée (renvoi au cahier des charges si possible)
+- **Décision** : ce qui est retenu, sans ambiguïté
+- **Conséquences** : impacts sur le code, les tests, la documentation
+- **Statut** : validée | à valider | intégrée au cahier des charges vX.Y | remplacée par D-xxx
+```
+
+---
+
+## D-001 — Ordre de développement
+- **Date** : 03/11/2026
+- **Origine** : projet Claude
+- **Contexte** : contradiction entre les sections 10 et 12 du cahier des charges v1.1.
+- **Décision** : le jalon 0 ne comporte aucune interface métier. Le jalon 1 commence par le moteur de calcul (`src/engine/`) et ses tests unitaires, avant tout écran de saisie.
+- **Conséquences** : section 10 du cahier des charges.
+- **Statut** : intégrée au cahier des charges v1.2
+
+## D-002 — Environnement de test
+- **Date** : 03/11/2026
+- **Origine** : projet Claude
+- **Contexte** : hébergement de Supabase pendant la phase de test.
+- **Décision** : Supabase local via la CLI Supabase installée comme dépendance de développement npm, exécutée dans Docker sur le poste de développement.
+- **Conséquences** : sections 6.3 et 10 du cahier des charges. Le test d'installation de la PWA sur smartphone (HTTPS requis) reste un point ouvert (section 11).
+- **Statut** : intégrée au cahier des charges v1.2
+
+## D-003 — Structure du dépôt
+- **Date** : 05/11/2026
+- **Origine** : projet Claude
+- **Contexte** : l'application avait été initialisée dans un sous-dossier `spv-app/` d'un dépôt Git existant (`pompier`).
+- **Décision** : l'application est à la racine du dépôt `pompier` (pas de sous-dossier). Pas de dépôt Git imbriqué.
+- **Conséquences** : chemins de la section 6.3 appliqués depuis la racine.
+- **Statut** : intégrée au cahier des charges v1.3
+
+## D-004 — Clé Supabase côté client
+- **Date** : 05/11/2026
+- **Origine** : projet Claude
+- **Contexte** : Supabase fournit désormais des clés « publishable » (`sb_publishable_…`) et « secret » (`sb_secret_…`) à la place de anon et service_role.
+- **Décision** : la variable `VITE_SUPABASE_ANON_KEY` (nom conservé du cahier des charges) contient la clé publishable. La clé secret n'apparaît jamais dans le code, `.env.local`, Git ni les échanges.
+- **Conséquences** : section 5 du cahier des charges.
+- **Statut** : intégrée au cahier des charges v1.3
+
+## D-005 — Organisation du travail et branches
+- **Date** : 05/11/2026
+- **Origine** : projet Claude
+- **Contexte** : répartition des rôles entre le projet Claude et Claude Code, et visibilité du projet Claude limitée à la branche `main`.
+- **Décision** :
+  - Le projet Claude traite les règles métier et les spécificités fonctionnelles ; Claude Code traite uniquement le code et la mise à jour des fichiers du dépôt.
+  - La communication passe par `CLAUDE.md`, `docs/cahier_des_charges.md` et `docs/decisions.md`.
+  - Claude Code ne travaille jamais directement sur `main` : une branche par tâche (`feat/…`, `fix/…`, `docs/…`), fusionnée après validation du porteur.
+  - Les modifications de documentation passent par des branches `docs/…` courtes, fusionnées dès validation, séparément du code.
+  - Après chaque fusion dans `main` touchant `CLAUDE.md` ou `docs/`, le porteur clique sur « Sync now » dans le projet Claude.
+- **Conséquences** : tant qu'une branche n'est pas fusionnée, le projet Claude ignore son contenu ; pour un avis sur un travail en cours, le porteur colle le contenu concerné dans le projet Claude.
+- **Statut** : intégrée au cahier des charges v1.3
+
+## D-006 — Cahier des charges au format Markdown
+- **Date** : 05/11/2026
+- **Origine** : projet Claude
+- **Contexte** : un PDF ne peut pas être mis à jour proprement par Claude Code, ce qui éclaterait la référence entre le PDF et le journal des décisions.
+- **Décision** : `docs/cahier_des_charges.md` devient la source de référence unique. Claude Code le met à jour directement à chaque décision qui le modifie, dans la même branche `docs/…`. Les figures sont des diagrammes Mermaid. Le PDF v1.2 est archivé dans `docs/archives/` ; un PDF n'est plus qu'un export ponctuel.
+- **Conséquences** : chaque modification du cahier des charges incrémente sa version et ajoute une ligne à sa section 13.
+- **Statut** : intégrée au cahier des charges v1.3
