@@ -52,6 +52,29 @@ date-fns (fuseau Europe/Paris) · Vitest (unitaires) · Playwright (parcours).
 - Migrations SQL versionnées dans `supabase/migrations/` ; respecter exactement les
   noms de tables et de colonnes du cahier des charges.
 - Si une information métier manque : poser une seule question à la fois.
+- Une branche Git et une Pull Request par étape ; `main` reste toujours fonctionnelle.
+  Commits petits, un sujet par commit, messages clairs en français.
+
+## Synchronisation avec le projet Claude
+- Le dépôt fait foi. La conception se fait dans le projet Claude (claude.ai),
+  l'exécution dans Claude Code.
+- Toute décision prise dans le projet Claude est reportée dans `docs/decisions.md`
+  (date, décision, raison, alternatives écartées) ou dans ce fichier AVANT d'être codée.
+- Si une décision évoquée n'est écrite nulle part dans le dépôt : demander de la reporter,
+  ne pas la deviner.
+
+## Accompagnement et apprentissage
+Le projet sert aussi au porteur à progresser en gestion de projet et en développement
+agentique. Il doit comprendre et valider chaque choix, pas seulement répondre « Oui ».
+- Avant de coder : présenter les options, une recommandation argumentée, et demander
+  son avis.
+- Avancer par petites étapes ; après chaque production, expliquer le rôle de chaque
+  fichier, les points clés, et comment le tester soi-même.
+- Guider sur les bonnes pratiques au moment où elles s'appliquent : cycle
+  cadrer → planifier → réaliser sur une branche → vérifier → relire (Pull Request) →
+  fusionner → consigner ; journal des décisions ; tests ; intégration continue ;
+  sécurité. Expliquer le « pourquoi » de chaque pratique et laisser le porteur faire
+  lui-même les gestes formateurs (relire un diff, ouvrir une PR, lancer les tests).
 
 ## Style
 - Réponses en français, concises.
@@ -62,7 +85,8 @@ date-fns (fuseau Europe/Paris) · Vitest (unitaires) · Playwright (parcours).
 - `src/` : application React
 - `supabase/migrations/` : migrations SQL
 - `tests/e2e/` : tests Playwright
-- `docs/` : cahier des charges, spécifications des écrans
+- `docs/` : cahier des charges, spécifications des écrans, journal des décisions
+  (`docs/decisions.md`)
 
 ## Commandes utiles
 - `npx supabase start` / `npx supabase stop` : Supabase local (Docker)
