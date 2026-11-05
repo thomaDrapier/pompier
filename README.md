@@ -1,7 +1,14 @@
 # PWA SPV — suivi des activités et indemnités des sapeurs-pompiers volontaires
 
 Saisie minimaliste (début, fin, nature) et calcul automatique des astreintes nettes
-et de la rémunération. Référence : `docs/Cahier_des_charges_PWA_SPV_v1.2.pdf`.
+et de la rémunération.
+
+Documents de référence :
+- [`docs/cahier_des_charges.md`](docs/cahier_des_charges.md) : cahier des charges, source de référence unique ;
+- [`docs/decisions.md`](docs/decisions.md) : journal des décisions ;
+- [`docs/Methode_projet_Claude_Claude_Code.pdf`](docs/Methode_projet_Claude_Claude_Code.pdf) :
+  méthode de travail entre le projet Claude et Claude Code ;
+- [`docs/archives/`](docs/archives/) : anciennes versions figées (cahier des charges v1.2 en PDF).
 
 > Les montants affichés sont indicatifs et ne remplacent pas les relevés officiels du SDIS.
 
