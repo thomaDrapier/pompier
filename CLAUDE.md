@@ -33,6 +33,16 @@ Le porteur du projet est aussi l'unique administrateur. Niveau : intermédiaire
 - Consigner toute décision technique notable dans `docs/decisions.md`
   (origine « Claude Code », statut « à valider » si elle a un impact métier).
 
+## Accompagnement et apprentissage
+- Le projet sert aussi au porteur à progresser en gestion de projet et en développement
+  agentique.
+- Avant de coder : présenter les options et une recommandation argumentée, puis
+  demander son avis.
+- Avancer par petites étapes. Après chaque production, expliquer chaque fichier et
+  comment le tester.
+- Guider sur les bonnes pratiques (branches, PR, tests, CI, sécurité) au moment où elles
+  s'appliquent, et laisser le porteur faire les gestes formateurs.
+
 ## Stack imposée (ne pas en changer sans raison sérieuse)
 PostgreSQL via Supabase (Auth, RLS, API) · React + TypeScript strict + Vite ·
 vite-plugin-pwa · Tailwind CSS + shadcn/ui · Recharts · TanStack Query ·
