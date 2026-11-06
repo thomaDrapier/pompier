@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Icône provisoire : flamme blanche sur fond plein (#171717, couleur du thème).
+       La flamme reste dans le cercle central (rayon 40 %) : zone sûre des icônes « maskable ». -->
+  <rect width="512" height="512" fill="#171717"/>
+  <path fill="#ffffff" d="M256 112 C300 176 368 216 368 304 C368 368 318 408 256 408 C194 408 144 368 144 304 C144 256 176 224 200 200 C204 240 220 264 244 272 C236 216 240 160 256 112 Z"/>
+</svg>

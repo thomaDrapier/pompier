@@ -3,16 +3,21 @@
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
 ## État actuel (mis à jour le 06/11/2026)
-- **En cours** : J0 · étape 0.2 — socle d'interface (Tailwind CSS, shadcn/ui, vite-plugin-pwa). Non commencée.
-- **Dernière étape terminée** : J0 · étape 0.1 — initialisation (Vite React TypeScript à la racine, Supabase local, .env.local, CLAUDE.md, docs/).
-- **Prochaine action** : valider dans le projet Claude le plan de l'étape 0.2, puis transmettre sa consigne à Claude Code (branche feat/j0-2-pwa).
+- **En cours** : J0 · étape 0.3 — migration 0001. Non commencée.
+- **Dernière étape terminée** : J0 · étape 0.2 — socle d'interface (Tailwind CSS v4, alias @/, shadcn/ui avec Button, vite-plugin-pwa : manifeste, icônes provisoires, service worker en precache seul ; bandeau « Pas de connexion réseau » ; page temporaire). PWA installable vide, testée sur poste dans Chrome.
+- **Prochaine action** : valider dans le projet Claude le plan de l'étape 0.3.
 - **En attente** :
-  - Plan de l'étape 0.2 : proposé dans le projet Claude, pas encore validé.
-  - Point ouvert à trancher avant la fin du J0 : moyen de tester l'installation de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
-  - Point ouvert à trancher avant le J1 : répartition de la durée nette entre deux astreintes qui se chevauchent, cahier des charges section 11.
-- **Branches ouvertes** : docs/avancement (cette mise à jour).
+  - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
+  - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
+  - Répartition de la durée nette entre astreintes qui se chevauchent, cahier des charges section 11, à trancher avant le J1.
+- **Branches ouvertes** : feat/j0-2-pwa (jusqu'à fusion).
 
 ## Journal
+
+### 06/11/2026 — J0 · étape 0.2 terminée
+- **Fait** : Tailwind CSS v4 (plugin Vite) ; alias d'import @/ ; shadcn/ui (Radix, preset Nova) et composant Button ; vite-plugin-pwa (manifeste « SPV Activités », icônes générées depuis public/logo.svg, service worker autoUpdate limité au precache de l'interface, aucune mise en cache des appels Supabase) ; composant OfflineBanner ; page temporaire « en construction » ; fichiers de démonstration Vite supprimés.
+- **Branche** : feat/j0-2-pwa
+- **Décisions liées** : aucune
 
 ### 06/11/2026 — Méthode : suivi de l'avancement
 - **Fait** : création de docs/avancement.md ; cahier des charges v1.4 ; CLAUDE.md mis à jour.
