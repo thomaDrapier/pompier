@@ -4,15 +4,15 @@
 
 | | |
 |---|---|
-| **Version** | 1.3 |
-| **Date** | 05/11/2026 |
+| **Version** | 1.4 |
+| **Date** | 06/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
 | **Destinataire** | Projet de développement (projet Claude et Claude Code) |
 
 > Les montants affichés par l'application sont indicatifs et ne remplacent pas les relevés officiels du SDIS.
 
-**Ce document est la source de référence unique** pour les règles métier, le modèle de données et la stack. Il est complété par le journal des décisions (`docs/decisions.md`) et par les spécifications des écrans. Toute modification passe par une branche `docs/…` (voir section 12).
+**Ce document est la source de référence unique** pour les règles métier, le modèle de données et la stack. Il est complété par le journal des décisions (`docs/decisions.md`), par le fichier d'avancement (`docs/avancement.md`) et par les spécifications des écrans. Toute modification passe par une branche `docs/…` (voir section 12).
 
 ## Sommaire
 
@@ -299,6 +299,7 @@ flowchart TB
 | `tests/e2e/` | Tests de parcours Playwright. |
 | `docs/cahier_des_charges.md` | Le présent document : source de référence unique. |
 | `docs/decisions.md` | Journal des décisions (métier et techniques). |
+| `docs/avancement.md` | État d'avancement du projet et journal des étapes ; point de reprise de toute nouvelle conversation. |
 | `docs/specifications_ecrans.md` | Spécifications des écrans (à rédiger). |
 | `docs/archives/` | Anciennes versions figées (PDF). |
 | `CLAUDE.md` | Synthèse des règles du projet, lue automatiquement par Claude Code (voir section 12). |
@@ -450,23 +451,27 @@ flowchart LR
 
 - **Projet Claude** (conversation) : règles métier, spécificités fonctionnelles, décisions, validation. Il ne produit pas le code du dépôt.
 - **Claude Code** (extension VS Code) : uniquement le code et la mise à jour des fichiers du dépôt.
-- **Les deux ne communiquent pas directement.** Le lien passe par le porteur du projet et par trois fichiers versionnés : `CLAUDE.md`, `docs/cahier_des_charges.md` et `docs/decisions.md`.
+- **Les deux ne communiquent pas directement.** Le lien passe par le porteur du projet et par quatre fichiers versionnés : `CLAUDE.md`, `docs/cahier_des_charges.md`, `docs/decisions.md` et `docs/avancement.md`.
 - **Visibilité :** le projet Claude est synchronisé manuellement (« Sync now ») sur la branche `main` uniquement. Il ne voit rien de ce qui se trouve sur une autre branche tant qu'elle n'est pas fusionnée dans `main`.
 - **Durabilité :** une décision prise dans une conversation n'existe que dans cette conversation tant qu'elle n'est pas écrite dans les fichiers de référence et fusionnée dans `main`.
+- **Reprise :** toute nouvelle conversation, côté projet Claude comme côté Claude Code, commence par la lecture de la section « État actuel » de `docs/avancement.md`, puis de la fin de son journal ; elle résume au porteur où en est le projet et attend son accord avant de continuer.
 
 ### 12.2 Cycle d'une décision
 
 1. **Projet Claude :** discussion, puis validation par le porteur.
-2. **Projet Claude :** production d'un bloc prêt à transmettre à Claude Code : entrée `D-xxx` pour `docs/decisions.md` et, si nécessaire, modification du cahier des charges et de `CLAUDE.md`.
+2. **Projet Claude :** production d'un bloc prêt à transmettre à Claude Code : entrée `D-xxx` pour `docs/decisions.md`, modification du cahier des charges et de `CLAUDE.md` si nécessaire, mise à jour de `docs/avancement.md`.
 3. **Claude Code :** sur une branche `docs/…`, mise à jour des fichiers, commit, push, puis fusion dans `main` après accord du porteur.
 4. **Projet Claude :** le porteur clique sur « Sync now ».
 
 Ce cycle est réalisé juste après chaque décision, sans en accumuler plusieurs.
 
+En fin de séance dans le projet Claude, si la discussion a avancé sans produire de décision, le projet Claude fournit le bloc « État actuel » à jour, transmis à Claude Code selon le même cycle.
+
 ### 12.3 Règles de développement
 
 - Développer par jalons, dans l'ordre J0 à J5. Le jalon 0 ne comporte aucune interface métier ; le jalon 1 commence par le moteur de calcul et ses tests, avant tout écran de saisie.
 - Ne jamais committer directement sur `main` : une branche par tâche (`feat/…`, `fix/…`, `docs/…`), fusionnée après validation du porteur. Les modifications de documentation passent par des branches `docs/…` courtes, fusionnées dès validation, séparément du code.
+- Toute tâche se termine par la mise à jour de `docs/avancement.md` (« État actuel » réécrit, entrée ajoutée au journal). Par exception à la règle des branches `docs/…`, ce fichier est mis à jour dans la branche de la tâche qu'il décrit, afin que `main` reflète toujours exactement ce qui a été fusionné.
 - Avant toute fonctionnalité non triviale : résumer le plan en quelques lignes et attendre l'accord du porteur du projet.
 - Fournir du code complet (jamais de « ... »), le chemin de chaque fichier et la façon de le tester.
 - Écrire le code en TypeScript strict, commenté en français pour les règles métier.
@@ -484,3 +489,4 @@ Ce cycle est réalisé juste après chaque décision, sans en accumuler plusieur
 | 1.1 | 31/10/2026 | Suppression des taux personnalisés : référentiel unique et commun à tous (table user_rate_overrides retirée, règles de calcul, écrans, tests et schémas mis à jour). Stack validée. Ajout de l'analyse de viabilité de l'offre gratuite Supabase et des consignes de sauvegarde. Ajout de la référence au document « Spécifications des écrans ». |
 | 1.2 | 03/11/2026 | Plan de livraison précisé : jalon 0 découpé en quatre étapes et sans interface métier ; le jalon 1 commence par le moteur de calcul et ses tests. Phase de test : Supabase local via la CLI (Docker). Ajout de la section 6.3 (environnement de développement) et des règles de gestion des clés Supabase (section 5). Section 12 : rôles projet Claude / Claude Code, fichier CLAUDE.md. Section 11 : deux nouveaux points ouverts. |
 | 1.3 | 05/11/2026 | Conversion au format Markdown (`docs/cahier_des_charges.md`), qui devient la source de référence unique ; figures converties en diagrammes Mermaid ; PDF v1.2 archivé. Intégration des décisions D-003 (application à la racine du dépôt) et D-004 (clé publishable dans `VITE_SUPABASE_ANON_KEY`). Section 6.3 : structure du dépôt mise à jour (journal des décisions, archives). Section 12 réorganisée : organisation projet Claude / Claude Code, visibilité limitée à `main`, cycle d'une décision, règles de branches. |
+| 1.4 | 06/11/2026 | Intégration de la décision D-007 : fichier `docs/avancement.md` (état actuel et journal des étapes) comme point de reprise de toute nouvelle conversation ; mise à jour en fin de chaque tâche, dans la branche de la tâche (exception à la règle des branches `docs/…`). Sections 6.3, 12.1, 12.2 et 12.3 mises à jour. |

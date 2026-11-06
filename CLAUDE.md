@@ -7,6 +7,8 @@ Le porteur du projet est aussi l'unique administrateur. Niveau : intermédiaire
 (architecte cloud), novice en PWA : expliquer brièvement les choix propres au web/PWA.
 
 ## Documents de référence (à lire au début de chaque session)
+- `docs/avancement.md` : à lire EN PREMIER (« État actuel », puis la fin du journal) ;
+  résumer au porteur où en est le projet et attendre son accord avant de continuer.
 - `docs/cahier_des_charges.md` : source de référence unique pour les règles métier,
   le modèle de données, la stack et l'organisation (section 12).
 - `docs/decisions.md` : journal des décisions ; les décisions validées complètent le
@@ -21,13 +23,15 @@ Le porteur du projet est aussi l'unique administrateur. Niveau : intermédiaire
   fonctionnelles ; Claude Code traite uniquement le code et la mise à jour des fichiers
   du dépôt.
 - Les deux ne communiquent pas directement : le lien passe par le porteur du projet et
-  par `CLAUDE.md`, `docs/cahier_des_charges.md` et `docs/decisions.md`.
+  par `CLAUDE.md`, `docs/cahier_des_charges.md`, `docs/decisions.md` et
+  `docs/avancement.md`.
 - Le projet Claude ne lit QUE la branche `main`, après synchronisation manuelle
   (« Sync now »). Tout ce qui est sur une autre branche lui est invisible.
 - Quand le porteur transmet une décision venant du projet Claude : la recopier
   fidèlement dans `docs/decisions.md`, reporter ses effets dans
-  `docs/cahier_des_charges.md` (version incrémentée + ligne dans la section 13) et,
-  si besoin, dans ce fichier, le tout dans une même branche `docs/…`.
+  `docs/cahier_des_charges.md` (version incrémentée + ligne dans la section 13),
+  mettre à jour `docs/avancement.md` et, si besoin, ce fichier, le tout dans une même
+  branche `docs/…`.
 - Ne jamais prendre seul une décision métier : si une règle métier manque ou est
   ambiguë, s'arrêter et demander au porteur, qui la tranchera dans le projet Claude.
 - Consigner toute décision technique notable dans `docs/decisions.md`
@@ -87,9 +91,13 @@ date-fns (fuseau Europe/Paris) · Vitest (unitaires) · Playwright (parcours).
   `feat/<jalon>-<sujet>` (ex. `feat/j0-2-pwa`), `fix/<sujet>`, `docs/<sujet>`.
 - Toute modification de `CLAUDE.md` ou de `docs/` passe par une branche `docs/…`
   courte, fusionnée dans `main` dès validation, séparément du code.
-- En fin de tâche : commit, push, puis demander l'accord du porteur avant la fusion
-  dans `main`. Après une fusion qui touche `CLAUDE.md` ou `docs/`, rappeler au porteur
-  de cliquer sur « Sync now » dans le projet Claude.
+- En fin de tâche : mettre à jour `docs/avancement.md` (« État actuel » réécrit, entrée
+  ajoutée au journal) dans la branche de la tâche, puis commit, push, et demander
+  l'accord du porteur avant la fusion dans `main`. Après une fusion qui touche
+  `CLAUDE.md` ou `docs/`, rappeler au porteur de cliquer sur « Sync now » dans le
+  projet Claude.
+- Exception à la règle des branches `docs/…` : `docs/avancement.md` est toujours mis à
+  jour dans la branche de la tâche qu'il décrit.
 
 ## Style
 - Réponses en français, concises.
@@ -100,7 +108,7 @@ date-fns (fuseau Europe/Paris) · Vitest (unitaires) · Playwright (parcours).
 - `src/` : application React
 - `supabase/migrations/` : migrations SQL
 - `tests/e2e/` : tests Playwright
-- `docs/` : cahier des charges, journal des décisions, spécifications des écrans
+- `docs/` : cahier des charges, journal des décisions, avancement, spécifications des écrans
 - `docs/archives/` : anciennes versions figées (PDF)
 
 ## Commandes utiles
