@@ -75,3 +75,16 @@
 - **Décision** : `docs/cahier_des_charges.md` devient la source de référence unique. Claude Code le met à jour directement à chaque décision qui le modifie, dans la même branche `docs/…`. Les figures sont des diagrammes Mermaid. Le PDF v1.2 est archivé dans `docs/archives/` ; un PDF n'est plus qu'un export ponctuel.
 - **Conséquences** : chaque modification du cahier des charges incrémente sa version et ajoute une ligne à sa section 13.
 - **Statut** : intégrée au cahier des charges v1.3
+
+## D-007 — Suivi de l'avancement du projet
+- **Date** : 06/11/2026
+- **Origine** : projet Claude
+- **Contexte** : docs/decisions.md indique ce qui a été décidé, mais rien n'indique où en est le projet ; une nouvelle conversation (projet Claude ou Claude Code) repart sans contexte.
+- **Décision** :
+  - Création de docs/avancement.md, composé d'une section « État actuel » (réécrite à chaque mise à jour : jalon et étape en cours, dernière étape terminée, prochaine action, points en attente, branches ouvertes) et d'un « Journal » (entrées datées ajoutées, jamais modifiées : date, étape, ce qui a été fait, branche, décisions liées).
+  - Claude Code met à jour docs/avancement.md à la fin de chaque tâche et de chaque cycle de décision.
+  - Exception à D-005 : docs/avancement.md est mis à jour dans la branche de la tâche qu'il décrit (feat/…, fix/… ou docs/…), afin que main reflète toujours exactement ce qui a été fusionné.
+  - En fin de séance sans décision, le projet Claude fournit le bloc « État actuel » à jour, transmis à Claude Code.
+  - Toute nouvelle conversation commence par la lecture de « État actuel » puis de la fin du journal, résume au porteur où en est le projet et attend son accord avant de continuer.
+- **Conséquences** : complète D-005 sans la remplacer. Cahier des charges v1.4 (sections 6.3 et 12), CLAUDE.md, instructions du projet Claude.
+- **Statut** : intégrée au cahier des charges v1.4
