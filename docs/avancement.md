@@ -1,6 +1,6 @@
 # Avancement du projet
 
-> Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger.
+> Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
 ## État actuel (mis à jour le 06/11/2026)
 - **En cours** : J0 · étape 0.2 — socle d'interface (Tailwind CSS, shadcn/ui, vite-plugin-pwa). Non commencée.
