@@ -88,3 +88,19 @@
   - Toute nouvelle conversation commence par la lecture de « État actuel » puis de la fin du journal, résume au porteur où en est le projet et attend son accord avant de continuer.
 - **Conséquences** : complète D-005 sans la remplacer. Cahier des charges v1.4 (sections 6.3 et 12), CLAUDE.md, instructions du projet Claude.
 - **Statut** : intégrée au cahier des charges v1.4
+
+## D-008 — Promotion du premier administrateur et protection du rôle
+- **Date** : 07/11/2026
+- **Origine** : Claude Code
+- **Contexte** : étape 0.3 (migration 0001). Un trigger refuse toute modification de `role` ou `actif` dans `profiles` si l'utilisateur n'est pas administrateur (`is_admin()`). Or le premier administrateur est promu par SQL dans le Studio, où aucun utilisateur n'est connecté (`auth.uid()` nul) : sans exception, cette promotion serait impossible.
+- **Décision** : le trigger `profiles_protect_role` ne contrôle que les requêtes émises par les utilisateurs de l'application (rôles `authenticated` et `anon`). Les accès d'administration de la base (rôle `postgres` via le Studio ou psql, `service_role` côté serveur) peuvent modifier `role` et `actif`. Depuis l'application, seul un administrateur actif le peut.
+- **Conséquences** : migration `…_init_schema.sql` ; procédure de promotion décrite dans le README (section « Base de données ») ; cas vérifiés dans `supabase/tests/verification_0_3.sql`. La clé `service_role` restant hors du client, aucun utilisateur ne peut s'auto-promouvoir. Aucun impact métier.
+- **Statut** : validée
+
+## D-009 — Aucun droit pour le rôle anon sur les tables
+- **Date** : 07/11/2026
+- **Origine** : Claude Code
+- **Contexte** : étape 0.3 (migration 0001). Par défaut, Supabase accorde des droits au rôle `anon` (visiteur non connecté) sur les tables du schéma `public` ; la RLS sans policy pour `anon` suffit déjà à masquer toutes les lignes.
+- **Décision** : en défense en profondeur, les droits du rôle `anon` sont retirés (`revoke all … from anon`) sur les 6 tables, en plus de la RLS. Les policies sont réservées au rôle `authenticated`.
+- **Conséquences** : migration `…_init_schema.sql` ; toute nouvelle table devra appliquer la même règle. Un visiteur non connecté reçoit un refus d'accès au lieu d'un résultat vide. Aucun impact métier.
+- **Statut** : validée

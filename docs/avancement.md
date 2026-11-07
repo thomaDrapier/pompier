@@ -4,16 +4,20 @@
 
 ## État actuel (mis à jour le 07/11/2026)
 - **En cours** : J0 · étape 0.4 — authentification et tests. Non commencée.
-- **Dernière étape terminée** : J0 · étape 0.3 — migration 0001 (6 tables, contraintes, index, triggers, RLS), types TypeScript, script de vérification manuelle. Vérifiée par Claude Code sur un PostgreSQL local imitant Supabase ; à revérifier par le porteur avec `npx supabase db reset` et `supabase/tests/verification_0_3.sql`.
+- **Dernière étape terminée** : J0 · étape 0.3 — migration 0001 (6 tables, contraintes, index, triggers, RLS), types TypeScript, script de vérification manuelle. Vérifiée par le porteur sur Supabase local (`npx supabase db reset`, `supabase/tests/verification_0_3.sql`, `npm run build`) ; fusionnée dans main.
 - **Prochaine action** : valider dans le projet Claude le plan de l'étape 0.4 (dont les tests RLS automatisés avec Vitest, qui remplaceront le script manuel de 0.3).
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
   - Répartition de la durée nette entre astreintes qui se chevauchent, cahier des charges section 11, à trancher avant le J1.
-  - Consigner dans docs/decisions.md (branche docs/…) les choix techniques de 0.3 : modification de role / actif autorisée aux accès d'administration de la base (Studio, service_role) pour promouvoir le premier administrateur ; droits du rôle anon retirés sur les 6 tables.
-- **Branches ouvertes** : feat/j0-3-database (jusqu'à fusion).
+- **Branches ouvertes** : docs/decisions-j0-3 (jusqu'à fusion).
 
 ## Journal
+
+### 07/11/2026 — Décisions techniques de l'étape 0.3
+- **Fait** : consignation dans docs/decisions.md des choix techniques de la migration 0001 (promotion du premier administrateur et protection du rôle ; aucun droit pour le rôle anon).
+- **Branche** : docs/decisions-j0-3
+- **Décisions liées** : D-008, D-009
 
 ### 07/11/2026 — J0 · étape 0.3 terminée
 - **Fait** : migration `supabase/migrations/20261107135551_init_schema.sql` (6 tables de la section 7, fin > début, unicité des taux par grade, nature et date d'effet, clés étrangères en restrict vers le référentiel, index sur (user_id, debut) et sur les clés étrangères, trigger modifie_le, fonction is_admin(), création automatique du profil à l'inscription, protection de role / actif, RLS sur les 6 tables, aucun droit pour anon) ; types `src/types/database.ts` écrits au format de `supabase gen types` (Docker indisponible dans l'environnement de Claude Code, à régénérer par le porteur) ; script `supabase/tests/verification_0_3.sql` ; section « Base de données » du README. Aucun seed.
