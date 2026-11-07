@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Playwright (rapports et traces des tests de parcours)
+test-results/
+playwright-report/
+playwright/.cache/

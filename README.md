@@ -45,8 +45,23 @@ npm run dev
 | `npm run dev` | Serveur de développement |
 | `npm run build && npm run preview` | Tester la PWA (service worker actif seulement en build) |
 | `npm run lint` | Analyse statique (oxlint) |
+| `npm run test` / `test:watch` | Tests unitaires (Vitest) |
+| `npm run test:rls` | Tests de sécurité de la base (Supabase local requis) |
+| `npm run test:e2e` | Tests de parcours (Playwright, Supabase local requis) |
 | `npx supabase start` / `stop` | Supabase local |
 | `npx supabase db reset` | Recrée la base locale et rejoue les migrations |
+
+## Créer un compte en local
+
+L'application n'a pas d'écran d'inscription (création des comptes : point ouvert,
+cahier des charges section 11). En local, créer un compte dans le Studio
+(http://127.0.0.1:54323) : **Authentication > Users > Add user > Create new user**,
+avec une adresse fictive (par exemple `prenom@example.test`) et un mot de passe
+d'au moins 8 caractères, en cochant « Auto Confirm User ». Se connecter ensuite sur
+http://localhost:5173 (`npm run dev`).
+
+Les e-mails envoyés par Supabase local (réinitialisation du mot de passe) ne partent
+pas : ils arrivent dans **Mailpit**, http://127.0.0.1:54324.
 
 ## Base de données
 
@@ -60,10 +75,16 @@ référentiel est saisi par l'administrateur.
 ```bash
 npx supabase db reset       # recrée la base locale et rejoue toutes les migrations
 npx supabase gen types typescript --local > src/types/database.ts   # régénère les types
+npx supabase gen types typescript --local | diff - src/types/database.ts  # contrôle : ne doit rien afficher
 ```
 
-Après toute modification du schéma, régénérer `src/types/database.ts` et le committer
-avec la migration.
+**Après chaque migration**, relancer `db reset` puis la génération des types, et
+committer `src/types/database.ts` avec la migration. Le fichier est généré tel quel
+(non reformaté) et figé en fins de ligne LF (`.gitattributes`).
+
+> Lancer ces commandes dans **Git Bash** (ou un terminal bash), pas dans Windows
+> PowerShell : la redirection `>` de PowerShell 5.1 écrit le fichier en UTF-16, que
+> TypeScript et git ne lisent pas correctement.
 
 ### Promotion du premier administrateur
 
@@ -78,17 +99,31 @@ update profiles set role = 'admin' where id = '<uuid du compte>';
 L'uuid se lit dans Authentication > Users. Depuis l'application, seul un
 administrateur peut modifier le rôle ou le statut actif d'un profil.
 
-### Vérification manuelle
+Les contraintes et la RLS sont vérifiées automatiquement par `npm run test:rls`
+(voir « Tests »).
 
-`supabase/tests/verification_0_3.sql` vérifie les contraintes et la RLS (deux
-utilisateurs simulés, un administrateur, un anonyme) dans une transaction annulée :
+## Tests
 
-```bash
-psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/tests/verification_0_3.sql
-```
+Prérequis pour `test:rls` et `test:e2e` : **Docker Desktop démarré** et **Supabase
+local lancé** (`npx supabase start`), `.env.local` rempli. Ces tests créent leurs
+propres comptes fictifs (`…@example.test`) et les suppriment à la fin ; ils refusent
+de s'exécuter si l'API ou la base visée n'est pas locale (127.0.0.1 / localhost).
 
-ou coller le fichier dans le SQL Editor du Studio. Résultat attendu : une suite de
-messages « OK … » puis « Tous les tests 0.3 sont passés ».
+| Commande | Contenu |
+| --- | --- |
+| `npm run test` | Tests unitaires Vitest (`src/**/*.test.ts(x)`), dans un DOM simulé, sans Supabase. |
+| `npm run test:rls` | Sécurité de la base (`tests/rls/`) : isolation des données entre utilisateurs, référentiel en lecture seule, rôle protégé, visiteur non connecté refusé, contraintes. Passe par l'API avec la clé publique, comme l'application. |
+| `npm run test:e2e` | Parcours Playwright (`tests/e2e/`) sur l'application buildée (`vite preview`, port 4173), en format ordinateur et smartphone (Pixel 7). Première fois : `npx playwright install chromium`. Rapport : `npx playwright show-report`. |
+
+La base des tests RLS est lue dans `SUPABASE_DB_URL`, à défaut
+`postgresql://postgres:postgres@127.0.0.1:54322/postgres` (valeur de
+`npx supabase status`).
+
+**Contrôle manuel de la réinitialisation du mot de passe** : sur l'écran de
+connexion, « Mot de passe oublié », saisir l'e-mail d'un compte local ; ouvrir
+l'e-mail dans Mailpit (http://127.0.0.1:54324) et cliquer sur le lien ; choisir un
+nouveau mot de passe ; l'écran connecté s'affiche. Vérifier ensuite, après
+déconnexion, que l'ancien mot de passe est refusé et le nouveau accepté.
 
 ## Sauvegarde et restauration
 
@@ -97,7 +132,7 @@ versions, test de restauration sur base vide.)*
 
 ## Jalons
 
-- [ ] J0 · Socle — 0.1 initialisation ✔ · 0.2 UI + PWA ✔ · 0.3 schéma + RLS ✔ · 0.4 auth + tests
+- [x] J0 · Socle — 0.1 initialisation ✔ · 0.2 UI + PWA ✔ · 0.3 schéma + RLS ✔ · 0.4 auth + tests ✔
 - [ ] J1 · MVP personnel (moteur de calcul et tests d'abord)
 - [ ] J2 · Référentiel et administration
 - [ ] J3 · Restitutions

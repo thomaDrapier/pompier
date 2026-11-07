@@ -1,0 +1,3 @@
+# Fichier généré par `supabase gen types` (fins de ligne LF) : le figer en LF pour
+# que le contrôle « gen types | diff - src/types/database.ts » reste valable sous Windows.
+src/types/database.ts text eol=lf

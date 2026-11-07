@@ -3,16 +3,24 @@
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
 ## État actuel (mis à jour le 07/11/2026)
-- **En cours** : J0 · étape 0.4 — authentification et tests. Non commencée.
-- **Dernière étape terminée** : J0 · étape 0.3 — migration 0001 (6 tables, contraintes, index, triggers, RLS), types TypeScript, script de vérification manuelle. Vérifiée par le porteur sur Supabase local (`npx supabase db reset`, `supabase/tests/verification_0_3.sql`, `npm run build`) ; fusionnée dans main.
-- **Prochaine action** : valider dans le projet Claude le plan de l'étape 0.4 (dont les tests RLS automatisés avec Vitest, qui remplaceront le script manuel de 0.3).
+- **En cours** : aucune étape. J0 (socle) terminé.
+- **Dernière étape terminée** : J0 · étape 0.4 — authentification (connexion, mot de passe oublié, nouveau mot de passe, déconnexion, session persistante) et mise en place des tests : Vitest (unitaires), tests automatisés de sécurité RLS (`npm run test:rls`), Playwright (`npm run test:e2e`, ordinateur et smartphone). Types TypeScript régénérés depuis la base locale. Fusionnée dans main.
+- **Prochaine action** : J1 — moteur de calcul `src/engine/` et ses tests Vitest, plan à valider d'abord dans le projet Claude.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
   - Répartition de la durée nette entre astreintes qui se chevauchent, cahier des charges section 11, à trancher avant le J1.
-- **Branches ouvertes** : docs/decisions-j0-3 (jusqu'à fusion).
+  - Choix d'un routeur avant les écrans du J1.
+  - Désactiver l'inscription publique en production (J4) : `enable_signup` est gardé actif en local, car les tests créent leurs comptes par signUp.
+  - Intégration continue GitHub Actions à envisager (lint, build, tests).
+- **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 07/11/2026 — J0 · étape 0.4 terminée (J0 terminé)
+- **Fait** : types `src/types/database.ts` régénérés par `npx supabase gen types typescript --local` (remplacent la version écrite à la main en 0.3 ; aucun écart de colonne, de type ni de nullabilité ; fichier figé en LF par `.gitattributes`) ; client Supabase typé (`src/lib/supabase.ts`, clé publishable seule) ; AuthProvider et useAuth (session, chargement, retour par le lien de réinitialisation) ; écrans connexion, mot de passe oublié, nouveau mot de passe et écran connecté temporaire (shadcn/ui Input, Label, Card), sans routeur ; `supabase/config.toml` (URLs de redirection 5173 et 4173, mot de passe de 8 caractères minimum) ; Vitest (3 tests de l'écran de connexion) ; tests RLS automatisés (32 cas, `tests/rls/`) remplaçant `supabase/tests/verification_0_3.sql`, supprimé ; Playwright (6 parcours × ordinateur et Pixel 7) ; README (Tests, Créer un compte en local, génération des types). Réinitialisation du mot de passe vérifiée de bout en bout avec Mailpit.
+- **Branche** : feat/j0-4-auth-tests
+- **Décisions liées** : D-008, D-009
 
 ### 07/11/2026 — Décisions techniques de l'étape 0.3
 - **Fait** : consignation dans docs/decisions.md des choix techniques de la migration 0001 (promotion du premier administrateur et protection du rôle ; aucun droit pour le rôle anon).
