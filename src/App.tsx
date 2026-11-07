@@ -1,21 +1,45 @@
 import { useState } from 'react'
 import { OfflineBanner } from '@/components/OfflineBanner'
-import { Button } from '@/components/ui/button'
+import { AuthProvider } from '@/features/auth/AuthProvider'
+import { useAuth } from '@/features/auth/useAuth'
+import { ConnexionScreen } from '@/features/auth/ConnexionScreen'
+import { MotDePasseOublieScreen } from '@/features/auth/MotDePasseOublieScreen'
+import { NouveauMotDePasseScreen } from '@/features/auth/NouveauMotDePasseScreen'
+import { ConnecteScreen } from '@/features/auth/ConnecteScreen'
 
-// Page temporaire du J0 : aucune interface métier à ce stade.
-function App() {
-  const [clics, setClics] = useState(0)
+// Choix de l'écran selon l'état d'authentification. Pas de routeur pour
+// l'instant (choix reporté avant les écrans du J1).
+function Ecrans() {
+  const { session, chargement, recuperationMotDePasse } = useAuth()
+  const [oubli, setOubli] = useState(false)
 
-  return (
-    <>
-      <OfflineBanner />
-      <main className="flex min-h-svh flex-col items-center justify-center gap-6 p-6 text-center">
-        <h1 className="text-2xl font-semibold">SPV Activités — en construction</h1>
-        <Button onClick={() => setClics((n) => n + 1)}>
-          Bouton de test ({clics} clic{clics > 1 ? 's' : ''})
-        </Button>
+  if (chargement) {
+    return (
+      <main className="flex min-h-svh items-center justify-center p-4">
+        <p role="status" className="text-muted-foreground">
+          Chargement…
+        </p>
       </main>
-    </>
+    )
+  }
+
+  // Retour par le lien de réinitialisation : le lien a ouvert une session,
+  // l'utilisateur doit d'abord choisir un nouveau mot de passe.
+  if (session && recuperationMotDePasse) return <NouveauMotDePasseScreen />
+
+  if (session) return <ConnecteScreen email={session.user.email} />
+
+  if (oubli) return <MotDePasseOublieScreen onRetour={() => setOubli(false)} />
+
+  return <ConnexionScreen onMotDePasseOublie={() => setOubli(true)} />
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <OfflineBanner />
+      <Ecrans />
+    </AuthProvider>
   )
 }
 
