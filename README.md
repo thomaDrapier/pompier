@@ -48,10 +48,47 @@ npm run dev
 | `npx supabase start` / `stop` | Supabase local |
 | `npx supabase db reset` | Recrée la base locale et rejoue les migrations |
 
-## Migrations
+## Base de données
 
-Migrations SQL versionnées dans `supabase/migrations/`, noms de tables et colonnes
-conformes à la section 7 du cahier des charges. *(À compléter au jalon 0.3.)*
+Migrations SQL versionnées dans `supabase/migrations/` (nom horodaté généré par
+`npx supabase migration new <nom>`), noms de tables et colonnes conformes à la
+section 7 du cahier des charges. La première, `…_init_schema.sql`, est la
+« migration 0001 » : 6 tables, contraintes, index, triggers et Row Level Security.
+Aucune donnée de référence n'est fournie (ni nature, ni grade, ni taux) : le
+référentiel est saisi par l'administrateur.
+
+```bash
+npx supabase db reset       # recrée la base locale et rejoue toutes les migrations
+npx supabase gen types typescript --local > src/types/database.ts   # régénère les types
+```
+
+Après toute modification du schéma, régénérer `src/types/database.ts` et le committer
+avec la migration.
+
+### Promotion du premier administrateur
+
+Tout compte créé reçoit le rôle `user` (profil créé automatiquement à l'inscription).
+Pour promouvoir le premier administrateur, après sa première inscription, exécuter
+dans le Studio (SQL Editor, http://127.0.0.1:54323 en local) :
+
+```sql
+update profiles set role = 'admin' where id = '<uuid du compte>';
+```
+
+L'uuid se lit dans Authentication > Users. Depuis l'application, seul un
+administrateur peut modifier le rôle ou le statut actif d'un profil.
+
+### Vérification manuelle
+
+`supabase/tests/verification_0_3.sql` vérifie les contraintes et la RLS (deux
+utilisateurs simulés, un administrateur, un anonyme) dans une transaction annulée :
+
+```bash
+psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f supabase/tests/verification_0_3.sql
+```
+
+ou coller le fichier dans le SQL Editor du Studio. Résultat attendu : une suite de
+messages « OK … » puis « Tous les tests 0.3 sont passés ».
 
 ## Sauvegarde et restauration
 
@@ -60,7 +97,7 @@ versions, test de restauration sur base vide.)*
 
 ## Jalons
 
-- [ ] J0 · Socle — 0.1 initialisation ✔ · 0.2 UI + PWA · 0.3 schéma + RLS · 0.4 auth + tests
+- [ ] J0 · Socle — 0.1 initialisation ✔ · 0.2 UI + PWA ✔ · 0.3 schéma + RLS ✔ · 0.4 auth + tests
 - [ ] J1 · MVP personnel (moteur de calcul et tests d'abord)
 - [ ] J2 · Référentiel et administration
 - [ ] J3 · Restitutions

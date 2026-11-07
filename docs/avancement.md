@@ -2,17 +2,23 @@
 
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
-## État actuel (mis à jour le 06/11/2026)
-- **En cours** : J0 · étape 0.3 — migration 0001. Non commencée.
-- **Dernière étape terminée** : J0 · étape 0.2 — socle d'interface (Tailwind CSS v4, alias @/, shadcn/ui avec Button, vite-plugin-pwa : manifeste, icônes provisoires, service worker en precache seul ; bandeau « Pas de connexion réseau » ; page temporaire). PWA installable vide, testée sur poste dans Chrome.
-- **Prochaine action** : valider dans le projet Claude le plan de l'étape 0.3.
+## État actuel (mis à jour le 07/11/2026)
+- **En cours** : J0 · étape 0.4 — authentification et tests. Non commencée.
+- **Dernière étape terminée** : J0 · étape 0.3 — migration 0001 (6 tables, contraintes, index, triggers, RLS), types TypeScript, script de vérification manuelle. Vérifiée par Claude Code sur un PostgreSQL local imitant Supabase ; à revérifier par le porteur avec `npx supabase db reset` et `supabase/tests/verification_0_3.sql`.
+- **Prochaine action** : valider dans le projet Claude le plan de l'étape 0.4 (dont les tests RLS automatisés avec Vitest, qui remplaceront le script manuel de 0.3).
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
   - Répartition de la durée nette entre astreintes qui se chevauchent, cahier des charges section 11, à trancher avant le J1.
-- **Branches ouvertes** : feat/j0-2-pwa (jusqu'à fusion).
+  - Consigner dans docs/decisions.md (branche docs/…) les choix techniques de 0.3 : modification de role / actif autorisée aux accès d'administration de la base (Studio, service_role) pour promouvoir le premier administrateur ; droits du rôle anon retirés sur les 6 tables.
+- **Branches ouvertes** : feat/j0-3-database (jusqu'à fusion).
 
 ## Journal
+
+### 07/11/2026 — J0 · étape 0.3 terminée
+- **Fait** : migration `supabase/migrations/20261107135551_init_schema.sql` (6 tables de la section 7, fin > début, unicité des taux par grade, nature et date d'effet, clés étrangères en restrict vers le référentiel, index sur (user_id, debut) et sur les clés étrangères, trigger modifie_le, fonction is_admin(), création automatique du profil à l'inscription, protection de role / actif, RLS sur les 6 tables, aucun droit pour anon) ; types `src/types/database.ts` écrits au format de `supabase gen types` (Docker indisponible dans l'environnement de Claude Code, à régénérer par le porteur) ; script `supabase/tests/verification_0_3.sql` ; section « Base de données » du README. Aucun seed.
+- **Branche** : feat/j0-3-database
+- **Décisions liées** : aucune (choix techniques à consigner, voir « En attente »)
 
 ### 06/11/2026 — J0 · étape 0.2 terminée
 - **Fait** : Tailwind CSS v4 (plugin Vite) ; alias d'import @/ ; shadcn/ui (Radix, preset Nova) et composant Button ; vite-plugin-pwa (manifeste « SPV Activités », icônes générées depuis public/logo.svg, service worker autoUpdate limité au precache de l'interface, aucune mise en cache des appels Supabase) ; composant OfflineBanner ; page temporaire « en construction » ; fichiers de démonstration Vite supprimés.
