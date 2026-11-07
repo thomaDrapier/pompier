@@ -6,8 +6,8 @@ import type { Database } from '@/types/database'
 //
 // Sécurité : seules l'URL et la clé PUBLIQUE (publishable / anon) sont utilisées.
 // Elles sont lisibles par n'importe quel visiteur : la protection des données
-// repose sur la Row Level Security de la base. La clé secret / service_role
-// n'est JAMAIS utilisée côté client.
+// repose sur la Row Level Security de la base. La clé secrète de Supabase
+// (accès administrateur, contourne la RLS) n'est JAMAIS utilisée côté client.
 
 const url = import.meta.env.VITE_SUPABASE_URL
 const cle = import.meta.env.VITE_SUPABASE_ANON_KEY
