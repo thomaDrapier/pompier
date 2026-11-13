@@ -143,3 +143,23 @@
   - date-fns et @date-fns/tz sont ajoutés en dépendances d'exécution.
 - **Conséquences** : moteur `src/engine/` et ses tests. Aucun impact métier.
 - **Statut** : validée
+
+## D-013 — Routeur de l'application
+- **Date** : 13/11/2026
+- **Origine** : projet Claude
+- **Contexte** : choix d'un routeur avant les écrans du J1 (point en attente de docs/avancement.md). Options étudiées : React Router et TanStack Router.
+- **Décision** : React Router est retenu. C'est le routeur le plus répandu et le mieux documenté, et le plus simple à prendre en main ; TanStack Router, mieux typé, demande plus de configuration.
+- **Conséquences** : dépendance ajoutée à l'étape 1.2b ; cahier des charges v1.7 (section 6) ; CLAUDE.md (stack).
+- **Statut** : intégrée au cahier des charges v1.7
+
+## D-014 — Niveau de finition de l'interface
+- **Date** : 13/11/2026
+- **Origine** : projet Claude
+- **Contexte** : rédaction de docs/specifications_ecrans.md avant les écrans de l'étape 1.2b. Le porteur prévoit un travail de design spécifique après la fin du projet.
+- **Décision** :
+  - Jusqu'au J5, les écrans visent la complétude fonctionnelle : composants shadcn/ui par défaut, mise en page simple, sans travail graphique spécifique.
+  - Les exigences d'ergonomie de la section 5 restent applicables (mobile first, utilisation à une main, saisie en moins de 15 secondes).
+  - docs/specifications_ecrans.md décrit le fonctionnement de chaque écran (contenu affiché, champs, actions, messages, navigation), pas son apparence. Il est rédigé dans le projet Claude, écran par écran, avant le développement de chaque écran.
+  - Le design (identité visuelle, maquettes) fera l'objet d'un projet distinct après le J5.
+- **Conséquences** : cahier des charges v1.7 (section 8) ; CLAUDE.md (méthode).
+- **Statut** : intégrée au cahier des charges v1.7

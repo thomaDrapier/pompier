@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Version** | 1.6 |
+| **Version** | 1.7 |
 | **Date** | 13/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
@@ -256,6 +256,7 @@ flowchart TB
 | UI | Tailwind CSS + composants shadcn/ui | Rapide à mettre en œuvre, adapté au mobile. |
 | Graphiques | Recharts | Intégration simple avec React. |
 | Données côté client | TanStack Query | Gère le chargement des données depuis Supabase : cache, rafraîchissement automatique des listes et totaux après chaque saisie, états de chargement et d'erreur ; limite les requêtes répétées. |
+| Navigation | React Router | Routeur le plus répandu et documenté : associe chaque adresse à un écran et gère le bouton « retour » (D-013). |
 | Dates | date-fns (ou Temporal), fuseau Europe/Paris | Gestion fiable du changement d'heure. |
 | Tests | Vitest (unitaires), Playwright (parcours) | Couverture du moteur de calcul et des écrans clés. |
 
@@ -390,6 +391,8 @@ Les montants et durées nettes sont calculés, pas stockés, afin de rester coh�
 
 Cette section donne la liste des écrans. Le détail de chaque écran fait l'objet d'un document séparé, « Spécifications des écrans ».
 
+**Niveau de finition (D-014) :** jusqu'au J5, les écrans visent la complétude fonctionnelle : composants shadcn/ui par défaut, mise en page simple, sans travail graphique spécifique ; les exigences d'ergonomie de la section 5 restent applicables. Le document « Spécifications des écrans » décrit le fonctionnement de chaque écran (contenu, champs, actions, messages, navigation), pas son apparence. Le design fera l'objet d'un projet distinct après le J5.
+
 1. Connexion / inscription.
 2. Accueil : synthèse du mois, bouton de saisie rapide.
 3. Saisie / modification d'une activité.
@@ -497,3 +500,4 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.4 | 06/11/2026 | Intégration de la décision D-007 : fichier `docs/avancement.md` (état actuel et journal des étapes) comme point de reprise de toute nouvelle conversation ; mise à jour en fin de chaque tâche, dans la branche de la tâche (exception à la règle des branches `docs/…`). Sections 6.3, 12.1, 12.2 et 12.3 mises à jour. |
 | 1.5 | 13/11/2026 | Intégration de la décision D-010 : chevauchement de deux astreintes interdit à la saisie et contrôlé en base, astreintes contiguës autorisées, anomalie « chevauchement d'astreintes » exclue des totaux. Sections 3.2, 3.4, 9 et 11 mises à jour. |
 | 1.6 | 13/11/2026 | Intégration de la décision D-011 : statuts d'une activité, priorité des anomalies, déduction indépendante du taux, contenu des totaux. Section 3.5 mise à jour. |
+| 1.7 | 13/11/2026 | Intégration des décisions D-013 (routeur React Router, section 6) et D-014 (interface fonctionnelle minimale jusqu'au J5, spécifications des écrans fonctionnelles, design reporté à un projet distinct, section 8). |

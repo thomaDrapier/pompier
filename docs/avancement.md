@@ -5,16 +5,20 @@
 ## État actuel (mis à jour le 13/11/2026)
 - **En cours** : aucune étape. J1 · étape 1.1 terminée.
 - **Dernière étape terminée** : J1 · étape 1.1 — moteur de calcul pur `src/engine/` (plages semi-ouvertes, durée nette d'astreinte, détection des chevauchements d'astreintes, résolution du grade et du taux à la date de Paris, montant en centimes, statuts et totaux) et ses tests Vitest (82 tests du moteur, 85 au total). Aucune interface, aucune migration.
-- **Prochaine action** : J1 · étape 1.2 — passage des données de la base aux types du moteur, contrôle bloquant du chevauchement d'astreintes (interface et trigger en base, D-010), écrans de saisie et de liste ; plan à valider d'abord dans le projet Claude.
+- **Prochaine action** : J1 · étape 1.2a (données : trigger D-010, seed fictif, passage base → moteur, hooks TanStack Query), puis 1.2b (écrans) après rédaction des spécifications des écrans de saisie et de liste.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
-  - Choix d'un routeur avant les écrans du J1.
   - Désactiver l'inscription publique en production (J4) : `enable_signup` est gardé actif en local, car les tests créent leurs comptes par signUp.
   - Intégration continue GitHub Actions à envisager (lint, build, tests).
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 13/11/2026 — Décisions : routeur et niveau de finition de l'interface
+- **Fait** : D-013 (React Router) et D-014 (interface fonctionnelle minimale, design reporté) consignées ; cahier des charges v1.7 (sections 6 et 8) ; CLAUDE.md mis à jour.
+- **Branche** : docs/d013-d014-interface
+- **Décisions liées** : D-013, D-014
 
 ### 13/11/2026 — J1 · étape 1.1 terminée
 - **Fait** : moteur de calcul pur dans `src/engine/`, sans import de React, de Supabase ni de `src/types/database.ts` : `types.ts` (types d'entrée et de résultat propres au moteur), `intervalles.ts` (union, intersection, soustraction, durée sur des plages semi-ouvertes en millisecondes UTC), `astreintes.ts` (durée nette, détection des astreintes qui se chevauchent), `taux.ts` (date calendaire en Europe/Paris, grade et taux en vigueur), `remuneration.ts` (montant en centimes entiers, demi vers le haut), `index.ts` (`calculerActivites`, `totaliser` avec astreintes à part et détail par nature) ; `aides-test.ts` (instants en heure de Paris pour les tests) ; un fichier de tests par module, 82 tests couvrant les 13 cas demandés, plus le cas miroir de la frontière de fuseau (01/01 à 00:30 à Paris). Dépendances `date-fns` et `@date-fns/tz` ajoutées. Tests du moteur vérifiés aussi sous un autre fuseau machine ; `npm run test`, `npm run build` et `npm run lint` sans erreur. Aucun taux en dur (taux fictifs dans les tests uniquement).
