@@ -3,7 +3,7 @@
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
 ## État actuel (mis à jour le 13/11/2026)
-- **En cours** : J1 · étape 1.1 (moteur de calcul) à lancer.
+- **En cours** : J1 · étape 1.1, plan validé, développement à lancer sur feat/j1-1-engine.
 - **Dernière étape terminée** : J0 · étape 0.4 — authentification (connexion, mot de passe oublié, nouveau mot de passe, déconnexion, session persistante) et mise en place des tests : Vitest (unitaires), tests automatisés de sécurité RLS (`npm run test:rls`), Playwright (`npm run test:e2e`, ordinateur et smartphone). Types TypeScript régénérés depuis la base locale. Fusionnée dans main.
 - **Prochaine action** : J1 — moteur de calcul `src/engine/` et ses tests Vitest, plan à valider d'abord dans le projet Claude.
 - **En attente** :
@@ -15,6 +15,11 @@
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 13/11/2026 — Décisions : précisions du moteur de calcul
+- **Fait** : D-011 (statuts, anomalies, totaux) et D-012 (conventions techniques) consignées ; cahier des charges v1.6 (section 3.5).
+- **Branche** : docs/d011-d012-moteur
+- **Décisions liées** : D-011, D-012
 
 ### 13/11/2026 — Décision : chevauchement de deux astreintes
 - **Fait** : D-010 consignée ; cahier des charges v1.5 (sections 3.2, 3.4, 9, 11, 13).

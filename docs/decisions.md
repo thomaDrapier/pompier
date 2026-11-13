@@ -117,3 +117,29 @@
   - Si des données en chevauchement existent malgré tout (par exemple après le passage d'une nature au statut « astreinte »), le moteur de calcul signale les astreintes concernées en anomalie « chevauchement d'astreintes » et les exclut des totaux, avec une alerte visible, sur le modèle du « taux manquant ».
 - **Conséquences** : moteur de calcul (étape 1.1) : statut d'anomalie et tests ; étape 1.2 : contrôle bloquant à la saisie et contrôle en base (trigger, migration dédiée) ; cahier des charges v1.5 (sections 3.2, 3.4, 9, 11, 13).
 - **Statut** : intégrée au cahier des charges v1.5
+
+## D-011 — Statuts, anomalies et totaux du moteur de calcul
+- **Date** : 13/11/2026
+- **Origine** : projet Claude
+- **Contexte** : plan de l'étape 1.1 (moteur de calcul). Comportement non précisé par le cahier des charges : calculs d'une activité en anomalie, priorité entre deux anomalies, déduction d'une activité sans taux, contenu des totaux.
+- **Décision** :
+  - Une activité a un seul statut : « ok », « taux manquant » ou « chevauchement d'astreintes ». Si une astreinte est à la fois en chevauchement et sans taux, « chevauchement d'astreintes » l'emporte.
+  - Pour une activité en anomalie, les durées et, s'il existe, le taux restent calculés et affichés ; le montant n'est pas calculé (null).
+  - La déduction (3.4) ne dépend pas du taux : une activité en « taux manquant » est quand même déduite de l'astreinte qu'elle chevauche.
+  - Pour une activité qui n'est pas une astreinte : durée déduite = 0, durée nette = durée déclarée.
+  - Les totaux ne comptent que les activités au statut « ok », durées comme montants. Ils fournissent : le montant total, les durées d'astreinte (déclarée, déduite, nette) totalisées à part, un détail par nature (nombre, durée retenue, montant) et le nombre d'anomalies par statut.
+- **Conséquences** : moteur `src/engine/` (ResultatActivite porte natureId et estAstreinte ; totaliser renvoie aussi un détail par nature) et ses tests ; cahier des charges v1.6 (section 3.5).
+- **Statut** : intégrée au cahier des charges v1.6
+
+## D-012 — Conventions techniques du moteur de calcul
+- **Date** : 13/11/2026
+- **Origine** : Claude Code
+- **Contexte** : plan de l'étape 1.1.
+- **Décision** :
+  - Les instants entrent dans le moteur sous forme de `Date` et sont convertis en millisecondes UTC à l'intérieur.
+  - Le début et la fin de chaque activité sont tronqués à la minute avant tout calcul (minutes entières, déclarée = déduite + nette).
+  - Une entrée impossible (fin ≤ début, nature inconnue) lève une erreur explicite ; la base les interdit déjà.
+  - Calculs en entiers : minutes et centimes ; montant = floor((minutes × centimesParHeure + 30) / 60), arrondi au centime le plus proche, demi vers le haut.
+  - date-fns et @date-fns/tz sont ajoutés en dépendances d'exécution.
+- **Conséquences** : moteur `src/engine/` et ses tests. Aucun impact métier.
+- **Statut** : validée
