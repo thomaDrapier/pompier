@@ -104,3 +104,16 @@
 - **Décision** : en défense en profondeur, les droits du rôle `anon` sont retirés (`revoke all … from anon`) sur les 6 tables, en plus de la RLS. Les policies sont réservées au rôle `authenticated`.
 - **Conséquences** : migration `…_init_schema.sql` ; toute nouvelle table devra appliquer la même règle. Un visiteur non connecté reçoit un refus d'accès au lieu d'un résultat vide. Aucun impact métier.
 - **Statut** : validée
+
+## D-010 — Interdiction du chevauchement de deux astreintes
+- **Date** : 13/11/2026
+- **Origine** : projet Claude
+- **Contexte** : cahier des charges section 11, « Chevauchement de deux astreintes » : comment répartir la durée nette entre deux astreintes qui se chevauchent (natures ou taux différents) pour le montant par activité (3.5). Point à trancher avant le J1.
+- **Décision** :
+  - Deux astreintes d'un même utilisateur ne peuvent pas se chevaucher. La saisie ou la modification d'une astreinte qui chevauche une autre astreinte est refusée (blocage, pas un simple avertissement).
+  - Les plages sont semi-ouvertes [début, fin) : deux astreintes contiguës (fin de l'une = début de l'autre) ne se chevauchent pas et sont autorisées.
+  - Le chevauchement d'une astreinte avec une activité d'une autre nature reste normal et attendu (règle de déduction 3.4).
+  - Défense en profondeur : le refus est appliqué dans l'interface et contrôlé dans la base.
+  - Si des données en chevauchement existent malgré tout (par exemple après le passage d'une nature au statut « astreinte »), le moteur de calcul signale les astreintes concernées en anomalie « chevauchement d'astreintes » et les exclut des totaux, avec une alerte visible, sur le modèle du « taux manquant ».
+- **Conséquences** : moteur de calcul (étape 1.1) : statut d'anomalie et tests ; étape 1.2 : contrôle bloquant à la saisie et contrôle en base (trigger, migration dédiée) ; cahier des charges v1.5 (sections 3.2, 3.4, 9, 11, 13).
+- **Statut** : intégrée au cahier des charges v1.5
