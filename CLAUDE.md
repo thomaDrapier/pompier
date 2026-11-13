@@ -49,7 +49,7 @@ Le porteur du projet est aussi l'unique administrateur. Niveau : intermédiaire
 
 ## Stack imposée (ne pas en changer sans raison sérieuse)
 PostgreSQL via Supabase (Auth, RLS, API) · React + TypeScript strict + Vite ·
-vite-plugin-pwa · Tailwind CSS + shadcn/ui · Recharts · TanStack Query ·
+React Router · vite-plugin-pwa · Tailwind CSS + shadcn/ui · Recharts · TanStack Query ·
 date-fns (fuseau Europe/Paris) · Vitest (unitaires) · Playwright (parcours).
 
 ## Règles métier non négociables
@@ -87,6 +87,8 @@ date-fns (fuseau Europe/Paris) · Vitest (unitaires) · Playwright (parcours).
 - Migrations SQL versionnées dans `supabase/migrations/` ; respecter exactement les
   noms de tables et de colonnes du cahier des charges.
 - Si une information métier manque : poser une seule question à la fois.
+- Interface : fonctionnalités d'abord, composants shadcn/ui par défaut, sans travail
+  graphique ; chaque écran suit docs/specifications_ecrans.md (D-014).
 
 ## Git
 - Ne jamais committer directement sur `main`. Une branche par tâche :
