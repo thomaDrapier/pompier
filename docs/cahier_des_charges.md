@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Version** | 1.5 |
+| **Version** | 1.6 |
 | **Date** | 13/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
@@ -140,6 +140,8 @@ gantt
 1. déterminer le grade G de l'utilisateur à la date D (historique des grades) ;
 2. chercher dans le référentiel unique le taux pour (G, N) en vigueur à la date D ;
 3. si aucun taux n'existe : l'activité est enregistrée mais signalée « taux manquant » et exclue des totaux, avec un bandeau d'alerte visible.
+
+**Statuts d'une activité (D-011) :** chaque activité a un seul statut : « ok », « taux manquant » ou « chevauchement d'astreintes » (3.4). Si une astreinte est à la fois en chevauchement et sans taux, « chevauchement d'astreintes » l'emporte. Pour une activité en anomalie, les durées et, s'il existe, le taux restent affichés, mais le montant n'est pas calculé. La déduction d'une activité sur une astreinte ne dépend pas de son taux : une activité en « taux manquant » est quand même déduite. Les totaux, durées comme montants, ne comptent que les activités au statut « ok » ; les durées d'astreinte y sont totalisées à part, avec un détail par nature.
 
 Les taux sont fixés pour tous les agents : aucun utilisateur ne peut les modifier ni créer de taux personnalisé.
 
@@ -494,3 +496,4 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.3 | 05/11/2026 | Conversion au format Markdown (`docs/cahier_des_charges.md`), qui devient la source de référence unique ; figures converties en diagrammes Mermaid ; PDF v1.2 archivé. Intégration des décisions D-003 (application à la racine du dépôt) et D-004 (clé publishable dans `VITE_SUPABASE_ANON_KEY`). Section 6.3 : structure du dépôt mise à jour (journal des décisions, archives). Section 12 réorganisée : organisation projet Claude / Claude Code, visibilité limitée à `main`, cycle d'une décision, règles de branches. |
 | 1.4 | 06/11/2026 | Intégration de la décision D-007 : fichier `docs/avancement.md` (état actuel et journal des étapes) comme point de reprise de toute nouvelle conversation ; mise à jour en fin de chaque tâche, dans la branche de la tâche (exception à la règle des branches `docs/…`). Sections 6.3, 12.1, 12.2 et 12.3 mises à jour. |
 | 1.5 | 13/11/2026 | Intégration de la décision D-010 : chevauchement de deux astreintes interdit à la saisie et contrôlé en base, astreintes contiguës autorisées, anomalie « chevauchement d'astreintes » exclue des totaux. Sections 3.2, 3.4, 9 et 11 mises à jour. |
+| 1.6 | 13/11/2026 | Intégration de la décision D-011 : statuts d'une activité, priorité des anomalies, déduction indépendante du taux, contenu des totaux. Section 3.5 mise à jour. |
