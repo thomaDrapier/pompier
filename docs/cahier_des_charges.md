@@ -4,8 +4,8 @@
 
 | | |
 |---|---|
-| **Version** | 1.4 |
-| **Date** | 06/11/2026 |
+| **Version** | 1.5 |
+| **Date** | 13/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
 | **Destinataire** | Projet de développement (projet Claude et Claude Code) |
@@ -87,6 +87,7 @@ flowchart LR
 - Les activités sont enregistrées avec le fuseau Europe/Paris ; le changement d'heure été/hiver doit être géré correctement (une astreinte de nuit lors du changement d'heure dure 1 h de plus ou de moins).
 - Doublon exact (même début, fin, nature) : avertissement avant enregistrement.
 - Chevauchement entre deux activités qui ne sont pas des astreintes : avertissement non bloquant, à confirmer. Le chevauchement avec une astreinte est normal et attendu.
+- Chevauchement entre deux astreintes : interdit, la saisie est refusée. Deux astreintes contiguës (fin de l'une = début de l'autre) sont autorisées. Ce contrôle est aussi appliqué dans la base (D-010).
 - Modification et suppression possibles à tout moment ; tous les calculs sont alors mis à jour.
 
 **Ergonomie :** formulaire en un seul écran, valeurs par défaut intelligentes (date du jour, dernière nature utilisée, heure de début pré-remplie à l'heure courante arrondie), sélecteurs de date et d'heure natifs mobiles.
@@ -103,7 +104,7 @@ Liste fixe, gérée uniquement par l'administrateur dans le référentiel. Liste
 
 **La durée nette d'astreinte est la durée des astreintes moins la durée de toutes les autres activités, quelle que soit leur nature, qui se déroulent pendant les astreintes.**
 
-**Formulation rigoureuse :** soit A l'union des plages d'astreinte et B l'union des plages de toutes les autres activités. Durée nette d'astreinte = durée de (A privé de B). Utiliser l'union des plages évite de déduire deux fois un même créneau lorsque deux activités se recouvrent, ou lorsque deux astreintes se chevauchent.
+**Formulation rigoureuse :** soit A l'union des plages d'astreinte et B l'union des plages de toutes les autres activités. Durée nette d'astreinte = durée de (A privé de B). Utiliser l'union des plages évite de déduire deux fois un même créneau lorsque deux activités se recouvrent. Deux astreintes ne pouvant pas se chevaucher (3.2), la durée nette de chaque astreinte est sa plage privée de B, et la durée nette totale est la somme des durées nettes des astreintes. Une astreinte en chevauchement avec une autre astreinte, si une telle donnée existe malgré le contrôle, est signalée « chevauchement d'astreintes » et exclue des totaux, avec une alerte visible.
 
 *Figure 2 — Exemple de référence du 26/06/2026 : astreinte 08h00–12h00, intervention 08h00–08h45, astreinte nette 3 h 15*
 
@@ -126,7 +127,9 @@ gantt
 - plusieurs activités dans une même astreinte, avec ou sans chevauchement entre elles ;
 - astreinte sur plusieurs jours ;
 - astreinte intégralement consommée par une intervention (durée nette = 0) ;
-- astreinte à cheval sur le changement d'heure.
+- astreinte à cheval sur le changement d'heure ;
+- deux astreintes contiguës (autorisées, aucune déduction mutuelle) ;
+- deux astreintes qui se chevauchent (anomalie signalée, exclues des totaux).
 
 ### 3.5 Calcul de la rémunération
 
@@ -398,6 +401,7 @@ Cette section donne la liste des écrans. Le détail de chaque écran fait l'obj
 
 - L'exemple du 26/06/2026 (astreinte 08h00–12h00, intervention 08h00–08h45) donne une astreinte nette de 3 h 15.
 - Tous les cas limites listés en 3.4 passent en test unitaire.
+- La saisie d'une astreinte qui chevauche une autre astreinte est refusée, dans l'interface comme dans la base (test automatisé).
 - Le taux appliqué est celui du référentiel en vigueur à la date de début, pour le grade de l'utilisateur à cette date ; à défaut, « taux manquant ».
 - Changer un taux avec une date d'effet future ne modifie pas les montants des activités antérieures.
 - Un utilisateur non administrateur ne peut modifier ni grade du référentiel, ni nature, ni taux (test automatisé).
@@ -438,7 +442,6 @@ flowchart LR
 - Qui renseigne le grade d'un utilisateur et ses promotions : l'utilisateur lui-même (hypothèse retenue) ou l'administrateur.
 - Règle d'arrondi : proratisation à la minute avec arrondi au centime par activité (hypothèse retenue), ou arrondi réglementaire du SDIS.
 - Règle de ventilation d'une activité à cheval sur deux semaines ou deux mois (voir 3.8).
-- Chevauchement de deux astreintes : la durée nette globale est calculée sur l'union des plages (3.4) ; reste à préciser comment cette durée nette est répartie entre les astreintes concernées pour le montant par activité (3.5), notamment si elles relèvent de natures ou de taux différents.
 - Existence de plafonds, majorations (nuit, jours fériés), forfaits par intervention ou autres règles propres au SDIS qui ne seraient pas de simples taux horaires.
 - Traitement des montants affichés (bruts, indicatifs) et information éventuelle sur leur régime fiscal et social : à vérifier auprès du SDIS, l'application n'en fait pas de calcul.
 - Revérification des limites de l'offre gratuite Supabase au moment de la mise en production.
@@ -490,3 +493,4 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.2 | 03/11/2026 | Plan de livraison précisé : jalon 0 découpé en quatre étapes et sans interface métier ; le jalon 1 commence par le moteur de calcul et ses tests. Phase de test : Supabase local via la CLI (Docker). Ajout de la section 6.3 (environnement de développement) et des règles de gestion des clés Supabase (section 5). Section 12 : rôles projet Claude / Claude Code, fichier CLAUDE.md. Section 11 : deux nouveaux points ouverts. |
 | 1.3 | 05/11/2026 | Conversion au format Markdown (`docs/cahier_des_charges.md`), qui devient la source de référence unique ; figures converties en diagrammes Mermaid ; PDF v1.2 archivé. Intégration des décisions D-003 (application à la racine du dépôt) et D-004 (clé publishable dans `VITE_SUPABASE_ANON_KEY`). Section 6.3 : structure du dépôt mise à jour (journal des décisions, archives). Section 12 réorganisée : organisation projet Claude / Claude Code, visibilité limitée à `main`, cycle d'une décision, règles de branches. |
 | 1.4 | 06/11/2026 | Intégration de la décision D-007 : fichier `docs/avancement.md` (état actuel et journal des étapes) comme point de reprise de toute nouvelle conversation ; mise à jour en fin de chaque tâche, dans la branche de la tâche (exception à la règle des branches `docs/…`). Sections 6.3, 12.1, 12.2 et 12.3 mises à jour. |
+| 1.5 | 13/11/2026 | Intégration de la décision D-010 : chevauchement de deux astreintes interdit à la saisie et contrôlé en base, astreintes contiguës autorisées, anomalie « chevauchement d'astreintes » exclue des totaux. Sections 3.2, 3.4, 9 et 11 mises à jour. |

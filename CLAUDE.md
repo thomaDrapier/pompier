@@ -60,6 +60,8 @@ date-fns (fuseau Europe/Paris) · Vitest (unitaires) · Playwright (parcours).
 - Durée nette d'astreinte = durée de (union des astreintes) privée de
   (union de toutes les autres activités, quelle que soit leur nature).
   Pas de double déduction.
+- Deux astreintes ne se chevauchent jamais (refus à la saisie et en base) ; anomalie
+  signalée sinon (D-010).
 - Taux applicable : grade de l'utilisateur à la date de début de l'activité, puis taux
   (grade, nature) en vigueur à cette date ; sinon « taux manquant », activité exclue
   des totaux avec alerte visible.
