@@ -1,0 +1,32 @@
+{
+  // Vérification des types du test d'intégration des requêtes
+  // (tests/rls/requetes.test.ts), lors de « npm run build » (tsc -b).
+  // Ce test importe le code de l'application (src/data/, alias « @/ ») : il lui
+  // faut la résolution de modules de l'application (bundler) en plus des types
+  // de Node, d'où cette configuration séparée de tsconfig.tests.json.
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.integration.tsbuildinfo",
+    "target": "es2023",
+    "lib": ["ES2023", "DOM"],
+    "module": "esnext",
+    "types": ["vite/client", "node"],
+    "skipLibCheck": true,
+
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["tests/rls/requetes.test.ts"]
+}

@@ -2,10 +2,10 @@
 
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
-## État actuel (mis à jour le 13/11/2026)
-- **En cours** : aucune étape. J1 · étape 1.1 terminée.
-- **Dernière étape terminée** : J1 · étape 1.1 — moteur de calcul pur `src/engine/` (plages semi-ouvertes, durée nette d'astreinte, détection des chevauchements d'astreintes, résolution du grade et du taux à la date de Paris, montant en centimes, statuts et totaux) et ses tests Vitest (82 tests du moteur, 85 au total). Aucune interface, aucune migration.
-- **Prochaine action** : J1 · étape 1.2a (données : trigger D-010, seed fictif, passage base → moteur, hooks TanStack Query), puis 1.2b (écrans) après rédaction des spécifications des écrans de saisie et de liste.
+## État actuel (mis à jour le 14/11/2026)
+- **En cours** : aucune étape. J1 · étape 1.2a terminée.
+- **Dernière étape terminée** : J1 · étape 1.2a — couche de données entre la base et le moteur : trigger en base refusant le chevauchement de deux astreintes (D-010), seed local fictif (natures, grades, taux, compte de test), conversions base → moteur (`src/data/`), lecture d'une période élargie aux activités qui chevauchent ses astreintes, hooks TanStack Query de lecture, de calcul et d'écriture (`src/hooks/`). Aucun écran.
+- **Prochaine action** : J1 · étape 1.2b (écrans de saisie et de liste, React Router), après rédaction de `docs/specifications_ecrans.md` dans le projet Claude.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
@@ -15,6 +15,11 @@
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 14/11/2026 — J1 · étape 1.2a terminée
+- **Fait** : migration `supabase/migrations/20261113235000_chevauchement_astreintes.sql` (trigger `before insert or update` sur `activities`, `security invoker`, verrou transactionnel par utilisateur, erreur de code `23P01` et de message `chevauchement_astreintes`, astreintes contiguës acceptées) ; `tests/rls/chevauchement-astreintes.test.ts` (11 tests : les 9 cas demandés, dont les insertions simultanées et l'insertion au nom d'un autre utilisateur) ; `supabase/seed.sql` (6 natures, 3 grades, grille de taux FICTIFS à deux dates d'effet, compte de test `demo@example.com` avec historique de grade), documenté dans le README ; `src/data/` : `conversions.ts` (lignes de la base → types du moteur, taux en centimes avec tolérance), `periode.ts` (enveloppe de calcul et lecture élargie), `calcul.ts` (`calculerPeriode` : moteur sur l'ensemble élargi, résultats et totaux des seules activités qui commencent dans la période), `erreurs.ts` (`ErreurChevauchementAstreintes`, reconnue au code et au message réunis), `requetes.ts`, `cles.ts` ; `src/hooks/` : `useReferentiel`, `useHistoriqueGrades`, `useActivitesPeriode`, `useCalculPeriode`, `useCreerActivite`, `useModifierActivite`, `useSupprimerActivite` ; `QueryClientProvider` dans `src/main.tsx` ; `tests/rls/requetes.test.ts` (requêtes de l'application contre Supabase local) avec `tsconfig.integration.json` et l'alias `@/` dans `vitest.rls.config.ts`. Dépendance `@tanstack/react-query` ajoutée. `npm run test` (115 tests), `npm run test:rls` (46 tests), `npm run build`, `npm run lint` et `npx supabase db reset` sans erreur ; types générés inchangés. Rattachement d'une activité à la période où elle commence : provisoire pour le J1 (hypothèse de 3.8).
+- **Branche** : feat/j1-2a-donnees
+- **Décisions liées** : D-010, D-011, D-012 ; D-015 à consigner (choix techniques de l'étape)
 
 ### 13/11/2026 — Décisions : routeur et niveau de finition de l'interface
 - **Fait** : D-013 (React Router) et D-014 (interface fonctionnelle minimale, design reporté) consignées ; cahier des charges v1.7 (sections 6 et 8) ; CLAUDE.md mis à jour.

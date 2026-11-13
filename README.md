@@ -134,7 +134,7 @@ de s'exécuter si l'API ou la base visée n'est pas locale (127.0.0.1 / localhos
 | Commande | Contenu |
 | --- | --- |
 | `npm run test` | Tests unitaires Vitest (`src/**/*.test.ts(x)`), dans un DOM simulé, sans Supabase. |
-| `npm run test:rls` | Sécurité de la base (`tests/rls/`) : isolation des données entre utilisateurs, référentiel en lecture seule, rôle protégé, visiteur non connecté refusé, contraintes, refus du chevauchement de deux astreintes (D-010). Passe par l'API avec la clé publique, comme l'application. |
+| `npm run test:rls` | Sécurité de la base (`tests/rls/`) : isolation des données entre utilisateurs, référentiel en lecture seule, rôle protégé, visiteur non connecté refusé, contraintes, refus du chevauchement de deux astreintes (D-010), requêtes de l'application (`src/data/requetes.ts`). Passe par l'API avec la clé publique, comme l'application. |
 | `npm run test:e2e` | Parcours Playwright (`tests/e2e/`) sur l'application buildée (`vite preview`, port 4173), en format ordinateur et smartphone (Pixel 7). Première fois : `npx playwright install chromium`. Rapport : `npx playwright show-report`. |
 
 La base des tests RLS est lue dans `SUPABASE_DB_URL`, à défaut

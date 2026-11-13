@@ -20,5 +20,7 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["tests", "vitest.rls.config.ts", "playwright.config.ts"]
+  "include": ["tests", "vitest.rls.config.ts", "playwright.config.ts"],
+  // Vérifié par tsconfig.integration.json (il importe le code de src/).
+  "exclude": ["tests/rls/requetes.test.ts"]
 }
