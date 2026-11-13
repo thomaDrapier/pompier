@@ -163,3 +163,20 @@
   - Le design (identité visuelle, maquettes) fera l'objet d'un projet distinct après le J5.
 - **Conséquences** : cahier des charges v1.7 (section 8) ; CLAUDE.md (méthode).
 - **Statut** : intégrée au cahier des charges v1.7
+
+## D-015 — Choix techniques de la couche de données (étape 1.2a)
+- **Date** : 14/11/2026
+- **Origine** : Claude Code
+- **Contexte** : étape 1.2a (couche de données entre la base et le moteur de calcul). Plan validé dans le projet Claude, avec deux corrections (security invoker, élargissement de la lecture).
+- **Décision** :
+  - Contrôle en base du chevauchement d'astreintes (D-010) : trigger `before insert or update of user_id, activity_type_id, debut, fin` sur `activities`. Une contrainte d'exclusion a été écartée, car l'indicateur `est_astreinte` est porté par une autre table (`activity_types`).
+  - La fonction du trigger est en `security invoker` (search_path vide, noms qualifiés) : la vérification s'exécute sous la RLS de l'appelant et ne voit que ses propres lignes. En `security definer`, un utilisateur insérant une ligne au nom d'un autre aurait pu déduire le planning de cet autre de la nature de l'erreur reçue.
+  - Insertions simultanées : verrou transactionnel par utilisateur (`pg_advisory_xact_lock` sur une clé dérivée du `user_id`), pris avant la vérification et libéré en fin de transaction. Les écritures d'astreintes d'un même utilisateur passent l'une après l'autre ; les autres utilisateurs ne sont pas ralentis.
+  - Erreur du trigger : code SQLSTATE `23P01` et message `chevauchement_astreintes`, sans autre donnée. Côté client, elle est reconnue au code ET au message réunis, et traduite en `ErreurChevauchementAstreintes`.
+  - Seed local (`supabase/seed.sql`, joué par `supabase db reset` uniquement) : le compte de test fictif `demo@example.com` est créé directement dans `auth.users` et `auth.identities`, avec un mot de passe fictif écrit en clair dans le seed et le README. Ces tables appartiennent à Supabase : le seed est à revérifier après une mise à jour de la CLI.
+  - Lecture d'une période [début, fin) : on lit d'abord les astreintes qui commencent dans la période, puis toutes les activités qui chevauchent l'enveloppe [min(début de la période, débuts des astreintes), max(fin de la période, fins des astreintes)). Le moteur calcule sur cet ensemble élargi ; seuls les résultats des activités qui commencent dans la période sont conservés et totalisés.
+  - Le rattachement d'une activité à la période où elle commence est provisoire pour le J1 (hypothèse de 3.8, point ouvert en section 11) ; la ventilation au prorata reste au J3.
+  - `taux_horaire` (euros, 2 décimales) est converti en centimes entiers par arrondi, avec une tolérance pour les imprécisions des nombres à virgule ; un taux à plus de 2 décimales lève une erreur.
+  - `@tanstack/react-query` est ajouté en dépendance d'exécution. Les requêtes de l'application sont testées contre Supabase local dans `npm run test:rls` (`tests/rls/requetes.test.ts`, `tsconfig.integration.json`).
+- **Conséquences** : migration `…_chevauchement_astreintes.sql`, `supabase/seed.sql`, `src/data/`, `src/hooks/`, `tests/rls/`, README. À traiter au J4 : garantir que le seed et le compte de test ne sont jamais appliqués en production (docs/avancement.md, « En attente »). Aucun impact métier au-delà du rattachement provisoire à la période de début.
+- **Statut** : validée
