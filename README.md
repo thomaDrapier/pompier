@@ -49,7 +49,7 @@ npm run dev
 | `npm run test:rls` | Tests de sécurité de la base (Supabase local requis) |
 | `npm run test:e2e` | Tests de parcours (Playwright, Supabase local requis) |
 | `npx supabase start` / `stop` | Supabase local |
-| `npx supabase db reset` | Recrée la base locale et rejoue les migrations |
+| `npx supabase db reset` | Recrée la base locale, rejoue les migrations puis le seed (données fictives) |
 
 ## Créer un compte en local
 
@@ -69,8 +69,30 @@ Migrations SQL versionnées dans `supabase/migrations/` (nom horodaté généré
 `npx supabase migration new <nom>`), noms de tables et colonnes conformes à la
 section 7 du cahier des charges. La première, `…_init_schema.sql`, est la
 « migration 0001 » : 6 tables, contraintes, index, triggers et Row Level Security.
-Aucune donnée de référence n'est fournie (ni nature, ni grade, ni taux) : le
-référentiel est saisi par l'administrateur.
+Les migrations ne contiennent aucune donnée de référence (ni nature, ni grade, ni
+taux) : en production, le référentiel est saisi par l'administrateur.
+
+La seconde, `…_chevauchement_astreintes.sql`, ajoute le contrôle en base de la
+décision D-010 : un trigger refuse l'enregistrement d'une astreinte qui chevauche
+une autre astreinte du même utilisateur (les astreintes contiguës sont acceptées).
+L'erreur porte le code `23P01` et le message `chevauchement_astreintes`.
+
+### Données de test (seed)
+
+`supabase/seed.sql` est joué après les migrations par `npx supabase db reset`,
+**sur la base locale uniquement**. Il ne doit jamais être appliqué en production.
+Tout y est **fictif** :
+
+- les 6 natures de la liste initiale (seule « Astreinte » est une astreinte) ;
+- 3 grades : Sapeur, Caporal, Sergent ;
+- une grille de taux complète au 01/01/2025, puis de nouveaux taux d'astreinte et
+  d'intervention au 01/07/2026. **Ces taux sont inventés** (valeurs rondes) et ne
+  correspondent à aucun barème réel ;
+- un compte de test, `demo@example.com` / `demo-spv-local`, Sapeur depuis le
+  01/01/2025 puis Caporal au 01/07/2026.
+
+Après un `db reset`, on peut donc se connecter directement avec ce compte sur
+http://localhost:5173.
 
 ```bash
 npx supabase db reset       # recrée la base locale et rejoue toutes les migrations
@@ -112,7 +134,7 @@ de s'exécuter si l'API ou la base visée n'est pas locale (127.0.0.1 / localhos
 | Commande | Contenu |
 | --- | --- |
 | `npm run test` | Tests unitaires Vitest (`src/**/*.test.ts(x)`), dans un DOM simulé, sans Supabase. |
-| `npm run test:rls` | Sécurité de la base (`tests/rls/`) : isolation des données entre utilisateurs, référentiel en lecture seule, rôle protégé, visiteur non connecté refusé, contraintes. Passe par l'API avec la clé publique, comme l'application. |
+| `npm run test:rls` | Sécurité de la base (`tests/rls/`) : isolation des données entre utilisateurs, référentiel en lecture seule, rôle protégé, visiteur non connecté refusé, contraintes, refus du chevauchement de deux astreintes (D-010). Passe par l'API avec la clé publique, comme l'application. |
 | `npm run test:e2e` | Parcours Playwright (`tests/e2e/`) sur l'application buildée (`vite preview`, port 4173), en format ordinateur et smartphone (Pixel 7). Première fois : `npx playwright install chromium`. Rapport : `npx playwright show-report`. |
 
 La base des tests RLS est lue dans `SUPABASE_DB_URL`, à défaut
