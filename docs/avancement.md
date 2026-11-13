@@ -3,9 +3,9 @@
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
 ## État actuel (mis à jour le 13/11/2026)
-- **En cours** : J1 · étape 1.1, plan validé, développement à lancer sur feat/j1-1-engine.
-- **Dernière étape terminée** : J0 · étape 0.4 — authentification (connexion, mot de passe oublié, nouveau mot de passe, déconnexion, session persistante) et mise en place des tests : Vitest (unitaires), tests automatisés de sécurité RLS (`npm run test:rls`), Playwright (`npm run test:e2e`, ordinateur et smartphone). Types TypeScript régénérés depuis la base locale. Fusionnée dans main.
-- **Prochaine action** : J1 — moteur de calcul `src/engine/` et ses tests Vitest, plan à valider d'abord dans le projet Claude.
+- **En cours** : aucune étape. J1 · étape 1.1 terminée.
+- **Dernière étape terminée** : J1 · étape 1.1 — moteur de calcul pur `src/engine/` (plages semi-ouvertes, durée nette d'astreinte, détection des chevauchements d'astreintes, résolution du grade et du taux à la date de Paris, montant en centimes, statuts et totaux) et ses tests Vitest (82 tests du moteur, 85 au total). Aucune interface, aucune migration.
+- **Prochaine action** : J1 · étape 1.2 — passage des données de la base aux types du moteur, contrôle bloquant du chevauchement d'astreintes (interface et trigger en base, D-010), écrans de saisie et de liste ; plan à valider d'abord dans le projet Claude.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
@@ -15,6 +15,11 @@
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 13/11/2026 — J1 · étape 1.1 terminée
+- **Fait** : moteur de calcul pur dans `src/engine/`, sans import de React, de Supabase ni de `src/types/database.ts` : `types.ts` (types d'entrée et de résultat propres au moteur), `intervalles.ts` (union, intersection, soustraction, durée sur des plages semi-ouvertes en millisecondes UTC), `astreintes.ts` (durée nette, détection des astreintes qui se chevauchent), `taux.ts` (date calendaire en Europe/Paris, grade et taux en vigueur), `remuneration.ts` (montant en centimes entiers, demi vers le haut), `index.ts` (`calculerActivites`, `totaliser` avec astreintes à part et détail par nature) ; `aides-test.ts` (instants en heure de Paris pour les tests) ; un fichier de tests par module, 82 tests couvrant les 13 cas demandés, plus le cas miroir de la frontière de fuseau (01/01 à 00:30 à Paris). Dépendances `date-fns` et `@date-fns/tz` ajoutées. Tests du moteur vérifiés aussi sous un autre fuseau machine ; `npm run test`, `npm run build` et `npm run lint` sans erreur. Aucun taux en dur (taux fictifs dans les tests uniquement).
+- **Branche** : feat/j1-1-engine
+- **Décisions liées** : D-010, D-011, D-012
 
 ### 13/11/2026 — Décisions : précisions du moteur de calcul
 - **Fait** : D-011 (statuts, anomalies, totaux) et D-012 (conventions techniques) consignées ; cahier des charges v1.6 (section 3.5).
