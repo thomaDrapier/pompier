@@ -3,9 +3,9 @@
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
 ## État actuel (mis à jour le 14/11/2026)
-- **En cours** : aucune étape. J1 · étape 1.2a terminée.
-- **Dernière étape terminée** : J1 · étape 1.2a — couche de données entre la base et le moteur : trigger en base refusant le chevauchement de deux astreintes (D-010), seed local fictif (natures, grades, taux, compte de test), conversions base → moteur (`src/data/`), lecture d'une période élargie aux activités qui chevauchent ses astreintes, hooks TanStack Query de lecture, de calcul et d'écriture (`src/hooks/`). Aucun écran.
-- **Prochaine action** : J1 · étape 1.2b (écrans de saisie et de liste selon docs/specifications_ecrans.md v1.1), plan validé, développement à lancer sur feat/j1-2b-ecrans.
+- **En cours** : aucune étape. J1 (MVP personnel) terminé.
+- **Dernière étape terminée** : J1 · étape 1.2b — écrans « Liste des activités » et « Saisie / modification » conformes à docs/specifications_ecrans.md v1.1, routage React Router (une adresse par écran, routes protégées, retour à l'adresse demandée après connexion), contrôles de la saisie (bloquants et avertissements), formats français en Europe/Paris. Le J1 est terminé : moteur de calcul (1.1), couche de données (1.2a), écrans (1.2b).
+- **Prochaine action** : J2 — Référentiel (grades, natures, taux à dates d'effet, écran d'administration), plan et spécification de l'écran à préparer dans le projet Claude.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
@@ -18,6 +18,11 @@
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 14/11/2026 — J1 · étape 1.2b terminée (J1 terminé)
+- **Fait** : React Router (`src/App.tsx`, `src/routes/`) : adresses `/connexion`, `/mot-de-passe-oublie`, `/nouveau-mot-de-passe`, `/activites`, `/activites/nouvelle`, `/activites/:id` ; routes protégées avec retour à l'adresse demandée ; le retour par le lien de réinitialisation passe avant toute redirection et reste actif après un rechargement de la page (récupération notée dans le stockage du navigateur, `AuthProvider`) ; écran connecté temporaire du J0 supprimé, en-tête avec déconnexion. Liste des activités (`src/features/activites/ListeActivitesScreen.tsx`) : mois et filtre dans l'adresse, paramètres invalides ignorés, totaux et bandeau d'anomalie sur le mois entier, lignes filtrées, états de chargement, d'erreur et de mois vide. Saisie / modification (`FormulaireActiviteScreen.tsx`) : valeurs par défaut, date et heure en champs natifs séparés, fin au lendemain, durée en direct, contrôles bloquants (champs, fin ≤ début, chevauchement d'astreintes côté client et erreur de la base), avertissements (doublon, chevauchement hors astreinte) dans une boîte de dialogue, suppression confirmée, activité introuvable. Fonctions pures testées : `src/lib/formats.ts`, `src/lib/temps.ts`, `regles-saisie.ts`, `etat-formulaire.ts`. Données : `lireActivite`, `lireDerniereActivite`, `lireActivitesChevauchant`, hooks `useActivite`, `useDerniereActivite`, `useEnLigne`. Composants shadcn/ui `alert-dialog`, `badge`, `textarea` ; dépendance `react-router`. Tests : `npm run test` (182), `npm run test:rls` (46), `npm run test:e2e` (38 : parcours a à g sur ordinateur et Pixel 7, dont la réinitialisation complète via Mailpit), `npm run build` et `npm run lint` sans erreur. Vérification manuelle sur téléphone simulé (375 × 812) : une saisie demande trois gestes (ouvrir le formulaire, saisir l'heure de fin, enregistrer), nature, début et date de fin étant préremplis ; l'enregistrement et le retour à la liste prennent environ une seconde.
+- **Branche** : feat/j1-2b-ecrans
+- **Décisions liées** : D-010, D-011, D-013, D-014, D-015, D-016 (choix techniques de l'étape, consignée par la branche docs/d016-ecrans)
 
 ### 14/11/2026 — Spécifications des écrans v1.1
 - **Fait** : docs/specifications_ecrans.md v1.1, précisions issues du plan de l'étape 1.2b (en-tête, conservation du mois et du filtre, totaux non filtrés, messages, champs date et heure séparés, valeurs par défaut, fin au lendemain, chevauchements multiples, astreinte en anomalie, activité introuvable) ; point J4 sur l'hébergement ajouté à « En attente ».
