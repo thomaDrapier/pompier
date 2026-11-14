@@ -180,3 +180,22 @@
   - `@tanstack/react-query` est ajouté en dépendance d'exécution. Les requêtes de l'application sont testées contre Supabase local dans `npm run test:rls` (`tests/rls/requetes.test.ts`, `tsconfig.integration.json`).
 - **Conséquences** : migration `…_chevauchement_astreintes.sql`, `supabase/seed.sql`, `src/data/`, `src/hooks/`, `tests/rls/`, README. À traiter au J4 : garantir que le seed et le compte de test ne sont jamais appliqués en production (docs/avancement.md, « En attente »). Aucun impact métier au-delà du rattachement provisoire à la période de début.
 - **Statut** : validée
+
+## D-016 — Choix techniques des écrans du J1 (étape 1.2b)
+- **Date** : 14/11/2026
+- **Origine** : Claude Code
+- **Contexte** : étape 1.2b (écrans « Liste des activités » et « Saisie / modification », routage React Router). Plan validé dans le projet Claude ; précisions fonctionnelles intégrées à docs/specifications_ecrans.md v1.1.
+- **Décision** :
+  - Adresses : `/connexion`, `/mot-de-passe-oublie`, `/nouveau-mot-de-passe`, `/activites`, `/activites/nouvelle`, `/activites/:id` ; la racine et toute adresse inconnue renvoient vers `/activites`. Routage côté navigateur (`BrowserRouter`).
+  - Routes protégées : sans session, redirection vers `/connexion` en mémorisant l'adresse demandée (état de navigation), à laquelle l'utilisateur revient après connexion. Seules les adresses internes sont acceptées comme destination.
+  - Le mois et le filtre de la liste sont dans l'adresse (`?mois=AAAA-MM&nature=<id>`) : ils sont conservés par le bouton « retour » et au retour d'un autre écran. Un mois mal formé ou une nature inconnue sont ignorés (mois en cours, filtre « Toutes »). Le mois est le mois calendaire de Paris.
+  - Lien de réinitialisation : il arrive toujours sur la racine du site (`redirectTo` inchangé, aucune modification de `supabase/config.toml`). Sa détection passe avant toute redirection. La récupération en cours est notée dans le stockage du navigateur avec l'identifiant du compte, pour rester active après un rechargement de la page ou dans un autre onglet ; la note est effacée à l'enregistrement du mot de passe, à la déconnexion, ou si le compte connecté n'est plus le même.
+  - À la déconnexion, les données gardées en mémoire par TanStack Query sont vidées.
+  - Contrôles de la saisie : les règles sont des fonctions pures (`regles-saisie.ts`, `etat-formulaire.ts`). Avant l'enregistrement, l'écran lit les activités qui chevauchent la plage saisie ; l'erreur de chevauchement renvoyée par la base reste traitée (message générique).
+  - En modification, la date de fin enregistrée n'est jamais recalculée : la règle « fin au lendemain » ne s'applique qu'à la création.
+  - Textes accordés : « et 1 autre » / « et N autres » ; « 1 activité non comptée » / « N activités non comptées », en ne citant que les anomalies présentes.
+  - Messages « Activité enregistrée » et « Activité supprimée » : transmis à la liste par l'état de navigation, sans dépendance supplémentaire.
+  - Nature et filtre : listes déroulantes natives ; composants shadcn/ui ajoutés : `alert-dialog`, `badge`, `textarea`.
+  - Tests de parcours : chaque test d'activités crée son propre compte fictif et lui attribue le grade « Sapeur » du seed, pour pouvoir tourner en parallèle ; `npm run test:e2e` exige donc le seed (`supabase db reset`). La réinitialisation du mot de passe est testée de bout en bout par l'API de Mailpit.
+- **Conséquences** : `src/App.tsx`, `src/routes/`, `src/features/activites/`, `src/lib/formats.ts`, `src/lib/temps.ts`, `src/features/auth/AuthProvider.tsx`, `tests/e2e/`, README. À traiter au J4 : l'hébergeur statique doit renvoyer `index.html` pour toute adresse (docs/avancement.md, « En attente »). Aucun impact métier.
+- **Statut** : validée
