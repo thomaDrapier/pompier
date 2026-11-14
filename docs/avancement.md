@@ -5,11 +5,12 @@
 ## État actuel (mis à jour le 14/11/2026)
 - **En cours** : aucune étape. J1 · étape 1.2a terminée.
 - **Dernière étape terminée** : J1 · étape 1.2a — couche de données entre la base et le moteur : trigger en base refusant le chevauchement de deux astreintes (D-010), seed local fictif (natures, grades, taux, compte de test), conversions base → moteur (`src/data/`), lecture d'une période élargie aux activités qui chevauchent ses astreintes, hooks TanStack Query de lecture, de calcul et d'écriture (`src/hooks/`). Aucun écran.
-- **Prochaine action** : J1 · étape 1.2b (écrans de saisie et de liste selon docs/specifications_ecrans.md v1.0).
+- **Prochaine action** : J1 · étape 1.2b (écrans de saisie et de liste selon docs/specifications_ecrans.md v1.1), plan validé, développement à lancer sur feat/j1-2b-ecrans.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
   - J4 : garantir que le seed et le compte de test ne sont jamais appliqués en production.
+  - J4 : l'hébergeur statique doit renvoyer index.html pour toute adresse (routage côté navigateur).
   - Identification des interventions (mise en avant, nombre d'interventions de l'accueil) : aucun indicateur dans le modèle ; à trancher avant le J3.
   - J1 : le grade du porteur est saisi à la main dans le Studio, en attendant l'écran Paramètres.
   - Désactiver l'inscription publique en production (J4) : `enable_signup` est gardé actif en local, car les tests créent leurs comptes par signUp.
@@ -17,6 +18,11 @@
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 14/11/2026 — Spécifications des écrans v1.1
+- **Fait** : docs/specifications_ecrans.md v1.1, précisions issues du plan de l'étape 1.2b (en-tête, conservation du mois et du filtre, totaux non filtrés, messages, champs date et heure séparés, valeurs par défaut, fin au lendemain, chevauchements multiples, astreinte en anomalie, activité introuvable) ; point J4 sur l'hébergement ajouté à « En attente ».
+- **Branche** : docs/specifications-ecrans-v1-1
+- **Décisions liées** : D-010, D-013, D-014
 
 ### 14/11/2026 — Spécifications des écrans du J1
 - **Fait** : création de docs/specifications_ecrans.md v1.0 (règles communes, liste des activités, saisie / modification) ; cahier des charges v1.8 (section 6.3).
