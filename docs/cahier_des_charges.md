@@ -4,8 +4,8 @@
 
 | | |
 |---|---|
-| **Version** | 1.7 |
-| **Date** | 13/11/2026 |
+| **Version** | 1.8 |
+| **Date** | 14/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
 | **Destinataire** | Projet de développement (projet Claude et Claude Code) |
@@ -306,7 +306,7 @@ flowchart TB
 | `docs/cahier_des_charges.md` | Le présent document : source de référence unique. |
 | `docs/decisions.md` | Journal des décisions (métier et techniques). |
 | `docs/avancement.md` | État d'avancement du projet et journal des étapes ; point de reprise de toute nouvelle conversation. |
-| `docs/specifications_ecrans.md` | Spécifications des écrans (à rédiger). |
+| `docs/specifications_ecrans.md` | Spécifications fonctionnelles des écrans (D-014), complétées écran par écran avant leur développement. |
 | `docs/archives/` | Anciennes versions figées (PDF). |
 | `CLAUDE.md` | Synthèse des règles du projet, lue automatiquement par Claude Code (voir section 12). |
 | `README.md` | Décisions d'architecture, installation locale, sauvegarde, restauration, migration. |
@@ -501,3 +501,4 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.5 | 13/11/2026 | Intégration de la décision D-010 : chevauchement de deux astreintes interdit à la saisie et contrôlé en base, astreintes contiguës autorisées, anomalie « chevauchement d'astreintes » exclue des totaux. Sections 3.2, 3.4, 9 et 11 mises à jour. |
 | 1.6 | 13/11/2026 | Intégration de la décision D-011 : statuts d'une activité, priorité des anomalies, déduction indépendante du taux, contenu des totaux. Section 3.5 mise à jour. |
 | 1.7 | 13/11/2026 | Intégration des décisions D-013 (routeur React Router, section 6) et D-014 (interface fonctionnelle minimale jusqu'au J5, spécifications des écrans fonctionnelles, design reporté à un projet distinct, section 8). |
+| 1.8 | 14/11/2026 | Création de `docs/specifications_ecrans.md` (v1.0 : écrans du J1). Section 6.3 mise à jour. |

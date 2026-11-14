@@ -13,7 +13,8 @@ Le porteur du projet est aussi l'unique administrateur. Niveau : intermédiaire
   le modèle de données, la stack et l'organisation (section 12).
 - `docs/decisions.md` : journal des décisions ; les décisions validées complètent le
   cahier des charges. Respecter les règles du journal (en tête du fichier).
-- `docs/specifications_ecrans.md` : fait foi pour l'interface (à rédiger).
+- `docs/specifications_ecrans.md` : fait foi pour l'interface (écrans du J1 spécifiés ;
+  complété écran par écran).
 - En cas d'ambiguïté ou de contradiction : la signaler et demander, ne jamais trancher
   silencieusement (voir section 11 du cahier des charges).
 - En cas d'écart entre ce fichier et le cahier des charges, le cahier des charges fait foi.
