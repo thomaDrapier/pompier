@@ -102,6 +102,35 @@ export function lireActivitesPourPeriode(
   return lireActivitesPourCalcul(sourceSupabase(userId, idsNaturesAstreinte), periode)
 }
 
+/** Activités de l'utilisateur qui chevauchent une plage [début, fin) (contrôles de la saisie). */
+export function lireActivitesChevauchant(userId: string, plage: Periode): Promise<LigneActivite[]> {
+  return sourceSupabase(userId, []).activitesChevauchant(plage)
+}
+
+/** Une activité par son identifiant ; null si elle n'existe pas ou n'est pas accessible. */
+export async function lireActivite(id: string): Promise<LigneActivite | null> {
+  const { data, error } = await supabase.from('activities').select('*').eq('id', id).maybeSingle()
+  if (error) {
+    // Identifiant mal formé dans l'adresse (ce n'est pas un uuid) : introuvable.
+    if (error.code === '22P02') return null
+    throw traduireErreur(error)
+  }
+  return data
+}
+
+/** Activité la plus récemment créée par l'utilisateur (nature proposée par défaut) ; null s'il n'en a aucune. */
+export async function lireDerniereActivite(userId: string): Promise<LigneActivite | null> {
+  const { data, error } = await supabase
+    .from('activities')
+    .select('*')
+    .eq('user_id', userId)
+    .order('cree_le', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (error) throw traduireErreur(error)
+  return data
+}
+
 /** Crée une activité pour l'utilisateur connecté (user_id rempli par la base). */
 export async function creerActivite(saisie: SaisieActivite): Promise<LigneActivite> {
   const { data, error } = await supabase

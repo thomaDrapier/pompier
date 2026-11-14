@@ -135,17 +135,32 @@ de s'exécuter si l'API ou la base visée n'est pas locale (127.0.0.1 / localhos
 | --- | --- |
 | `npm run test` | Tests unitaires Vitest (`src/**/*.test.ts(x)`), dans un DOM simulé, sans Supabase. |
 | `npm run test:rls` | Sécurité de la base (`tests/rls/`) : isolation des données entre utilisateurs, référentiel en lecture seule, rôle protégé, visiteur non connecté refusé, contraintes, refus du chevauchement de deux astreintes (D-010), requêtes de l'application (`src/data/requetes.ts`). Passe par l'API avec la clé publique, comme l'application. |
-| `npm run test:e2e` | Parcours Playwright (`tests/e2e/`) sur l'application buildée (`vite preview`, port 4173), en format ordinateur et smartphone (Pixel 7). Première fois : `npx playwright install chromium`. Rapport : `npx playwright show-report`. |
+| `npm run test:e2e` | Parcours Playwright (`tests/e2e/`) sur l'application buildée (`vite preview`, port 4173), en format ordinateur et smartphone (Pixel 7) : authentification, réinitialisation du mot de passe par le lien reçu dans Mailpit, liste des activités, saisie, modification et suppression. Les tests d'activités créent leurs comptes et leur attribuent le grade « Sapeur » du seed : **le seed doit être présent** (`npx supabase db reset`). Première fois : `npx playwright install chromium`. Rapport : `npx playwright show-report`. |
 
 La base des tests RLS est lue dans `SUPABASE_DB_URL`, à défaut
 `postgresql://postgres:postgres@127.0.0.1:54322/postgres` (valeur de
 `npx supabase status`).
 
-**Contrôle manuel de la réinitialisation du mot de passe** : sur l'écran de
-connexion, « Mot de passe oublié », saisir l'e-mail d'un compte local ; ouvrir
-l'e-mail dans Mailpit (http://127.0.0.1:54324) et cliquer sur le lien ; choisir un
-nouveau mot de passe ; l'écran connecté s'affiche. Vérifier ensuite, après
-déconnexion, que l'ancien mot de passe est refusé et le nouveau accepté.
+**Réinitialisation du mot de passe** : le parcours complet est testé par
+`npm run test:e2e`. Pour le refaire à la main : sur l'écran de connexion,
+« Mot de passe oublié », saisir l'e-mail d'un compte local ; ouvrir l'e-mail dans
+Mailpit (http://127.0.0.1:54324) et cliquer sur le lien ; choisir un nouveau mot
+de passe ; la liste des activités s'affiche. Vérifier ensuite, après déconnexion,
+que l'ancien mot de passe est refusé et le nouveau accepté.
+
+## Adresses de l'application
+
+Routage côté navigateur avec React Router (D-013) :
+
+| Adresse | Écran |
+| --- | --- |
+| `/connexion`, `/mot-de-passe-oublie`, `/nouveau-mot-de-passe` | Authentification |
+| `/activites?mois=AAAA-MM&nature=<id>` | Liste des activités d'un mois, filtre facultatif |
+| `/activites/nouvelle`, `/activites/<id>` | Saisie, modification |
+
+Les adresses d'activités sont protégées : sans session, l'application renvoie vers
+`/connexion`, puis ramène à l'adresse demandée. En production, l'hébergeur statique
+devra renvoyer `index.html` pour toute adresse (point à traiter au J4).
 
 ## Sauvegarde et restauration
 
