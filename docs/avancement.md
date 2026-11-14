@@ -5,16 +5,23 @@
 ## État actuel (mis à jour le 14/11/2026)
 - **En cours** : aucune étape. J1 · étape 1.2a terminée.
 - **Dernière étape terminée** : J1 · étape 1.2a — couche de données entre la base et le moteur : trigger en base refusant le chevauchement de deux astreintes (D-010), seed local fictif (natures, grades, taux, compte de test), conversions base → moteur (`src/data/`), lecture d'une période élargie aux activités qui chevauchent ses astreintes, hooks TanStack Query de lecture, de calcul et d'écriture (`src/hooks/`). Aucun écran.
-- **Prochaine action** : J1 · étape 1.2b (écrans de saisie et de liste, React Router), après rédaction de `docs/specifications_ecrans.md` dans le projet Claude.
+- **Prochaine action** : J1 · étape 1.2b (écrans de saisie et de liste selon docs/specifications_ecrans.md v1.0).
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
   - J4 : garantir que le seed et le compte de test ne sont jamais appliqués en production.
+  - Identification des interventions (mise en avant, nombre d'interventions de l'accueil) : aucun indicateur dans le modèle ; à trancher avant le J3.
+  - J1 : le grade du porteur est saisi à la main dans le Studio, en attendant l'écran Paramètres.
   - Désactiver l'inscription publique en production (J4) : `enable_signup` est gardé actif en local, car les tests créent leurs comptes par signUp.
   - Intégration continue GitHub Actions à envisager (lint, build, tests).
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 14/11/2026 — Spécifications des écrans du J1
+- **Fait** : création de docs/specifications_ecrans.md v1.0 (règles communes, liste des activités, saisie / modification) ; cahier des charges v1.8 (section 6.3).
+- **Branche** : docs/specifications-ecrans-j1
+- **Décisions liées** : D-010, D-011, D-014, D-015
 
 ### 14/11/2026 — J1 · étape 1.2a terminée
 - **Fait** : migration `supabase/migrations/20261113235000_chevauchement_astreintes.sql` (trigger `before insert or update` sur `activities`, `security invoker`, verrou transactionnel par utilisateur, erreur de code `23P01` et de message `chevauchement_astreintes`, astreintes contiguës acceptées) ; `tests/rls/chevauchement-astreintes.test.ts` (11 tests : les 9 cas demandés, dont les insertions simultanées et l'insertion au nom d'un autre utilisateur) ; `supabase/seed.sql` (6 natures, 3 grades, grille de taux FICTIFS à deux dates d'effet, compte de test `demo@example.com` avec historique de grade), documenté dans le README ; `src/data/` : `conversions.ts` (lignes de la base → types du moteur, taux en centimes avec tolérance), `periode.ts` (enveloppe de calcul et lecture élargie), `calcul.ts` (`calculerPeriode` : moteur sur l'ensemble élargi, résultats et totaux des seules activités qui commencent dans la période), `erreurs.ts` (`ErreurChevauchementAstreintes`, reconnue au code et au message réunis), `requetes.ts`, `cles.ts` ; `src/hooks/` : `useReferentiel`, `useHistoriqueGrades`, `useActivitesPeriode`, `useCalculPeriode`, `useCreerActivite`, `useModifierActivite`, `useSupprimerActivite` ; `QueryClientProvider` dans `src/main.tsx` ; `tests/rls/requetes.test.ts` (requêtes de l'application contre Supabase local) avec `tsconfig.integration.json` et l'alias `@/` dans `vitest.rls.config.ts`. Dépendance `@tanstack/react-query` ajoutée. `npm run test` (115 tests), `npm run test:rls` (46 tests), `npm run build`, `npm run lint` et `npx supabase db reset` sans erreur ; types générés inchangés. Rattachement d'une activité à la période où elle commence : provisoire pour le J1 (hypothèse de 3.8).
