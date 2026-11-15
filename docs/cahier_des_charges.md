@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Version** | 1.10 |
+| **Version** | 1.11 |
 | **Date** | 15/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
@@ -175,7 +175,9 @@ flowchart TD
 - Grille de taux : un taux horaire par couple (grade × nature), avec date d'effet et historique consultable.
 - Gestion des utilisateurs : création, désactivation, rôle.
 - Le référentiel est unique et commun à tous les utilisateurs : aucun agent ne peut modifier un taux ni créer de taux personnalisé.
-- Un changement de taux se fait en ajoutant une nouvelle ligne avec sa date d'effet (jamais en écrasant l'ancienne) afin de préserver l'historique ; la correction d'une erreur de saisie reste possible par l'administrateur.
+- Un changement de barème se fait en ajoutant une nouvelle ligne avec sa date d'effet (« Nouveau taux »), jamais en écrasant l'ancienne, afin de préserver l'historique.
+- La date d'effet d'un nouveau taux peut être future (sans confirmation) ou passée, c'est-à-dire antérieure ou égale à la date du jour (effet rétroactif). Dans ce cas, une confirmation prévient que les montants des activités à partir de cette date seront recalculés (D-020).
+- Pour corriger une erreur de saisie, l'administrateur peut modifier le taux horaire ou la date d'effet d'une ligne (« Corriger »), ou la supprimer. Une confirmation prévient que les montants des activités concernées seront recalculés ; après une suppression, elles reprennent le taux précédent ou passent en « taux manquant ». Ces opérations ne sont pas tracées (D-019).
 
 ### 3.7 Paramètres utilisateur
 
@@ -510,3 +512,4 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.8 | 14/11/2026 | Création de `docs/specifications_ecrans.md` (v1.0 : écrans du J1). Section 6.3 mise à jour. |
 | 1.9 | 15/11/2026 | Intégration de la décision D-017 : périmètre et découpage du J2 (référentiel et écran Paramètres ; gestion des utilisateurs reportée au J5) ; le grade est renseigné par l'utilisateur. Sections 10 et 11 mises à jour. |
 | 1.10 | 15/11/2026 | Intégration de la décision D-018 : suppression d'un grade ou d'une nature seulement s'il n'a jamais servi, archivage sinon ; colonne `actif` ajoutée à `grades` ; l'archivage n'a aucun effet sur le calcul. Sections 3.3, 3.6 et 7 mises à jour. |
+| 1.11 | 15/11/2026 | Intégration des décisions D-019 (« Nouveau taux » comme action normale ; correction et suppression d'une ligne de taux avec confirmation, sans traçabilité) et D-020 (date d'effet passée autorisée avec confirmation, date d'effet future sans confirmation). Section 3.6 mise à jour. |

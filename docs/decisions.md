@@ -225,3 +225,29 @@
   - En modification d'une activité existante dont la nature est archivée, cette nature reste affichée et peut être conservée.
 - **Conséquences** : migration à l'étape 2.1 (colonne `grades.actif`, types régénérés) ; filtres des listes de choix (saisie d'activité, Paramètres) ; tests RLS et tests de suppression refusée ; cahier des charges v1.10 (sections 3.3, 3.6, 7 et 13).
 - **Statut** : intégrée au cahier des charges v1.10
+
+## D-019 — Nouveau taux, correction et suppression d'une ligne de taux
+- **Date** : 15/11/2026
+- **Origine** : projet Claude
+- **Contexte** : étape 2.0 du J2. Selon la section 3.6, un changement de taux se fait en ajoutant une ligne, mais l'administrateur peut corriger une erreur de saisie. Les montants n'étant jamais stockés, toute correction modifie les montants déjà affichés.
+- **Décision** :
+  - Action principale « Nouveau taux » : ajout d'une ligne (grade, nature, taux horaire, date d'effet). C'est le cas normal d'un changement de barème ; l'historique est préservé.
+  - Action secondaire « Corriger » : modification du taux horaire ou de la date d'effet d'une ligne existante, réservée à la correction d'une erreur de saisie. Une confirmation prévient que les montants des activités concernées seront recalculés.
+  - « Supprimer » une ligne de taux : autorisé, avec la même confirmation. Les activités concernées reprennent le taux précédent en vigueur ou, à défaut, passent en « taux manquant ».
+  - Le message de confirmation est générique : la RLS empêche l'administrateur de lire les activités des autres utilisateurs, l'application ne peut donc pas les dénombrer.
+  - Les corrections et suppressions ne sont pas tracées (administrateur unique).
+  - L'unicité (grade, nature, date d'effet) s'applique aussi aux corrections.
+- **Conséquences** : écran d'administration de la grille de taux (étape 2.2) et ses messages ; requêtes de modification et de suppression des taux (étape 2.1) ; cahier des charges v1.11 (sections 3.6 et 13).
+- **Statut** : intégrée au cahier des charges v1.11
+
+## D-020 — Nouveau taux avec une date d'effet passée ou future
+- **Date** : 15/11/2026
+- **Origine** : projet Claude
+- **Contexte** : étape 2.0 du J2. Un barème peut être publié avec effet rétroactif. Un « Nouveau taux » (D-019) dont la date d'effet est passée modifie alors les montants déjà affichés.
+- **Décision** :
+  - Une date d'effet passée est autorisée. Est passée une date antérieure ou égale à la date du jour à Paris.
+  - Elle demande une confirmation générique : « Cette date d'effet est passée : les montants des activités à partir du JJ/MM/AAAA seront recalculés. » L'application ne dénombre pas les activités concernées (RLS).
+  - Une date d'effet future est autorisée sans confirmation : elle ne modifie aucun montant passé (section 9).
+  - La même confirmation s'applique quand une correction (D-019) porte la date d'effet à une date passée.
+- **Conséquences** : écran d'administration de la grille de taux (étape 2.2) ; cahier des charges v1.11 (sections 3.6 et 13).
+- **Statut** : intégrée au cahier des charges v1.11
