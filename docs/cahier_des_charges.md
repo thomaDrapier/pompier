@@ -157,7 +157,7 @@ flowchart TD
     style E fill:#F8DEDC,stroke:#B3261E
 ```
 
-**Taux avec dates d'effet :** chaque taux du référentiel possède une date d'effet. Une modification de barème ou un changement de grade n'altère jamais rétroactivement les mois passés. Le taux est choisi à la date de début de l'activité.
+**Taux avec dates d'effet :** chaque taux du référentiel et chaque ligne de l'historique de grades d'un utilisateur possède une date d'effet. Le taux est choisi à la date de début de l'activité, pour le grade de l'utilisateur à cette date. Un taux ou un grade dont la date d'effet est future ne modifie aucun montant passé. Les montants n'étant jamais stockés, les montants passés ne changent que par un acte explicite : ajout d'un taux avec une date d'effet passée (D-020), correction ou suppression d'une ligne de taux (D-019), ajout, correction ou suppression d'une ligne de l'historique de grades avec une date d'effet passée (D-021).
 
 **Exemple chiffré** (taux fictifs, à ne pas reprendre) :
 
@@ -512,4 +512,4 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.8 | 14/11/2026 | Création de `docs/specifications_ecrans.md` (v1.0 : écrans du J1). Section 6.3 mise à jour. |
 | 1.9 | 15/11/2026 | Intégration de la décision D-017 : périmètre et découpage du J2 (référentiel et écran Paramètres ; gestion des utilisateurs reportée au J5) ; le grade est renseigné par l'utilisateur. Sections 10 et 11 mises à jour. |
 | 1.10 | 15/11/2026 | Intégration de la décision D-018 : suppression d'un grade ou d'une nature seulement s'il n'a jamais servi, archivage sinon ; colonne `actif` ajoutée à `grades` ; l'archivage n'a aucun effet sur le calcul. Sections 3.3, 3.6 et 7 mises à jour. |
-| 1.11 | 15/11/2026 | Intégration des décisions D-019 (« Nouveau taux » comme action normale ; correction et suppression d'une ligne de taux avec confirmation, sans traçabilité) et D-020 (date d'effet passée autorisée avec confirmation, date d'effet future sans confirmation). Section 3.6 mise à jour. |
+| 1.11 | 15/11/2026 | Intégration des décisions D-019 (« Nouveau taux » comme action normale ; correction et suppression d'une ligne de taux avec confirmation, sans traçabilité), D-020 (date d'effet passée autorisée avec confirmation, date d'effet future sans confirmation) et D-021 (portée rétroactive des dates d'effet des taux et des grades). Sections 3.5 et 3.6 mises à jour. |

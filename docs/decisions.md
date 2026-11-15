@@ -251,3 +251,16 @@
   - La même confirmation s'applique quand une correction (D-019) porte la date d'effet à une date passée.
 - **Conséquences** : écran d'administration de la grille de taux (étape 2.2) ; cahier des charges v1.11 (sections 3.6 et 13).
 - **Statut** : intégrée au cahier des charges v1.11
+
+## D-021 — Portée rétroactive des dates d'effet
+- **Date** : 15/11/2026
+- **Origine** : projet Claude
+- **Contexte** : contradictions relevées par Claude Code en appliquant D-019 et D-020. Selon la section 3.5 du cahier des charges, « une modification de barème ou un changement de grade n'altère jamais rétroactivement les mois passés », ce qui contredit D-020 (date d'effet passée) et D-019 (correction, suppression). Depuis D-017, l'utilisateur saisit lui-même son historique de grades, éventuellement avec une date d'effet passée. CLAUDE.md dit « on ajoute une ligne, on n'écrase jamais l'historique », ce qui contredit la correction et la suppression de D-019.
+- **Décision** :
+  - Le taux appliqué reste celui en vigueur à la date de début de l'activité, pour le grade de l'utilisateur à cette date.
+  - Un taux ou un grade dont la date d'effet est future ne modifie aucun montant passé.
+  - Les montants n'étant jamais stockés, les montants passés ne changent que par un acte explicite : ajout d'un taux avec une date d'effet passée (D-020) ; correction ou suppression d'une ligne de taux (D-019) ; ajout, correction ou suppression d'une ligne de l'historique de grades avec une date d'effet passée (D-017).
+  - Un changement de barème ajoute toujours une ligne et n'écrase jamais l'historique. Seule la correction d'une erreur de saisie par l'administrateur modifie ou supprime une ligne de taux existante.
+  - Une éventuelle confirmation lors de la saisie d'un grade à date d'effet passée sera traitée dans la spécification de l'écran Paramètres.
+- **Conséquences** : cahier des charges v1.11 (sections 3.5 et 13) ; CLAUDE.md (règles métier non négociables). Aucun impact sur le moteur de calcul, qui applique déjà cette règle.
+- **Statut** : intégrée au cahier des charges v1.11
