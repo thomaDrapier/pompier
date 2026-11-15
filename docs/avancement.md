@@ -4,8 +4,8 @@
 
 ## État actuel (mis à jour le 15/11/2026)
 - **En cours** : J2 · étape 2.0 (décisions de gestion du référentiel et spécifications des écrans, projet Claude).
-- **Dernière étape terminée** : D-022, verrouillage de l'indicateur « est une astreinte ».
-- **Prochaine action** : décision sur le code des natures ; puis docs/specifications_ecrans.md v1.2, y compris la confirmation éventuelle d'un grade à date d'effet passée (écran Paramètres).
+- **Dernière étape terminée** : D-023, code des natures. Les décisions de gestion du référentiel sont complètes (D-017 à D-023).
+- **Prochaine action** : docs/specifications_ecrans.md v1.2 (administration des grades, des natures et de la grille de taux ; écran Paramètres, y compris la confirmation éventuelle d'un grade à date d'effet passée), rédigée dans le projet Claude.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
@@ -15,9 +15,14 @@
   - Grade du porteur saisi à la main dans le Studio jusqu'à l'étape 2.3 (écran Paramètres).
   - Désactiver l'inscription publique en production (J4) : `enable_signup` est gardé actif en local, car les tests créent leurs comptes par signUp.
   - Intégration continue GitHub Actions à envisager (lint, build, tests).
-- **Branches ouvertes** : docs/d022-verrou-astreinte (docs/d019-d020-taux est fusionnée).
+- **Branches ouvertes** : docs/d023-code-nature (docs/d022-verrou-astreinte est fusionnée).
 
 ## Journal
+
+### 15/11/2026 — Décision : code des natures
+- **Fait** : D-023 consignée ; cahier des charges v1.13 (sections 3.3, 7, 13).
+- **Branche** : docs/d023-code-nature
+- **Décisions liées** : D-023
 
 ### 15/11/2026 — Décision : verrouillage de « est une astreinte »
 - **Fait** : D-022 consignée ; cahier des charges v1.12 (sections 3.3, 13).

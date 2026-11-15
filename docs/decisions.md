@@ -276,3 +276,14 @@
   - Le contrôle en base doit porter sur les activités de tous les utilisateurs. Il ne doit donc pas dépendre de la RLS, qui empêche l'administrateur de lire les activités des autres. Le moyen de savoir dans l'interface si une nature a servi est un choix technique de l'étape 2.1. Il ne doit révéler aucune donnée d'activité (au plus un booléen).
 - **Conséquences** : migration à l'étape 2.1 (contrôle en base, tests de refus, dont le cas d'une nature utilisée seulement par un autre utilisateur) ; écran d'administration des natures (étape 2.2) ; cahier des charges v1.12 (sections 3.3 et 13). Le scénario de D-010 (passage d'une nature déjà utilisée au statut « astreinte ») devient impossible ; le signalement d'anomalie du moteur reste en place par sécurité.
 - **Statut** : intégrée au cahier des charges v1.12
+
+## D-023 — Code d'une nature d'activité
+- **Date** : 15/11/2026
+- **Origine** : projet Claude
+- **Contexte** : étape 2.0 du J2. Chaque nature possède un code court (section 3.3), dont ni l'unicité, ni la modifiabilité, ni le rôle n'étaient définis.
+- **Décision** :
+  - Le code est obligatoire et unique, sans distinction entre majuscules et minuscules. L'unicité est contrôlée dans la base.
+  - Il est modifiable à tout moment par l'administrateur, y compris pour une nature déjà utilisée.
+  - Il est purement informatif (libellé court pour l'affichage). Aucune règle de calcul ni de restitution, présente ou future, ne doit s'appuyer sur la valeur d'un code ; le moteur et l'application utilisent l'identifiant interne. Un besoin de classement (par exemple l'identification des interventions, à trancher avant le J3) passera par un indicateur dédié, pas par un code.
+- **Conséquences** : migration à l'étape 2.1 (contrainte d'unicité insensible à la casse, si elle n'existe pas déjà ; test de refus d'un doublon) ; écran d'administration des natures (étape 2.2) ; vérifier qu'aucun code existant ne dépend de la valeur d'un code (seed compris) ; cahier des charges v1.13 (sections 3.3, 7 et 13).
+- **Statut** : intégrée au cahier des charges v1.13
