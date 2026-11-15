@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Version** | 1.11 |
+| **Version** | 1.12 |
 | **Date** | 15/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
@@ -97,7 +97,7 @@ flowchart LR
 Liste fixe, gérée uniquement par l'administrateur dans le référentiel. Liste initiale proposée (à valider) : astreinte, intervention, garde, manœuvre, formation, administratif. Chaque nature possède :
 
 - un libellé et un code court ;
-- un indicateur « est une astreinte » (c'est lui qui déclenche la règle de déduction) ;
+- un indicateur « est une astreinte » (c'est lui qui déclenche la règle de déduction). Il n'est modifiable que tant qu'aucune activité n'utilise la nature ; il est ensuite verrouillé, dans l'interface et dans la base. Pour changer de comportement, on crée une nouvelle nature et on archive l'ancienne (D-022) ;
 - un indicateur « actif / archivé » : une nature archivée n'est plus proposée à la saisie d'une nouvelle activité, mais reste visible dans l'historique, conservable en modification d'une activité existante et calculée normalement (D-018).
 
 ### 3.4 Règle de calcul des heures d'astreinte
@@ -513,3 +513,4 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.9 | 15/11/2026 | Intégration de la décision D-017 : périmètre et découpage du J2 (référentiel et écran Paramètres ; gestion des utilisateurs reportée au J5) ; le grade est renseigné par l'utilisateur. Sections 10 et 11 mises à jour. |
 | 1.10 | 15/11/2026 | Intégration de la décision D-018 : suppression d'un grade ou d'une nature seulement s'il n'a jamais servi, archivage sinon ; colonne `actif` ajoutée à `grades` ; l'archivage n'a aucun effet sur le calcul. Sections 3.3, 3.6 et 7 mises à jour. |
 | 1.11 | 15/11/2026 | Intégration des décisions D-019 (« Nouveau taux » comme action normale ; correction et suppression d'une ligne de taux avec confirmation, sans traçabilité), D-020 (date d'effet passée autorisée avec confirmation, date d'effet future sans confirmation) et D-021 (portée rétroactive des dates d'effet des taux et des grades). Sections 3.5 et 3.6 mises à jour. |
+| 1.12 | 15/11/2026 | Intégration de la décision D-022 : l'indicateur « est une astreinte » est verrouillé dès qu'une activité utilise la nature, contrôle en base indépendant de la RLS. Section 3.3 mise à jour. |
