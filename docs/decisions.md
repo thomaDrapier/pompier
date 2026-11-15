@@ -225,3 +225,42 @@
   - En modification d'une activité existante dont la nature est archivée, cette nature reste affichée et peut être conservée.
 - **Conséquences** : migration à l'étape 2.1 (colonne `grades.actif`, types régénérés) ; filtres des listes de choix (saisie d'activité, Paramètres) ; tests RLS et tests de suppression refusée ; cahier des charges v1.10 (sections 3.3, 3.6, 7 et 13).
 - **Statut** : intégrée au cahier des charges v1.10
+
+## D-019 — Nouveau taux, correction et suppression d'une ligne de taux
+- **Date** : 15/11/2026
+- **Origine** : projet Claude
+- **Contexte** : étape 2.0 du J2. Selon la section 3.6, un changement de taux se fait en ajoutant une ligne, mais l'administrateur peut corriger une erreur de saisie. Les montants n'étant jamais stockés, toute correction modifie les montants déjà affichés.
+- **Décision** :
+  - Action principale « Nouveau taux » : ajout d'une ligne (grade, nature, taux horaire, date d'effet). C'est le cas normal d'un changement de barème ; l'historique est préservé.
+  - Action secondaire « Corriger » : modification du taux horaire ou de la date d'effet d'une ligne existante, réservée à la correction d'une erreur de saisie. Une confirmation prévient que les montants des activités concernées seront recalculés.
+  - « Supprimer » une ligne de taux : autorisé, avec la même confirmation. Les activités concernées reprennent le taux précédent en vigueur ou, à défaut, passent en « taux manquant ».
+  - Le message de confirmation est générique : la RLS empêche l'administrateur de lire les activités des autres utilisateurs, l'application ne peut donc pas les dénombrer.
+  - Les corrections et suppressions ne sont pas tracées (administrateur unique).
+  - L'unicité (grade, nature, date d'effet) s'applique aussi aux corrections.
+- **Conséquences** : écran d'administration de la grille de taux (étape 2.2) et ses messages ; requêtes de modification et de suppression des taux (étape 2.1) ; cahier des charges v1.11 (sections 3.6 et 13).
+- **Statut** : intégrée au cahier des charges v1.11
+
+## D-020 — Nouveau taux avec une date d'effet passée ou future
+- **Date** : 15/11/2026
+- **Origine** : projet Claude
+- **Contexte** : étape 2.0 du J2. Un barème peut être publié avec effet rétroactif. Un « Nouveau taux » (D-019) dont la date d'effet est passée modifie alors les montants déjà affichés.
+- **Décision** :
+  - Une date d'effet passée est autorisée. Est passée une date antérieure ou égale à la date du jour à Paris.
+  - Elle demande une confirmation générique : « Cette date d'effet est passée : les montants des activités à partir du JJ/MM/AAAA seront recalculés. » L'application ne dénombre pas les activités concernées (RLS).
+  - Une date d'effet future est autorisée sans confirmation : elle ne modifie aucun montant passé (section 9).
+  - La même confirmation s'applique quand une correction (D-019) porte la date d'effet à une date passée.
+- **Conséquences** : écran d'administration de la grille de taux (étape 2.2) ; cahier des charges v1.11 (sections 3.6 et 13).
+- **Statut** : intégrée au cahier des charges v1.11
+
+## D-021 — Portée rétroactive des dates d'effet
+- **Date** : 15/11/2026
+- **Origine** : projet Claude
+- **Contexte** : contradictions relevées par Claude Code en appliquant D-019 et D-020. Selon la section 3.5 du cahier des charges, « une modification de barème ou un changement de grade n'altère jamais rétroactivement les mois passés », ce qui contredit D-020 (date d'effet passée) et D-019 (correction, suppression). Depuis D-017, l'utilisateur saisit lui-même son historique de grades, éventuellement avec une date d'effet passée. CLAUDE.md dit « on ajoute une ligne, on n'écrase jamais l'historique », ce qui contredit la correction et la suppression de D-019.
+- **Décision** :
+  - Le taux appliqué reste celui en vigueur à la date de début de l'activité, pour le grade de l'utilisateur à cette date.
+  - Un taux ou un grade dont la date d'effet est future ne modifie aucun montant passé.
+  - Les montants n'étant jamais stockés, les montants passés ne changent que par un acte explicite : ajout d'un taux avec une date d'effet passée (D-020) ; correction ou suppression d'une ligne de taux (D-019) ; ajout, correction ou suppression d'une ligne de l'historique de grades avec une date d'effet passée (D-017).
+  - Un changement de barème ajoute toujours une ligne et n'écrase jamais l'historique. Seule la correction d'une erreur de saisie par l'administrateur modifie ou supprime une ligne de taux existante.
+  - Une éventuelle confirmation lors de la saisie d'un grade à date d'effet passée sera traitée dans la spécification de l'écran Paramètres.
+- **Conséquences** : cahier des charges v1.11 (sections 3.5 et 13) ; CLAUDE.md (règles métier non négociables). Aucun impact sur le moteur de calcul, qui applique déjà cette règle.
+- **Statut** : intégrée au cahier des charges v1.11

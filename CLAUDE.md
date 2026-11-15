@@ -56,7 +56,10 @@ date-fns (fuseau Europe/Paris) · Vitest (unitaires) · Playwright (parcours).
 ## Règles métier non négociables
 - Référentiel unique et commun (tables `grades`, `activity_types`, `reference_rates`) :
   aucun taux personnalisé ; seul l'administrateur le modifie.
-- Taux à date d'effet : on ajoute une ligne, on n'écrase jamais l'historique.
+- Taux à date d'effet : un changement de barème ajoute une ligne et n'écrase jamais
+  l'historique ; seule la correction d'une erreur de saisie par l'administrateur modifie
+  ou supprime une ligne existante (D-019). Les montants passés ne changent que par une
+  date d'effet passée, une correction ou une suppression (D-021).
 - Ne JAMAIS coder un taux en dur, ni en inventer un, ni inventer une règle du SDIS.
 - Durée nette d'astreinte = durée de (union des astreintes) privée de
   (union de toutes les autres activités, quelle que soit leur nature).
