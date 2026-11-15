@@ -4,8 +4,8 @@
 
 ## État actuel (mis à jour le 15/11/2026)
 - **En cours** : J2 · étape 2.0 (décisions de gestion du référentiel et spécifications des écrans, projet Claude).
-- **Dernière étape terminée** : D-019, D-020 et D-021, gestion des lignes de taux et portée rétroactive des dates d'effet.
-- **Prochaine action** : décisions sur la modification de « est une astreinte » et le code des natures ; puis docs/specifications_ecrans.md v1.2, y compris la confirmation éventuelle d'un grade à date d'effet passée (écran Paramètres).
+- **Dernière étape terminée** : D-022, verrouillage de l'indicateur « est une astreinte ».
+- **Prochaine action** : décision sur le code des natures ; puis docs/specifications_ecrans.md v1.2, y compris la confirmation éventuelle d'un grade à date d'effet passée (écran Paramètres).
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
@@ -15,9 +15,14 @@
   - Grade du porteur saisi à la main dans le Studio jusqu'à l'étape 2.3 (écran Paramètres).
   - Désactiver l'inscription publique en production (J4) : `enable_signup` est gardé actif en local, car les tests créent leurs comptes par signUp.
   - Intégration continue GitHub Actions à envisager (lint, build, tests).
-- **Branches ouvertes** : docs/d019-d020-taux.
+- **Branches ouvertes** : docs/d022-verrou-astreinte (docs/d019-d020-taux est fusionnée).
 
 ## Journal
+
+### 15/11/2026 — Décision : verrouillage de « est une astreinte »
+- **Fait** : D-022 consignée ; cahier des charges v1.12 (sections 3.3, 13).
+- **Branche** : docs/d022-verrou-astreinte
+- **Décisions liées** : D-022
 
 ### 15/11/2026 — Décisions : gestion des lignes de taux et portée des dates d'effet
 - **Fait** : D-019, D-020 et D-021 consignées ; cahier des charges v1.11 (sections 3.5, 3.6, 13) ; CLAUDE.md (règle des taux à date d'effet).

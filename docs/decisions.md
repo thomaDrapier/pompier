@@ -264,3 +264,15 @@
   - Une éventuelle confirmation lors de la saisie d'un grade à date d'effet passée sera traitée dans la spécification de l'écran Paramètres.
 - **Conséquences** : cahier des charges v1.11 (sections 3.5 et 13) ; CLAUDE.md (règles métier non négociables). Aucun impact sur le moteur de calcul, qui applique déjà cette règle.
 - **Statut** : intégrée au cahier des charges v1.11
+
+## D-022 — Verrouillage de l'indicateur « est une astreinte »
+- **Date** : 15/11/2026
+- **Origine** : projet Claude
+- **Contexte** : étape 2.0 du J2. Modifier l'indicateur `est_astreinte` d'une nature déjà utilisée changerait rétroactivement les déductions, les durées nettes et les montants de toutes les activités concernées. Cela pourrait aussi faire apparaître des chevauchements d'astreintes (D-010).
+- **Décision** :
+  - L'indicateur « est une astreinte » d'une nature est modifiable tant qu'aucune activité, de quelque utilisateur que ce soit, n'utilise cette nature. Il est ensuite verrouillé.
+  - Pour changer de comportement, l'administrateur crée une nouvelle nature et archive l'ancienne (D-018). Les activités existantes et leurs calculs restent intacts.
+  - Défense en profondeur : le verrou est appliqué dans l'interface (indicateur non modifiable, avec une explication) et contrôlé dans la base.
+  - Le contrôle en base doit porter sur les activités de tous les utilisateurs. Il ne doit donc pas dépendre de la RLS, qui empêche l'administrateur de lire les activités des autres. Le moyen de savoir dans l'interface si une nature a servi est un choix technique de l'étape 2.1. Il ne doit révéler aucune donnée d'activité (au plus un booléen).
+- **Conséquences** : migration à l'étape 2.1 (contrôle en base, tests de refus, dont le cas d'une nature utilisée seulement par un autre utilisateur) ; écran d'administration des natures (étape 2.2) ; cahier des charges v1.12 (sections 3.3 et 13). Le scénario de D-010 (passage d'une nature déjà utilisée au statut « astreinte ») devient impossible ; le signalement d'anomalie du moteur reste en place par sécurité.
+- **Statut** : intégrée au cahier des charges v1.12
