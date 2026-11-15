@@ -211,3 +211,17 @@
   - Découpage : 2.0 décisions de gestion du référentiel et spécifications des écrans (projet Claude) ; 2.1 données (migration si nécessaire, tests RLS, requêtes et hooks) ; 2.2 écrans d'administration ; 2.3 écran Paramètres.
 - **Conséquences** : cahier des charges v1.9 (sections 10, 11 et 13). Les étapes 2.1 à 2.3 attendent les décisions de gestion du référentiel et les spécifications des écrans du J2.
 - **Statut** : intégrée au cahier des charges v1.9
+
+## D-018 — Suppression et archivage des grades et des natures
+- **Date** : 15/11/2026
+- **Origine** : projet Claude
+- **Contexte** : étape 2.0 du J2. Les clés étrangères en mode « restrict » empêchent déjà de supprimer un élément du référentiel utilisé ailleurs. `activity_types` a une colonne `actif` (section 3.3), `grades` n'en a pas (section 7).
+- **Décision** :
+  - Un grade ou une nature ne peut être supprimé que s'il n'a jamais servi : aucune activité, aucun taux et aucune ligne d'historique de grade ne le référence. Sinon, l'administrateur l'archive.
+  - Une colonne `actif` (booléen, vrai par défaut, non nulle) est ajoutée à `grades`, sur le modèle de `activity_types`.
+  - Une nature archivée n'est plus proposée à la saisie d'une nouvelle activité. Un grade archivé n'est plus proposé lors de l'ajout d'une ligne d'historique de grade (écran Paramètres).
+  - L'archivage n'a aucun effet sur le calcul : les activités, les historiques de grade et les taux existants qui référencent un élément archivé restent valables et sont calculés normalement.
+  - Les éléments archivés restent visibles dans l'administration, signalés comme archivés, et peuvent être réactivés.
+  - En modification d'une activité existante dont la nature est archivée, cette nature reste affichée et peut être conservée.
+- **Conséquences** : migration à l'étape 2.1 (colonne `grades.actif`, types régénérés) ; filtres des listes de choix (saisie d'activité, Paramètres) ; tests RLS et tests de suppression refusée ; cahier des charges v1.10 (sections 3.3, 3.6, 7 et 13).
+- **Statut** : intégrée au cahier des charges v1.10
