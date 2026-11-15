@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Version** | 1.9 |
+| **Version** | 1.10 |
 | **Date** | 15/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
@@ -98,7 +98,7 @@ Liste fixe, gérée uniquement par l'administrateur dans le référentiel. Liste
 
 - un libellé et un code court ;
 - un indicateur « est une astreinte » (c'est lui qui déclenche la règle de déduction) ;
-- un indicateur « actif / archivé » (une nature archivée n'est plus proposée à la saisie mais reste visible dans l'historique).
+- un indicateur « actif / archivé » : une nature archivée n'est plus proposée à la saisie d'une nouvelle activité, mais reste visible dans l'historique, conservable en modification d'une activité existante et calculée normalement (D-018).
 
 ### 3.4 Règle de calcul des heures d'astreinte
 
@@ -169,8 +169,9 @@ flowchart TD
 
 ### 3.6 Référentiel unique (espace administrateur)
 
-- CRUD des grades (libellé, ordre hiérarchique).
-- CRUD des natures d'activité (voir 3.3).
+- Création, modification, archivage et réactivation des grades (libellé, ordre hiérarchique, actif / archivé).
+- Création, modification, archivage et réactivation des natures d'activité (voir 3.3).
+- Un grade ou une nature ne peut être supprimé que s'il n'a jamais servi (aucune activité, aucun taux, aucun historique de grade) ; sinon il est archivé. L'archivage n'a aucun effet sur le calcul (D-018).
 - Grille de taux : un taux horaire par couple (grade × nature), avec date d'effet et historique consultable.
 - Gestion des utilisateurs : création, désactivation, rôle.
 - Le référentiel est unique et commun à tous les utilisateurs : aucun agent ne peut modifier un taux ni créer de taux personnalisé.
@@ -360,6 +361,7 @@ erDiagram
         uuid id PK
         text libelle
         int ordre
+        boolean actif
     }
     reference_rates {
         uuid id PK
@@ -375,7 +377,7 @@ erDiagram
 | Table | Rôle | Colonnes |
 |---|---|---|
 | `profiles` | Un utilisateur | id (lié au compte d'authentification), nom_affichage, role (user \| admin), actif |
-| `grades` | Référentiel : les grades | id, libelle, ordre |
+| `grades` | Référentiel : les grades | id, libelle, ordre, actif |
 | `activity_types` | Référentiel : les natures d'activité | id, code, libelle, est_astreinte (booléen), actif, ordre |
 | `reference_rates` | Référentiel : taux horaire par grade et par nature | id, grade_id, activity_type_id, taux_horaire (2 décimales), date_effet |
 | `user_grade_history` | Grade d'un utilisateur au fil du temps | id, user_id, grade_id, date_effet |
@@ -507,3 +509,4 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.7 | 13/11/2026 | Intégration des décisions D-013 (routeur React Router, section 6) et D-014 (interface fonctionnelle minimale jusqu'au J5, spécifications des écrans fonctionnelles, design reporté à un projet distinct, section 8). |
 | 1.8 | 14/11/2026 | Création de `docs/specifications_ecrans.md` (v1.0 : écrans du J1). Section 6.3 mise à jour. |
 | 1.9 | 15/11/2026 | Intégration de la décision D-017 : périmètre et découpage du J2 (référentiel et écran Paramètres ; gestion des utilisateurs reportée au J5) ; le grade est renseigné par l'utilisateur. Sections 10 et 11 mises à jour. |
+| 1.10 | 15/11/2026 | Intégration de la décision D-018 : suppression d'un grade ou d'une nature seulement s'il n'a jamais servi, archivage sinon ; colonne `actif` ajoutée à `grades` ; l'archivage n'a aucun effet sur le calcul. Sections 3.3, 3.6 et 7 mises à jour. |
