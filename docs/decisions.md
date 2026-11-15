@@ -199,3 +199,15 @@
   - Tests de parcours : chaque test d'activités crée son propre compte fictif et lui attribue le grade « Sapeur » du seed, pour pouvoir tourner en parallèle ; `npm run test:e2e` exige donc le seed (`supabase db reset`). La réinitialisation du mot de passe est testée de bout en bout par l'API de Mailpit.
 - **Conséquences** : `src/App.tsx`, `src/routes/`, `src/features/activites/`, `src/lib/formats.ts`, `src/lib/temps.ts`, `src/features/auth/AuthProvider.tsx`, `tests/e2e/`, README. À traiter au J4 : l'hébergeur statique doit renvoyer `index.html` pour toute adresse (docs/avancement.md, « En attente »). Aucun impact métier.
 - **Statut** : validée
+
+## D-017 — Périmètre du jalon 2
+- **Date** : 15/11/2026
+- **Origine** : projet Claude
+- **Contexte** : le cahier des charges est ambigu sur le contenu du J2. La section 10 cite « grades, natures, taux avec dates d'effet, écran d'administration ». La section 8 range aussi la gestion des utilisateurs dans l'écran d'administration. L'écran Paramètres (section 8, n° 7) n'est rattaché à aucun jalon. Depuis le J1, le grade du porteur est saisi à la main dans le Studio. Section 11 : « Qui renseigne le grade d'un utilisateur ».
+- **Décision** :
+  - Le J2 comprend : l'administration du référentiel (grades, natures d'activité, grille de taux à dates d'effet avec historique), réservée à l'administrateur ; l'écran Paramètres (grade actuel et historique des grades avec dates d'effet, consultation en lecture seule des taux applicables à son grade).
+  - C'est l'utilisateur qui renseigne lui-même son grade et ses promotions (hypothèse de la section 11, confirmée).
+  - La gestion des utilisateurs (création, désactivation, rôle) est reportée au J5, avec l'ouverture aux collègues.
+  - Découpage : 2.0 décisions de gestion du référentiel et spécifications des écrans (projet Claude) ; 2.1 données (migration si nécessaire, tests RLS, requêtes et hooks) ; 2.2 écrans d'administration ; 2.3 écran Paramètres.
+- **Conséquences** : cahier des charges v1.9 (sections 10, 11 et 13). Les étapes 2.1 à 2.3 attendent les décisions de gestion du référentiel et les spécifications des écrans du J2.
+- **Statut** : intégrée au cahier des charges v1.9

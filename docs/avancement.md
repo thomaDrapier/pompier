@@ -2,22 +2,27 @@
 
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
-## État actuel (mis à jour le 14/11/2026)
-- **En cours** : aucune étape. J1 (MVP personnel) terminé.
-- **Dernière étape terminée** : J1 · étape 1.2b — écrans « Liste des activités » et « Saisie / modification » conformes à docs/specifications_ecrans.md v1.1, routage React Router (une adresse par écran, routes protégées, retour à l'adresse demandée après connexion), contrôles de la saisie (bloquants et avertissements), formats français en Europe/Paris. Le J1 est terminé : moteur de calcul (1.1), couche de données (1.2a), écrans (1.2b).
-- **Prochaine action** : J2 — Référentiel (grades, natures, taux à dates d'effet, écran d'administration), plan et spécification de l'écran à préparer dans le projet Claude.
+## État actuel (mis à jour le 15/11/2026)
+- **En cours** : J2 · étape 2.0 (décisions de gestion du référentiel et spécifications des écrans, projet Claude).
+- **Dernière étape terminée** : D-017, périmètre du J2.
+- **Prochaine action** : décisions sur l'archivage ou la suppression des grades et des natures, la correction des taux, les dates d'effet passées, la modification de « est une astreinte » et le code des natures ; puis docs/specifications_ecrans.md v1.2.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
   - J4 : garantir que le seed et le compte de test ne sont jamais appliqués en production.
   - J4 : l'hébergeur statique doit renvoyer index.html pour toute adresse (routage côté navigateur).
   - Identification des interventions (mise en avant, nombre d'interventions de l'accueil) : aucun indicateur dans le modèle ; à trancher avant le J3.
-  - J1 : le grade du porteur est saisi à la main dans le Studio, en attendant l'écran Paramètres.
+  - Grade du porteur saisi à la main dans le Studio jusqu'à l'étape 2.3 (écran Paramètres).
   - Désactiver l'inscription publique en production (J4) : `enable_signup` est gardé actif en local, car les tests créent leurs comptes par signUp.
   - Intégration continue GitHub Actions à envisager (lint, build, tests).
-- **Branches ouvertes** : aucune.
+- **Branches ouvertes** : docs/d017-perimetre-j2.
 
 ## Journal
+
+### 15/11/2026 — Décision : périmètre du J2
+- **Fait** : D-017 consignée ; cahier des charges v1.9 (sections 10, 11, 13).
+- **Branche** : docs/d017-perimetre-j2
+- **Décisions liées** : D-017
 
 ### 14/11/2026 — J1 · étape 1.2b terminée (J1 terminé)
 - **Fait** : React Router (`src/App.tsx`, `src/routes/`) : adresses `/connexion`, `/mot-de-passe-oublie`, `/nouveau-mot-de-passe`, `/activites`, `/activites/nouvelle`, `/activites/:id` ; routes protégées avec retour à l'adresse demandée ; le retour par le lien de réinitialisation passe avant toute redirection et reste actif après un rechargement de la page (récupération notée dans le stockage du navigateur, `AuthProvider`) ; écran connecté temporaire du J0 supprimé, en-tête avec déconnexion. Liste des activités (`src/features/activites/ListeActivitesScreen.tsx`) : mois et filtre dans l'adresse, paramètres invalides ignorés, totaux et bandeau d'anomalie sur le mois entier, lignes filtrées, états de chargement, d'erreur et de mois vide. Saisie / modification (`FormulaireActiviteScreen.tsx`) : valeurs par défaut, date et heure en champs natifs séparés, fin au lendemain, durée en direct, contrôles bloquants (champs, fin ≤ début, chevauchement d'astreintes côté client et erreur de la base), avertissements (doublon, chevauchement hors astreinte) dans une boîte de dialogue, suppression confirmée, activité introuvable. Fonctions pures testées : `src/lib/formats.ts`, `src/lib/temps.ts`, `regles-saisie.ts`, `etat-formulaire.ts`. Données : `lireActivite`, `lireDerniereActivite`, `lireActivitesChevauchant`, hooks `useActivite`, `useDerniereActivite`, `useEnLigne`. Composants shadcn/ui `alert-dialog`, `badge`, `textarea` ; dépendance `react-router`. Tests : `npm run test` (182), `npm run test:rls` (46), `npm run test:e2e` (38 : parcours a à g sur ordinateur et Pixel 7, dont la réinitialisation complète via Mailpit), `npm run build` et `npm run lint` sans erreur. Vérification manuelle sur téléphone simulé (375 × 812) : une saisie demande trois gestes (ouvrir le formulaire, saisir l'heure de fin, enregistrer), nature, début et date de fin étant préremplis ; l'enregistrement et le retour à la liste prennent environ une seconde.

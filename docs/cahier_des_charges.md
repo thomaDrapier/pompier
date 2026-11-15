@@ -4,8 +4,8 @@
 
 | | |
 |---|---|
-| **Version** | 1.8 |
-| **Date** | 14/11/2026 |
+| **Version** | 1.9 |
+| **Date** | 15/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
 | **Destinataire** | Projet de développement (projet Claude et Claude Code) |
@@ -436,15 +436,19 @@ flowchart LR
    - **0.3 Base de données :** migration 0001 avec les 6 tables, contraintes, index et règles de sécurité (RLS).
    - **0.4 Authentification et tests :** connexion e-mail et mot de passe, session persistante, réinitialisation ; configuration de Vitest et de Playwright avec un test d'exemple.
 2. **Jalon 1 – MVP personnel :** d'abord le moteur de calcul (module pur `src/engine/` : déduction des astreintes, résolution des taux) et ses tests unitaires couvrant les cas de 3.4 et 3.5 ; ensuite seulement les écrans de saisie et de liste ; taux saisis dans la base.
-3. **Jalon 2 – Référentiel :** grades, natures, taux avec dates d'effet, écran d'administration.
+3. **Jalon 2 – Référentiel** (D-017), découpé en quatre étapes :
+   - **2.0 Décisions et spécifications :** règles de gestion du référentiel et spécifications des écrans du J2, dans le projet Claude.
+   - **2.1 Données :** migration si nécessaire, tests de sécurité (un non-administrateur ne peut écrire ni grade, ni nature, ni taux), requêtes et hooks.
+   - **2.2 Administration :** écrans de gestion des grades, des natures et de la grille de taux à dates d'effet, avec historique ; accès réservé à l'administrateur.
+   - **2.3 Paramètres :** grade actuel et historique des grades, saisis par l'utilisateur ; consultation en lecture seule des taux de son grade.
 4. **Jalon 3 – Restitutions :** synthèses par semaine, historique mensuel, graphiques.
 5. **Jalon 4 – Mise en production :** déploiement sur l'offre gratuite Supabase, sauvegardes planifiées et test de restauration, politique de confidentialité.
-6. **Jalon 5 – Ouverture aux collègues :** création de comptes, validation des isolations de données, retours d'usage, puis améliorations de la section 4.
+6. **Jalon 5 – Ouverture aux collègues :** gestion des utilisateurs (création, désactivation, rôle ; reportée du J2, D-017), validation des isolations de données, retours d'usage, puis améliorations de la section 4.
 
 ## 11. Points ouverts à valider
 
 - Liste définitive des natures d'activité et lesquelles sont considérées comme « astreinte ».
-- Qui renseigne le grade d'un utilisateur et ses promotions : l'utilisateur lui-même (hypothèse retenue) ou l'administrateur.
+- ~~Qui renseigne le grade d'un utilisateur et ses promotions~~ : tranché par D-017, c'est l'utilisateur lui-même.
 - Règle d'arrondi : proratisation à la minute avec arrondi au centime par activité (hypothèse retenue), ou arrondi réglementaire du SDIS.
 - Règle de ventilation d'une activité à cheval sur deux semaines ou deux mois (voir 3.8).
 - Existence de plafonds, majorations (nuit, jours fériés), forfaits par intervention ou autres règles propres au SDIS qui ne seraient pas de simples taux horaires.
@@ -502,3 +506,4 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.6 | 13/11/2026 | Intégration de la décision D-011 : statuts d'une activité, priorité des anomalies, déduction indépendante du taux, contenu des totaux. Section 3.5 mise à jour. |
 | 1.7 | 13/11/2026 | Intégration des décisions D-013 (routeur React Router, section 6) et D-014 (interface fonctionnelle minimale jusqu'au J5, spécifications des écrans fonctionnelles, design reporté à un projet distinct, section 8). |
 | 1.8 | 14/11/2026 | Création de `docs/specifications_ecrans.md` (v1.0 : écrans du J1). Section 6.3 mise à jour. |
+| 1.9 | 15/11/2026 | Intégration de la décision D-017 : périmètre et découpage du J2 (référentiel et écran Paramètres ; gestion des utilisateurs reportée au J5) ; le grade est renseigné par l'utilisateur. Sections 10 et 11 mises à jour. |
