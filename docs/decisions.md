@@ -312,3 +312,14 @@
   - En cas d'incident sur un conflit de fusion, Claude Code s'arrête et demande au porteur.
 - **Conséquences** : cahier des charges v1.15 (sections 12.2, 12.3 et 13) ; CLAUDE.md (section Git) ; instructions du projet Claude (mises à jour par le porteur). Si une décision antérieure exige l'accord du porteur avant la fusion, la signaler au porteur dans le compte rendu sans la modifier.
 - **Statut** : intégrée au cahier des charges v1.15
+
+## D-026 — Unicité du libellé des natures d'activité
+- **Date** : 17/11/2026
+- **Origine** : projet Claude
+- **Contexte** : étape 2.0 du J2, spécification de l'écran d'administration des natures. Seul le code des natures était unique (D-023) ; deux natures de même libellé seraient indiscernables dans la liste de saisie et dans la grille de taux.
+- **Décision** :
+  - Le libellé d'une nature est obligatoire et unique, sans distinction entre majuscules et minuscules, sur le modèle du libellé des grades (D-024).
+  - L'unicité porte sur toutes les natures, actives comme archivées.
+  - L'unicité est contrôlée dans la base ; l'interface affiche « Une nature porte déjà ce libellé. »
+- **Conséquences** : migration à l'étape 2.1 (contrainte d'unicité insensible à la casse sur `activity_types.libelle`, test de refus d'un doublon, vérification que le seed la respecte) ; écran d'administration des natures (étape 2.2) ; cahier des charges v1.16 (sections 3.3, 7 et 13).
+- **Statut** : intégrée au cahier des charges v1.16

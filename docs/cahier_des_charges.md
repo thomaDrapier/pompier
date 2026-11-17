@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Version** | 1.15 |
+| **Version** | 1.16 |
 | **Date** | 17/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
@@ -96,7 +96,7 @@ flowchart LR
 
 Liste fixe, gérée uniquement par l'administrateur dans le référentiel. Liste initiale proposée (à valider) : astreinte, intervention, garde, manœuvre, formation, administratif. Chaque nature possède :
 
-- un libellé et un code court, obligatoire, unique (sans distinction de casse) et modifiable à tout moment ; le code est purement informatif : aucune règle ne s'appuie sur sa valeur (D-023) ;
+- un libellé obligatoire et unique (sans distinction de casse, D-026) et un code court, obligatoire, unique (sans distinction de casse) et modifiable à tout moment ; le code est purement informatif : aucune règle ne s'appuie sur sa valeur (D-023) ;
 - un indicateur « est une astreinte » (c'est lui qui déclenche la règle de déduction). Il n'est modifiable que tant qu'aucune activité n'utilise la nature ; il est ensuite verrouillé, dans l'interface et dans la base. Pour changer de comportement, on crée une nouvelle nature et on archive l'ancienne (D-022) ;
 - un indicateur « actif / archivé » : une nature archivée n'est plus proposée à la saisie d'une nouvelle activité, mais reste visible dans l'historique, conservable en modification d'une activité existante et calculée normalement (D-018).
 
@@ -385,7 +385,7 @@ erDiagram
 | `user_grade_history` | Grade d'un utilisateur au fil du temps | id, user_id, grade_id, date_effet |
 | `activities` | Les activités saisies | id, user_id, activity_type_id, debut (timestamptz), fin (timestamptz), note (facultatif), cree_le, modifie_le |
 
-**Contraintes :** fin > début ; unicité des taux sur (grade, nature, date d'effet) ; unicité du code des natures, sans distinction de casse ; unicité du libellé des grades, sans distinction de casse (D-024) ; index sur (user_id, début).
+**Contraintes :** fin > début ; unicité des taux sur (grade, nature, date d'effet) ; unicité du code des natures, sans distinction de casse ; unicité du libellé des grades, sans distinction de casse (D-024) ; unicité du libellé des natures, sans distinction de casse (D-026) ; index sur (user_id, début).
 
 **Sécurité (Row Level Security) :** un utilisateur ne lit et n'écrit que ses lignes dans `activities` et `user_grade_history` ; le référentiel est en lecture seule pour tous ; son écriture est réservée à l'administrateur.
 
@@ -517,3 +517,4 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.13 | 15/11/2026 | Intégration de la décision D-023 : code des natures obligatoire, unique sans distinction de casse, modifiable et purement informatif. Sections 3.3 et 7 mises à jour. |
 | 1.14 | 17/11/2026 | Intégration de la décision D-024 : libellé des grades obligatoire et unique sans distinction de casse, actifs comme archivés, contrôlé en base. Sections 3.6 et 7 mises à jour. |
 | 1.15 | 17/11/2026 | Intégration de la décision D-025 : fusion dans `main` par Claude Code sans accord préalable du porteur ; pour le code, après réussite de lint, build et tests. Sections 12.2 et 12.3 mises à jour. |
+| 1.16 | 17/11/2026 | Intégration de la décision D-026 : libellé des natures obligatoire et unique sans distinction de casse, actives comme archivées, contrôlé en base. Sections 3.3 et 7 mises à jour. |

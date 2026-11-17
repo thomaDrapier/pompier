@@ -4,8 +4,8 @@
 
 ## État actuel (mis à jour le 17/11/2026)
 - **En cours** : J2 · étape 2.0 (spécifications des écrans, projet Claude).
-- **Dernière étape terminée** : D-024 (unicité du libellé des grades) et D-025 (fusion dans main par Claude Code).
-- **Prochaine action** : suite de docs/specifications_ecrans.md v1.2 dans le projet Claude. Déjà validés, à consigner avec la v1.2 : navigation (menu Activités / Paramètres / Administration ; adresses /parametres, /admin/grades, /admin/natures, /admin/taux ; message « Accès réservé à l'administrateur ») et écran Administration › Grades. Restent : Natures, Grille de taux, Paramètres.
+- **Dernière étape terminée** : D-026, unicité du libellé des natures.
+- **Prochaine action** : suite de docs/specifications_ecrans.md v1.2 dans le projet Claude. Validés, à consigner avec la v1.2 : navigation (menu Activités / Paramètres / Administration ; adresses /parametres, /admin/grades, /admin/natures, /admin/taux ; message « Accès réservé à l'administrateur ») et écran Administration › Grades. Proposé, à valider : Administration › Natures. Restent : Grille de taux, Paramètres.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
@@ -18,6 +18,11 @@
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 17/11/2026 — Décision : unicité du libellé des natures
+- **Fait** : D-026 consignée ; cahier des charges v1.16 (sections 3.3, 7, 13).
+- **Branche** : docs/d026-libelle-nature
+- **Décisions liées** : D-026
 
 ### 17/11/2026 — Décisions : libellé des grades et fusion par Claude Code
 - **Fait** : D-024 et D-025 consignées ; cahier des charges v1.15 (sections 3.6, 7, 12.2, 12.3, 13) ; CLAUDE.md (section Git).
