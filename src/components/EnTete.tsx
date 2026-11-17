@@ -46,6 +46,7 @@ export function EnTete() {
         <EntreeMenu to={ADRESSES.accueil}>Accueil</EntreeMenu>
         <EntreeMenu to={ADRESSES.activites}>Activités</EntreeMenu>
         <EntreeMenu to={ADRESSES.astreintes}>Astreintes</EntreeMenu>
+        <EntreeMenu to={ADRESSES.remuneration}>Rémunération</EntreeMenu>
         <EntreeMenu to={ADRESSES.parametres}>Paramètres</EntreeMenu>
         {profil.data?.estAdmin && <EntreeMenu to={ADRESSES.admin}>Administration</EntreeMenu>}
       </nav>

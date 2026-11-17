@@ -4,8 +4,16 @@
 // graphique (D-014).
 
 import { useId, useState, type ReactNode } from 'react'
+import { CATEGORIES } from '@/engine'
+import type { TotauxPeriode } from '@/engine'
+import { formaterMontant } from '@/lib/formats'
+import {
+  LIBELLES_CATEGORIES,
+  compter,
+  texteActivitesNonComptees,
+  texteDontAnomalies,
+} from '@/lib/textes'
 import { cn } from '@/lib/utils'
-import { texteActivitesNonComptees, texteDontAnomalies } from '@/lib/textes'
 
 /**
  * Ligne dépliable (spécifications, règles communes) : un toucher affiche le
@@ -75,6 +83,61 @@ export function BandeauAnomalies({
   return (
     <p role="alert" className="rounded-md border border-destructive px-3 py-2 text-sm text-destructive">
       {texte}
+    </p>
+  )
+}
+
+/**
+ * Rémunération d'une période (activités « ok », D-011), dépliable en
+ * catégories (Astreintes / Interventions / Autres activités), puis chaque
+ * catégorie en natures, avec montant et nombre d'activités.
+ */
+export function DetailRemuneration({
+  totaux,
+  natures,
+  libelle = 'Rémunération',
+}: {
+  totaux: TotauxPeriode
+  natures: readonly { id: string; libelle: string }[]
+  libelle?: string
+}) {
+  const libelleNature = (id: string) =>
+    natures.find((nature) => nature.id === id)?.libelle ?? 'Nature inconnue'
+  return (
+    <Depliable
+      libelle={libelle}
+      valeur={<span className="font-semibold">{formaterMontant(totaux.montants.totalCentimes)}</span>}
+    >
+      {CATEGORIES.map((categorie) => {
+        const detail = totaux.montants.parCategorie[categorie]
+        return (
+          <Depliable
+            key={categorie}
+            className="text-sm"
+            libelle={LIBELLES_CATEGORIES[categorie]}
+            valeur={formaterMontant(detail.montantCentimes)}
+          >
+            {detail.parNature.length === 0 && <p className="text-muted-foreground">Aucune activité.</p>}
+            {detail.parNature.map((nature) => (
+              <div key={nature.natureId} className="flex justify-between gap-2">
+                <span>
+                  {libelleNature(nature.natureId)} · {compter(nature.nombre, 'activité')}
+                </span>
+                <span>{formaterMontant(nature.montantCentimes)}</span>
+              </div>
+            ))}
+          </Depliable>
+        )
+      })}
+    </Depliable>
+  )
+}
+
+/** Mention commune sous chaque total de rémunération (spécifications 9). */
+export function MentionIndicative() {
+  return (
+    <p className="text-xs text-muted-foreground">
+      Montants indicatifs, calculés à partir du référentiel.
     </p>
   )
 }

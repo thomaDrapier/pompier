@@ -3,6 +3,7 @@
 // affiché. Fonctions pures.
 
 import {
+  ErreurAstreinteEtIntervention,
   ErreurAstreinteVerrouillee,
   ErreurDejaServi,
   ErreurDoublon,
@@ -23,6 +24,8 @@ export const MESSAGES = {
   /** D-022 : explication de la case « Est une astreinte » grisée. */
   astreinteVerrouillee:
     'Cette nature a déjà été utilisée. Pour changer ce comportement, créez une nouvelle nature et archivez celle-ci.',
+  /** D-032 : explication de l'exclusion des deux cases, et message du refus de la base. */
+  astreinteEtIntervention: 'Une nature ne peut pas être à la fois une astreinte et une intervention.',
   tauxAjoute: 'Taux ajouté',
   tauxCorrige: 'Taux corrigé',
   tauxSupprime: 'Taux supprimé',
@@ -56,6 +59,7 @@ export function messageErreur(erreur: unknown, objet?: ObjetSuppression): string
     return objet === 'nature' ? MESSAGES.natureDejaServi : MESSAGES.gradeDejaServi
   }
   if (erreur instanceof ErreurAstreinteVerrouillee) return MESSAGES.astreinteVerrouillee
+  if (erreur instanceof ErreurAstreinteEtIntervention) return MESSAGES.astreinteEtIntervention
   if (erreur instanceof ErreurDoublon || erreur instanceof ErreurTauxNegatif) {
     return erreur.message
   }

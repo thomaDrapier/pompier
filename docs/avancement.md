@@ -3,9 +3,9 @@
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
 ## État actuel (mis à jour le 17/11/2026)
-- **En cours** : aucune étape. J3 · étape 3.3 terminée.
-- **Dernière étape terminée** : J3 · étape 3.3 — écran Astreintes (vues Semaine et Mois).
-- **Prochaine action** : J3 · étape 3.4 (écran Rémunération et case « Est une intervention »).
+- **En cours** : aucune étape. J3 terminé.
+- **Dernière étape terminée** : J3 · étape 3.4 — écran Rémunération et case « Est une intervention ». J3 terminé.
+- **Prochaine action** : J4 · Mise en production : plan à préparer dans le projet Claude.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
@@ -17,6 +17,11 @@
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 17/11/2026 — J3 · étape 3.4 terminée : écran Rémunération et case « Est une intervention » (J3 terminé)
+- **Fait** : écran Rémunération `/remuneration` (`src/features/remuneration/RemunerationScreen.tsx`) : vues « Semaine », « Mois » (par défaut) et « Historique », précédent / suivant, vue, période et mode dans l'adresse (`?vue=historique&mode=annee&periode=2026`), valeurs invalides ignorées. Semaine : total dépliable par catégorie puis par nature, activités qui commencent dans la semaine (montant ou « — » avec l'étiquette d'anomalie, lien de modification). Mois : total, écart avec le mois précédent (« +42,50 € (+8 %) par rapport à octobre », « — » si le mois précédent vaut 0 €), une ligne par semaine ISO. Historique : « 12 derniers mois » et « Année civile » (total annuel, mois futurs vides), graphique en barres Recharts empilées par catégorie avec légende, tableau mois / total / écart, toucher un mois ouvre la vue Mois. Bandeau d'anomalie, mention des astreintes à cheval (« montant compté sur la période de début »), « Montants indicatifs, calculés à partir du référentiel. ». Entrée « Rémunération » du menu après « Astreintes ». Administration › Natures : case « Est une intervention » (toujours modifiable), exclusion avec « Est une astreinte » et son explication, refus de la base traduit par le même message, mention « Intervention » dans la liste. Composant commun `DetailRemuneration` (accueil et rémunération) ; données du graphique et anomalies de l'historique dans `src/data/restitutions.ts` ; textes de l'écart dans `src/lib/textes.ts`. Dépendance ajoutée : `recharts` 3.10.1 (stack imposée). Tests : `npm run test` (364), `npm run test:rls` (85), `npm run test:e2e` (102, dont 12 nouveaux dans `tests/e2e/remuneration.spec.ts`, parcours a à f sur ordinateur et Pixel 7), `npm run lint` et `npm run build` sans erreur (avertissement de Vite : fichier JavaScript principal de 1,09 Mo, 317 ko compressé). Vérification visuelle du graphique sur téléphone simulé (375 × 812).
+- **Branche** : feat/j3-4-remuneration
+- **Décisions liées** : D-011, D-014, D-032, D-033, D-034, D-036, D-039 (choix techniques de l'étape, consignée par la branche docs/d039-remuneration)
 
 ### 17/11/2026 — J3 · étape 3.3 terminée : écran Astreintes
 - **Fait** : écran Astreintes `/astreintes` (`src/features/astreintes/AstreintesScreen.tsx`) : vues « Semaine » (par défaut) et « Mois », précédent / suivant, vue et période dans l'adresse (`?vue=semaine&periode=2026-W47`, `?vue=mois&periode=2026-11`), valeurs invalides ignorées ; totaux « déclarée · déduite · nette » avec détail par nature d'astreinte s'il y en a plusieurs ; une ligne par jour (dépliable en astreintes : horaires, part du jour, « à cheval », lien de modification) ou par semaine ISO limitée au mois ; bandeau des astreintes en chevauchement ; période vide. Entrée « Astreintes » du menu après « Activités » ; le menu passe à la ligne sur un écran étroit (il débordait du Pixel 7 avec cinq entrées), vérifié par les tests de parcours ; sur l'accueil, l'astreinte nette ouvre la vue Mois du mois en cours. Moteur : `astreintesDeLaPeriode` (part de chaque astreinte dans une période), exposée par `restituerSemaine`. Aides : `texteDureesAstreinte`, `formaterPlageJours` ; aides SQL des tests de parcours réunies dans `tests/e2e/aides.ts`. Tests : `npm run test` (355), `npm run test:rls` (85), `npm run test:e2e` (90, dont 10 nouveaux dans `tests/e2e/astreintes.spec.ts`, parcours a à e sur ordinateur et Pixel 7), `npm run lint` et `npm run build` sans erreur.

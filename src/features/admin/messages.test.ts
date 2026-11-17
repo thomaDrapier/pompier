@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  ErreurAstreinteEtIntervention,
   ErreurAstreinteVerrouillee,
   ErreurDejaServi,
   ErreurDonnees,
@@ -44,6 +45,14 @@ describe('messageDateEffetPassee (D-020)', () => {
   it('cite la date d’effet au format JJ/MM/AAAA', () => {
     expect(messageDateEffetPassee('2026-01-01')).toBe(
       'Cette date d’effet est passée : les montants des activités à partir du 01/01/2026 seront recalculés.',
+    )
+  })
+})
+
+describe('messageErreur : astreinte et intervention (D-032)', () => {
+  it('message de la spécification 6.3', () => {
+    expect(messageErreur(new ErreurAstreinteEtIntervention())).toBe(
+      'Une nature ne peut pas être à la fois une astreinte et une intervention.',
     )
   })
 })

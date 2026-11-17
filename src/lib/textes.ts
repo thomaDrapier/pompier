@@ -1,7 +1,7 @@
 // Textes des restitutions (spécifications des écrans v1.3), avec les accords
 // au singulier et au pluriel (D-016). Fonctions pures.
 
-import { formaterDuree } from '@/lib/formats'
+import { formaterDuree, formaterMontantSigne, formaterNomMois } from '@/lib/formats'
 
 /** « 1 activité », « 3 activités » ; `pluriel` par défaut : singulier + « s ». */
 export function compter(nombre: number, singulier: string, pluriel = `${singulier}s`): string {
@@ -58,4 +58,35 @@ export function texteDureesAstreinte(durees: {
   return [durees.dureeDeclareeMin, durees.dureeDeduiteMin, durees.dureeNetteMin]
     .map(formaterDuree)
     .join(' · ')
+}
+
+/** Pourcentage d'écart : « (+8 %) », « (-5 %) », « (0 %) » ; « (—) » si sans objet (mois précédent à 0 €). */
+function textePourcentage(pourcentage: number | null): string {
+  if (pourcentage === null) return '(—)'
+  return `(${pourcentage > 0 ? '+' : ''}${pourcentage} %)`
+}
+
+/** Écart court, pour un tableau : « +42,50 € (+8 %) ». */
+export function texteEcartCourt(ecart: { centimes: number; pourcentage: number | null }): string {
+  return `${formaterMontantSigne(ecart.centimes)} ${textePourcentage(ecart.pourcentage)}`
+}
+
+/**
+ * Écart avec le mois précédent (spécifications 9.2) :
+ * « +42,50 € (+8 %) par rapport à octobre » ; « (—) » si octobre vaut 0 €.
+ */
+export function texteEcart(
+  ecart: { centimes: number; pourcentage: number | null },
+  moisPrecedent: string,
+): string {
+  return `${texteEcartCourt(ecart)} par rapport à ${formaterNomMois(moisPrecedent)}`
+}
+
+/**
+ * Rémunération (spécifications 9) : « 1 astreinte à cheval : montant compté
+ * sur la période de début. » ; null si aucune.
+ */
+export function texteAstreintesAChevalMontant(nombre: number): string | null {
+  if (nombre === 0) return null
+  return `${compter(nombre, 'astreinte')} à cheval : montant compté sur la période de début.`
 }

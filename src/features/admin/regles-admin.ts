@@ -132,9 +132,11 @@ export interface ChampsNature {
   code: string
   ordre: string
   estAstreinte: boolean
+  /** D-032 : modifiable à tout moment, exclusif de estAstreinte. */
+  estIntervention: boolean
 }
 
-export type ChampNature = Exclude<keyof ChampsNature, 'estAstreinte'>
+export type ChampNature = Exclude<keyof ChampsNature, 'estAstreinte' | 'estIntervention'>
 
 export function lireSaisieNature(
   champs: ChampsNature,
@@ -147,6 +149,7 @@ export function lireSaisieNature(
     code: code.valeur as string,
     ordre: ordre.valeur as number,
     estAstreinte: champs.estAstreinte,
+    estIntervention: champs.estIntervention,
   }))
 }
 

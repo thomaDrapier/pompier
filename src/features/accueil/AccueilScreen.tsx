@@ -2,16 +2,21 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { EtatLecture } from '@/components/communs'
-import { BandeauAnomalies, Depliable, NombreAvecAnomalies } from '@/components/restitutions'
+import {
+  BandeauAnomalies,
+  DetailRemuneration,
+  Depliable,
+  NombreAvecAnomalies,
+} from '@/components/restitutions'
 import { dateParis, gradeALaDate } from '@/data/affichage-referentiel'
 import type { LigneNature } from '@/data/conversions'
-import { CATEGORIES, cleMois } from '@/engine'
+import { cleMois } from '@/engine'
 import type { TotauxPeriode } from '@/engine'
 import { useHistoriqueGrades } from '@/hooks/useHistoriqueGrades'
 import { useReferentiel } from '@/hooks/useReferentiel'
 import { useRestitutionMois } from '@/hooks/useRestitutions'
-import { formaterDuree, formaterMois, formaterMontant } from '@/lib/formats'
-import { LIBELLES_CATEGORIES, compter, texteAstreintesAChevalMois } from '@/lib/textes'
+import { formaterDuree, formaterMois } from '@/lib/formats'
+import { texteAstreintesAChevalMois } from '@/lib/textes'
 import { ADRESSES, adresseAstreintes } from '@/routes/adresses'
 import type { EtatNavigation } from '@/routes/adresses'
 
@@ -121,35 +126,7 @@ function SyntheseMois({
           ))}
         </Depliable>
 
-        <Depliable
-          libelle="Rémunération"
-          valeur={<span className="font-semibold">{formaterMontant(totaux.montants.totalCentimes)}</span>}
-        >
-          {CATEGORIES.map((categorie) => {
-            const detail = totaux.montants.parCategorie[categorie]
-            return (
-              <Depliable
-                key={categorie}
-                className="text-sm"
-                libelle={LIBELLES_CATEGORIES[categorie]}
-                valeur={formaterMontant(detail.montantCentimes)}
-              >
-                {detail.parNature.length === 0 && (
-                  <p className="text-muted-foreground">Aucune activité.</p>
-                )}
-                {detail.parNature.map((nature) => (
-                  <div key={nature.natureId} className="flex justify-between gap-2">
-                    <span>
-                      {libelleNature(natures, nature.natureId)} ·{' '}
-                      {compter(nature.nombre, 'activité')}
-                    </span>
-                    <span>{formaterMontant(nature.montantCentimes)}</span>
-                  </div>
-                ))}
-              </Depliable>
-            )
-          })}
-        </Depliable>
+        <DetailRemuneration totaux={totaux} natures={natures} />
       </section>
 
       {aCheval && <p className="text-sm text-muted-foreground">{aCheval}</p>}

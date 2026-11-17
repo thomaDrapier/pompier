@@ -140,15 +140,27 @@ describe('lireSaisieGrade', () => {
 describe('lireSaisieNature', () => {
   it('renvoie la saisie nettoyée, indicateur d’astreinte compris', () => {
     expect(
-      lireSaisieNature({ libelle: ' Garde ', code: ' gar ', ordre: '3', estAstreinte: true }),
+      lireSaisieNature({
+        libelle: ' Garde ',
+        code: ' gar ',
+        ordre: '3',
+        estAstreinte: true,
+        estIntervention: false,
+      }),
     ).toEqual({
-      saisie: { libelle: 'Garde', code: 'gar', ordre: 3, estAstreinte: true },
+      saisie: { libelle: 'Garde', code: 'gar', ordre: 3, estAstreinte: true, estIntervention: false },
       erreurs: {},
     })
   })
 
   it('signale un code fait d’espaces', () => {
-    const lecture = lireSaisieNature({ libelle: 'Garde', code: '  ', ordre: '3', estAstreinte: false })
+    const lecture = lireSaisieNature({
+      libelle: 'Garde',
+      code: '  ',
+      ordre: '3',
+      estAstreinte: false,
+      estIntervention: false,
+    })
     expect(lecture.saisie).toBeNull()
     expect(lecture.erreurs).toEqual({ code: MESSAGE_CHAMP_OBLIGATOIRE })
   })
