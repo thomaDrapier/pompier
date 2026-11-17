@@ -468,3 +468,18 @@
   - Jeu de démonstration de `demo@example.com` : bloc `do` en PL/pgSQL, dates relatives au jour du reset en heure de Paris (`(date + heure) at time zone 'Europe/Paris'`), période du 1er du mois M-3 jusqu'au moment du reset (aucune activité future). L'historique de grade fixe de ce compte (Sapeur au 01/01/2025, Caporal au 01/07/2026) est remplacé par un historique relatif : aucun grade les 7 premiers jours (« taux manquant », astreintes et interventions comprises), Sapeur, puis Caporal au 15 du mois M-1. Motif hebdomadaire d'activités, plus une astreinte à cheval sur les mois M-2 et M-1 ; chaque astreinte n'est créée que si elle ne chevauche aucune astreinte existante, ce qui rend le seed rejouable à toute date.
 - **Conséquences** : `supabase/migrations/`, `src/engine/`, `src/data/`, `src/hooks/`, `src/types/database.ts`, `supabase/seed.sql`, `tests/`, README. Points à valider dans le projet Claude : (1) le signalement « à cheval » limité aux astreintes comptées dans les durées ; (2) le rattachement des interventions et des anomalies à la période de leur début ; (3) l'arrondi du pourcentage négatif (−0,5 % affiché 0 %) ; (4) le report de la ventilation des durées d'astreinte de la liste des activités à l'étape 3.2.
 - **Statut** : à valider
+
+## D-037 — Choix techniques de l'Accueil et de la liste des activités (étape 3.2)
+- **Date** : 17/11/2026
+- **Origine** : Claude Code
+- **Contexte** : J3, étape 3.2 (écran Accueil, navigation, liste des activités alignée sur D-033, D-034 et D-035). Plan validé dans le projet Claude ; docs/specifications_ecrans.md v1.3 fait foi.
+- **Décision** :
+  - Les totaux du mois de la liste des activités sont lus par le même hook que l'accueil (`useRestitutionMois`) ; les lignes restent lues par `useCalculPeriode`. Un même mois donne ainsi, par construction, les mêmes chiffres sur les deux écrans (astreinte nette ventilée, interventions, montant). Le nombre d'activités par nature reste celui des activités « ok » (D-011), dans l'ordre du référentiel.
+  - Filtre « Interventions » de la liste : valeur `interventions` dans l'adresse (`?nature=interventions`), qui ne peut pas être confondue avec l'identifiant (uuid) d'une nature.
+  - Arrivée sur `/accueil` après connexion (sauf adresse demandée, toujours prioritaire, D-016) et après le choix d'un nouveau mot de passe ; la racine et toute adresse inconnue y renvoient. Le nom de l'application dans l'en-tête mène aussi à l'accueil.
+  - Détails dépliables : composant `Depliable` (`src/components/restitutions.tsx`), un bouton portant `aria-expanded`, le détail affiché dessous ; un second toucher le replie. Les dépliables vides affichent « Aucune intervention. » ou « Aucune activité. ».
+  - Règle « Anomalies » (D-034) : chiffre en rouge suivi de « (dont N en anomalie) » (composant `NombreAvecAnomalies`). Textes et accords singulier / pluriel en fonctions pures testées (`src/lib/textes.ts`), dont le bandeau d'anomalie, désormais partagé avec la liste.
+  - Accueil : « sans grade » = aucun grade en vigueur à la date du jour à Paris ; le mot « Paramètres » du message est le lien vers `/parametres`. « Mois sans activité » : aucune activité ne commence dans le mois et aucune heure d'astreinte n'y tombe. Le bouton « Nouvelle activité » transmet l'accueil comme adresse de retour (« Annuler » y ramène).
+  - Composants : shadcn/ui existants et HTML natif, sans nouvelle dépendance.
+- **Conséquences** : `src/features/accueil/`, `src/features/activites/ListeActivitesScreen.tsx`, `src/components/`, `src/lib/textes.ts`, `src/routes/`, `src/App.tsx`, `tests/e2e/`. Aucun impact métier.
+- **Statut** : validée
