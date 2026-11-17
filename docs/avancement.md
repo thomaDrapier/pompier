@@ -4,8 +4,8 @@
 
 ## État actuel (mis à jour le 17/11/2026)
 - **En cours** : J2 · étape 2.0 (spécifications des écrans, projet Claude).
-- **Dernière étape terminée** : D-026, unicité du libellé des natures.
-- **Prochaine action** : suite de docs/specifications_ecrans.md v1.2 dans le projet Claude. Validés, à consigner avec la v1.2 : navigation (menu Activités / Paramètres / Administration ; adresses /parametres, /admin/grades, /admin/natures, /admin/taux ; message « Accès réservé à l'administrateur ») et écran Administration › Grades. Proposé, à valider : Administration › Natures. Restent : Grille de taux, Paramètres.
+- **Dernière étape terminée** : D-027, taux horaire nul autorisé.
+- **Prochaine action** : fin de docs/specifications_ecrans.md v1.2 dans le projet Claude. Validés, à consigner avec la v1.2 : navigation (menu Activités / Paramètres / Administration ; adresses /parametres, /admin/grades, /admin/natures, /admin/taux ; « Accès réservé à l'administrateur »), Administration › Grades, Administration › Natures, Administration › Grille de taux. Reste : Paramètres.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
@@ -18,6 +18,11 @@
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 17/11/2026 — Décision : taux horaire nul
+- **Fait** : D-027 consignée ; cahier des charges v1.17 (sections 3.5, 7, 13).
+- **Branche** : docs/d027-taux-nul
+- **Décisions liées** : D-027
 
 ### 17/11/2026 — Décision : unicité du libellé des natures
 - **Fait** : D-026 consignée ; cahier des charges v1.16 (sections 3.3, 7, 13).

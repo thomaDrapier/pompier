@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Version** | 1.16 |
+| **Version** | 1.17 |
 | **Date** | 17/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
@@ -140,6 +140,8 @@ gantt
 1. déterminer le grade G de l'utilisateur à la date D (historique des grades) ;
 2. chercher dans le référentiel unique le taux pour (G, N) en vigueur à la date D ;
 3. si aucun taux n'existe : l'activité est enregistrée mais signalée « taux manquant » et exclue des totaux, avec un bandeau d'alerte visible.
+
+**Taux nul (D-027) :** un taux de 0,00 €/h est un taux valide : l'activité a le statut « ok », un montant de 0,00 € et ses durées sont comptées dans les totaux. Un taux négatif est refusé.
 
 **Statuts d'une activité (D-011) :** chaque activité a un seul statut : « ok », « taux manquant » ou « chevauchement d'astreintes » (3.4). Si une astreinte est à la fois en chevauchement et sans taux, « chevauchement d'astreintes » l'emporte. Pour une activité en anomalie, les durées et, s'il existe, le taux restent affichés, mais le montant n'est pas calculé. La déduction d'une activité sur une astreinte ne dépend pas de son taux : une activité en « taux manquant » est quand même déduite. Les totaux, durées comme montants, ne comptent que les activités au statut « ok » ; les durées d'astreinte y sont totalisées à part, avec un détail par nature.
 
@@ -385,7 +387,7 @@ erDiagram
 | `user_grade_history` | Grade d'un utilisateur au fil du temps | id, user_id, grade_id, date_effet |
 | `activities` | Les activités saisies | id, user_id, activity_type_id, debut (timestamptz), fin (timestamptz), note (facultatif), cree_le, modifie_le |
 
-**Contraintes :** fin > début ; unicité des taux sur (grade, nature, date d'effet) ; unicité du code des natures, sans distinction de casse ; unicité du libellé des grades, sans distinction de casse (D-024) ; unicité du libellé des natures, sans distinction de casse (D-026) ; index sur (user_id, début).
+**Contraintes :** fin > début ; unicité des taux sur (grade, nature, date d'effet) ; unicité du code des natures, sans distinction de casse ; unicité du libellé des grades, sans distinction de casse (D-024) ; unicité du libellé des natures, sans distinction de casse (D-026) ; taux horaire positif ou nul (D-027) ; index sur (user_id, début).
 
 **Sécurité (Row Level Security) :** un utilisateur ne lit et n'écrit que ses lignes dans `activities` et `user_grade_history` ; le référentiel est en lecture seule pour tous ; son écriture est réservée à l'administrateur.
 
@@ -518,3 +520,4 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.14 | 17/11/2026 | Intégration de la décision D-024 : libellé des grades obligatoire et unique sans distinction de casse, actifs comme archivés, contrôlé en base. Sections 3.6 et 7 mises à jour. |
 | 1.15 | 17/11/2026 | Intégration de la décision D-025 : fusion dans `main` par Claude Code sans accord préalable du porteur ; pour le code, après réussite de lint, build et tests. Sections 12.2 et 12.3 mises à jour. |
 | 1.16 | 17/11/2026 | Intégration de la décision D-026 : libellé des natures obligatoire et unique sans distinction de casse, actives comme archivées, contrôlé en base. Sections 3.3 et 7 mises à jour. |
+| 1.17 | 17/11/2026 | Intégration de la décision D-027 : taux horaire positif ou nul ; un taux nul donne le statut « ok » et un montant nul. Sections 3.5 et 7 mises à jour. |
