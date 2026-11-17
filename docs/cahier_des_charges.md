@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Version** | 1.20 |
+| **Version** | 1.21 |
 | **Date** | 17/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
@@ -144,7 +144,7 @@ gantt
 
 **Taux nul (D-027) :** un taux de 0,00 €/h est un taux valide : l'activité a le statut « ok », un montant de 0,00 € et ses durées sont comptées dans les totaux. Un taux négatif est refusé.
 
-**Statuts d'une activité (D-011) :** chaque activité a un seul statut : « ok », « taux manquant » ou « chevauchement d'astreintes » (3.4). Si une astreinte est à la fois en chevauchement et sans taux, « chevauchement d'astreintes » l'emporte. Pour une activité en anomalie, les durées et, s'il existe, le taux restent affichés, mais le montant n'est pas calculé. La déduction d'une activité sur une astreinte ne dépend pas de son taux : une activité en « taux manquant » est quand même déduite. Les totaux, durées comme montants, ne comptent que les activités au statut « ok » ; les durées d'astreinte y sont totalisées à part, avec un détail par nature.
+**Statuts d'une activité (D-011) :** chaque activité a un seul statut : « ok », « taux manquant » ou « chevauchement d'astreintes » (3.4). Si une astreinte est à la fois en chevauchement et sans taux, « chevauchement d'astreintes » l'emporte. Pour une activité en anomalie, les durées et, s'il existe, le taux restent affichés, mais le montant n'est pas calculé. La déduction d'une activité sur une astreinte ne dépend pas de son taux : une activité en « taux manquant » est quand même déduite. Les totaux, durées comme montants, ne comptent que les activités au statut « ok » ; les durées d'astreinte y sont totalisées à part, avec un détail par nature. Exception (D-034) : le nombre d'interventions compte toutes les interventions, quel que soit leur statut ; celles en anomalie sont identifiables visuellement.
 
 Les taux sont fixés pour tous les agents : aucun utilisateur ne peut les modifier ni créer de taux personnalisé.
 
@@ -198,7 +198,7 @@ L'utilisateur doit pouvoir consulter :
 4. **La rémunération par semaine** : semaine ISO (lundi à dimanche), avec détail par nature.
 5. **L'historique de rémunération par mois** : tableau et graphique, avec total par nature et comparaison au mois précédent.
 
-**Écran d'accueil :** synthèse du mois en cours (heures d'astreinte nettes, nombre d'interventions, rémunération cumulée) et accès direct à la saisie.
+**Écran d'accueil :** synthèse du mois en cours (heures d'astreinte nettes, nombre d'interventions (anomalies comprises et signalées, D-034), rémunération cumulée) et accès direct à la saisie.
 
 **Règle de ventilation temporelle (D-033) :** les durées déclarée, déduite et nette d'une astreinte sont ventilées sur chaque période qu'elle traverse, par découpage exact aux limites de période en heure de Paris (minuit ; lundi 0 h ; le 1er à 0 h). Le montant d'une activité, et toute autre activité, sont rattachés en entier à la période de la date de début (règle provisoire, à revoir avant le J5). Les écrans signalent les astreintes dont les heures sont réparties sur plusieurs périodes.
 
@@ -526,3 +526,4 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.18 | 17/11/2026 | Intégration de la décision D-028 : une seule ligne par date d'effet dans l'historique de grades d'un utilisateur, contrôlée en base. Sections 3.7 et 7 mises à jour. |
 | 1.19 | 17/11/2026 | Intégration de la décision D-032 : indicateur « est une intervention » sur les natures, une nature par type d'intervention (VSAV, FPT, VRID), exclusif de « est une astreinte », sans effet sur le calcul. Sections 3.3, 7, 8 et 11 mises à jour. |
 | 1.20 | 17/11/2026 | Intégration de la décision D-033 : durées d'astreinte ventilées par découpage exact aux limites de période ; montants rattachés à la période de début (provisoire, à revoir avant le J5). Sections 3.8 et 11 mises à jour. |
+| 1.21 | 17/11/2026 | Intégration de la décision D-034 : le nombre d'interventions compte aussi les interventions en anomalie, signalées visuellement ; durées et montants restent exclus des totaux. Sections 3.5 et 3.8 mises à jour. |

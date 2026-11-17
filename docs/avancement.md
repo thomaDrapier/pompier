@@ -4,7 +4,7 @@
 
 ## État actuel (mis à jour le 17/11/2026)
 - **En cours** : J3 · étape 3.0 (décisions et spécifications, projet Claude).
-- **Dernière étape terminée** : D-033, ventilation des activités à cheval sur plusieurs périodes.
+- **Dernière étape terminée** : D-034, comptage des interventions en anomalie.
 - **Prochaine action** : docs/specifications_ecrans.md v1.3 (Accueil, Astreintes, Rémunération, mise en avant des interventions dans la liste, case « Est une intervention » dans l'administration des natures), rédigée dans le projet Claude.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
@@ -18,6 +18,11 @@
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 17/11/2026 — Décision : comptage des interventions en anomalie
+- **Fait** : D-034 consignée ; cahier des charges v1.21 (sections 3.5, 3.8, 13).
+- **Branche** : docs/d034-comptage-interventions
+- **Décisions liées** : D-034
 
 ### 17/11/2026 — Décision : ventilation des activités à cheval sur plusieurs périodes
 - **Fait** : D-033 consignée ; cahier des charges v1.20 (sections 3.8, 11, 13).

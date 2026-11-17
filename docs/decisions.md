@@ -426,3 +426,14 @@
   - À revoir en fin de projet, au plus tard avant l'ouverture aux collègues (J5), si possible avec une règle du SDIS : rattachement des montants à cheval sur deux périodes, et taux appliqué à une activité qui traverse une date de changement de taux ou de grade.
 - **Conséquences** : module de regroupement par période (étape 3.1, module pur et tests, dont le changement d'heure) ; spécifications des écrans v1.3 ; précise la règle provisoire de D-015 pour les durées d'astreinte ; cahier des charges v1.20 (sections 3.8, 11 et 13) ; docs/avancement.md (point en attente).
 - **Statut** : intégrée au cahier des charges v1.20
+
+## D-034 — Comptage des interventions en anomalie
+- **Date** : 17/11/2026
+- **Origine** : projet Claude
+- **Contexte** : J3, étape 3.0, spécification de l'accueil. D-011 : les totaux, durées comme montants, ne comptent que les activités au statut « ok ». Une intervention en anomalie (par exemple « taux manquant ») a pourtant bien eu lieu : l'exclure fausserait le nombre d'interventions.
+- **Décision** :
+  - Le nombre d'interventions (natures « est une intervention », D-032) compte toutes les interventions de la période, quel que soit leur statut.
+  - Les interventions en anomalie sont identifiables visuellement partout où ce nombre est affiché (accueil, détail par nature, restitutions) : chiffre mis en évidence comme une anomalie (par exemple en rouge) et nombre d'anomalies indiqué (« dont 1 en anomalie »).
+  - Exception limitée au comptage : les durées et les montants des interventions en anomalie restent exclus des totaux (D-011).
+- **Conséquences** : module de regroupement (étape 3.1) ; spécifications des écrans v1.3 ; cahier des charges v1.21 (sections 3.5, 3.8 et 13).
+- **Statut** : intégrée au cahier des charges v1.21
