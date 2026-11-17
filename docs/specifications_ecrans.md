@@ -4,9 +4,9 @@
 
 | | |
 |---|---|
-| **Version** | 1.2 |
+| **Version** | 1.3 |
 | **Date** | 17/11/2026 |
-| **Écrans spécifiés** | Liste des activités, Saisie / modification (J1) ; Paramètres, Administration › Grades, Natures, Grille de taux (J2) |
+| **Écrans spécifiés** | Liste des activités, Saisie / modification (J1) ; Paramètres, Administration › Grades, Natures, Grille de taux (J2) ; Accueil, Astreintes, Rémunération (J3) |
 
 ## 1. Règles communes
 
@@ -14,14 +14,20 @@
 - **Formats :** dates en français (« ven. 26/06/2026 »), heures sur 24 h, fuseau Europe/Paris ; durées « 3 h 15 » ; montants « 15,50 € ».
 - **Hors ligne :** message clair (bandeau existant) ; aucun enregistrement possible ; le formulaire en cours conserve sa saisie.
 - **Confirmations :** boîte de dialogue de l'application (composant shadcn/ui), jamais une boîte de dialogue du navigateur.
-- **En-tête et menu :** bouton de déconnexion dans l'en-tête. Un menu de navigation, toujours accessible et utilisable à une main, propose « Activités », « Paramètres » et, pour l'administrateur seulement, « Administration ». L'e-mail de l'utilisateur n'est jamais affiché dans l'en-tête.
-- **Navigation :** un utilisateur non connecté qui ouvre une adresse protégée est renvoyé vers la connexion, puis vers l'adresse demandée après connexion. Après connexion, l'écran d'arrivée est la liste des activités. Le bouton « retour » du téléphone fonctionne entre les écrans.
+- **En-tête et menu :** bouton de déconnexion dans l'en-tête. Un menu de navigation, toujours accessible et utilisable à une main, propose, dans cet ordre, « Accueil », « Activités », « Astreintes », « Rémunération », « Paramètres » et, pour l'administrateur seulement, « Administration ». L'e-mail de l'utilisateur n'est jamais affiché dans l'en-tête.
+- **Navigation :** un utilisateur non connecté qui ouvre une adresse protégée est renvoyé vers la connexion, puis vers l'adresse demandée après connexion. Après connexion, l'écran d'arrivée est l'Accueil (`/accueil`) ; la racine du site et toute adresse inconnue renvoient vers `/accueil`. Le bouton « retour » du téléphone fonctionne entre les écrans.
 - **Administrateur :** profil dont le rôle est `admin` et qui est actif (même règle que la fonction `is_admin()` de la base).
 - **Accès réservé :** un utilisateur qui n'est pas administrateur et ouvre une adresse `/admin/…` voit le message « Accès réservé à l'administrateur » et un bouton « Retour aux activités ». Masquer le menu n'est qu'un confort : la protection est assurée par la base (RLS).
 - **Messages de réussite :** affichés en haut de l'écran concerné (« Grade ajouté », etc.).
 - **Erreur réseau ou serveur :** message ; le formulaire en cours conserve sa saisie.
 - **Dates d'effet :** une date est « passée » si elle est antérieure ou égale à la date du jour à Paris ; « future » sinon.
 - **Taux :** affichés « 12,00 €/h » ; saisis en euros, 2 décimales au plus, positifs ou nuls (D-027).
+- **Détails dépliables :** un toucher sur un chiffre ou une ligne marqué comme dépliable affiche son détail sous lui ; un second toucher le replie.
+- **Anomalies :** un chiffre qui inclut des anomalies est mis en évidence comme une anomalie (par exemple en rouge) et précisé par « dont N en anomalie » (D-034).
+- **Périodes :** semaine ISO (lundi à dimanche) et mois calendaire, en heure de Paris. La vue et la période choisies sont conservées dans l'adresse ; une valeur invalide est ignorée (période en cours).
+- **Ventilation (D-033) :** les durées d'astreinte sont réparties sur chaque période traversée ; les montants, et toute autre activité, sont rattachés à la période de début. Une astreinte à cheval sur deux périodes porte la mention « à cheval ».
+- **Totaux :** montants : activités au statut « ok » (D-011) ; durées d'astreinte : statuts « ok » et « taux manquant » (D-035) ; nombre d'interventions : toutes (D-034).
+- **Catégories de rémunération :** « Astreintes » (natures « est une astreinte »), « Interventions » (natures « est une intervention »), « Autres activités » (toutes les autres natures).
 
 ## 2. Liste des activités — `/activites`
 
@@ -29,9 +35,9 @@
 
 **Contenu :**
 - **Période :** mois en cours par défaut ; boutons « mois précédent » et « mois suivant ». Une activité appartient au mois où elle commence (règle provisoire, D-015).
-- **Filtre par nature :** « Toutes » par défaut, puis chaque nature.
+- **Filtre par nature :** « Toutes » par défaut, puis « Interventions » (toutes les natures « est une intervention »), puis chaque nature.
 - Le mois et le filtre affichés sont conservés par le bouton retour et au retour d'un autre écran.
-- **Totaux du mois** (activités au statut « ok » uniquement, D-011) : montant total ; astreinte nette totale ; nombre d'activités par nature.
+- **Totaux du mois** (règles « Totaux » et « Ventilation » de la section 1) : montant total ; astreinte nette totale, qui compte les astreintes en « taux manquant » (D-035) ; nombre d'interventions (règle « Anomalies » de la section 1) ; nombre d'activités par nature.
 - **Bandeau d'anomalie**, s'il y en a au moins une : « N activité(s) non comptée(s) : taux manquant (x), chevauchement d'astreintes (y) ».
 - Les totaux et le bandeau d'anomalie portent toujours sur le mois entier ; le filtre par nature ne s'applique qu'aux lignes.
 - Les messages « Activité enregistrée » et « Activité supprimée » s'affichent en haut de la liste.
@@ -41,6 +47,7 @@
   - durée retenue ; pour une astreinte, détail « déclarée · déduite · nette » ;
   - montant, ou « — » si l'activité est en anomalie ;
   - étiquette « Taux manquant » ou « Chevauchement d'astreintes » le cas échéant.
+- Les lignes d'intervention portent l'étiquette « Intervention ».
 
 **Actions :**
 - Toucher une ligne : ouvre `/activites/:id` (modification).
@@ -134,9 +141,10 @@ Connexion, mot de passe oublié, nouveau mot de passe : fonctionnement inchangé
 - **Messages :** « Grade ajouté », « Grade modifié », « Grade supprimé », « Un grade porte déjà ce libellé. »
 
 **6.3 Natures — `/admin/natures`**
-- **Liste :** natures actives triées par ordre d'affichage, puis natures archivées ; libellé, code, mention « Astreinte » le cas échéant.
-- **Ajouter :** libellé (obligatoire, unique sans distinction de casse, D-026), code (obligatoire, unique sans distinction de casse, D-023), ordre (nombre entier, obligatoire), case « Est une astreinte ». La nature est active dès sa création.
-- **Modifier :** libellé, code et ordre à tout moment (D-023). La case « Est une astreinte » n'est modifiable que si aucune activité n'utilise la nature ; sinon elle est grisée, avec l'explication : « Cette nature a déjà été utilisée. Pour changer ce comportement, créez une nouvelle nature et archivez celle-ci. » (D-022)
+- **Liste :** natures actives triées par ordre d'affichage, puis natures archivées ; libellé, code, mention « Astreinte » ou « Intervention » le cas échéant.
+- **Ajouter :** libellé (obligatoire, unique sans distinction de casse, D-026), code (obligatoire, unique sans distinction de casse, D-023), ordre (nombre entier, obligatoire), cases « Est une astreinte » et « Est une intervention ». La nature est active dès sa création.
+- **Modifier :** libellé, code et ordre à tout moment (D-023). La case « Est une astreinte » n'est modifiable que si aucune activité n'utilise la nature ; sinon elle est grisée, avec l'explication : « Cette nature a déjà été utilisée. Pour changer ce comportement, créez une nouvelle nature et archivez celle-ci. » (D-022) La case « Est une intervention » est modifiable à tout moment, y compris pour une nature déjà utilisée (D-032).
+- **Astreinte ou intervention :** les cases « Est une astreinte » et « Est une intervention » s'excluent : cocher l'une grise l'autre, avec l'explication « Une nature ne peut pas être à la fois une astreinte et une intervention. » ; même message si la base refuse (D-032).
 - **Archiver / Réactiver :** une nature archivée n'est plus proposée à la saisie d'une nouvelle activité.
 - **Supprimer :** confirmation « Supprimer cette nature ? » ; refus de la base : « Cette nature a déjà servi : archivez-la plutôt. »
 - **Messages :** « Nature ajoutée », « Nature modifiée », « Nature supprimée », « Une nature porte déjà ce libellé. », « Une nature porte déjà ce code. »
@@ -153,10 +161,65 @@ Connexion, mot de passe oublié, nouveau mot de passe : fonctionnement inchangé
 - Les messages de confirmation sont génériques : l'application ne dénombre pas les activités concernées (RLS, D-019).
 - **Messages :** « Taux ajouté », « Taux corrigé », « Taux supprimé », « Un taux existe déjà pour ce grade, cette nature et cette date d'effet. »
 
-## 7. Historique
+## 7. Accueil — `/accueil`
+
+**Objectif :** voir l'essentiel du mois en cours et saisir rapidement.
+
+**Contenu** (mois en cours, heure de Paris, sans navigation entre les mois) :
+- **Astreinte nette du mois** (part des heures qui se déroule dans le mois, D-033). Toucher : ouvre l'écran Astreintes, vue Mois, sur le mois en cours.
+- **Interventions :** nombre total (règle « Anomalies »). Dépliable : une ligne par nature d'intervention avec son nombre, anomalies signalées.
+- **Rémunération totale** (activités « ok »). Dépliable : trois lignes « Astreintes », « Interventions », « Autres activités », avec leur montant ; chacune dépliable par nature (montant et nombre d'activités).
+- Bandeau d'anomalie, s'il y en a : « N activité(s) non comptée(s) : taux manquant (x), chevauchement d'astreintes (y) ».
+- Si une astreinte du mois déborde sur un mois voisin : « N astreinte(s) à cheval sur deux mois : heures réparties, montant compté sur le mois de début. »
+- Sans grade en vigueur : « Renseignez votre grade dans Paramètres pour calculer vos montants. », avec un lien vers `/parametres`.
+- Mois sans activité : chiffres à zéro et « Aucune activité ce mois-ci. »
+
+**Actions :** bouton « Nouvelle activité », toujours visible et accessible au pouce ; lien « Voir les activités du mois » vers `/activites`.
+
+## 8. Astreintes — `/astreintes`
+
+**Objectif :** consulter les durées d'astreinte déclarée, déduite et nette.
+
+**Vues :** « Semaine » (par défaut) et « Mois », avec navigation « précédent / suivant ».
+- **Semaine :** une ligne par jour, du lundi au dimanche.
+- **Mois :** une ligne par semaine ISO, limitée à la part de la semaine comprise dans le mois.
+
+**Contenu :**
+- Totaux de la période : déclarée · déduite · nette (« 14 h · 1 h 30 · 12 h 30 »), avec un détail par nature d'astreinte s'il y en a plusieurs.
+- Chaque ligne affiche ses trois durées. En vue Semaine, toucher un jour déplie ses astreintes (horaires, durées de la part du jour, mention « à cheval » le cas échéant) avec un lien vers leur modification (`/activites/:id`).
+- Totaux : astreintes « ok » et « taux manquant » (D-035) ; les astreintes en « chevauchement d'astreintes » sont exclues, avec le bandeau d'anomalie.
+- Période sans astreinte : durées à zéro et « Aucune astreinte sur cette période. »
+
+## 9. Rémunération — `/remuneration`
+
+**Objectif :** consulter la rémunération par activité, par semaine, par mois et son historique.
+
+**Vues :** « Semaine », « Mois » (par défaut) et « Historique », avec navigation « précédent / suivant ».
+
+**9.1 Semaine (ISO)**
+- Total de la semaine ; détail dépliable par catégorie puis par nature (comme l'accueil).
+- Liste des activités qui commencent dans la semaine : date, horaires, nature, montant, ou « — » avec l'étiquette d'anomalie. Toucher : ouvre `/activites/:id`.
+
+**9.2 Mois**
+- Total du mois et comparaison au mois précédent : écart en euros et en pourcentage (« +42,50 € (+8 %) par rapport à octobre ») ; pourcentage remplacé par « — » si le mois précédent vaut 0 €.
+- Détail dépliable par catégorie puis par nature.
+- Une ligne par semaine ISO (part comprise dans le mois), avec son montant.
+
+**9.3 Historique**
+- Deux modes : « 12 derniers mois » (par défaut, du mois en cours en remontant ; « précédent » recule de 12 mois) et « Année civile » (janvier à décembre, navigation d'une année à l'autre ; mois futurs vides ; total annuel affiché).
+- Graphique en barres (Recharts) : un mois par barre, découpée en « Astreintes », « Interventions », « Autres activités », avec une légende.
+- Tableau : mois, total, écart avec le mois précédent. Toucher un mois : ouvre la vue Mois correspondante.
+
+**Règles de l'écran :**
+- Montants des activités « ok » uniquement (D-011), bandeau d'anomalie.
+- Montants rattachés à la période de début (D-033) ; une astreinte à cheval porte la mention « montant compté sur la période de début ».
+- Sous chaque total : « Montants indicatifs, calculés à partir du référentiel. »
+
+## 10. Historique
 
 | Version | Date | Modifications |
 |---|---|---|
 | 1.0 | 14/11/2026 | Première version : règles communes, liste des activités, saisie / modification (J1). |
 | 1.1 | 14/11/2026 | Précisions issues du plan de l'étape 1.2b : en-tête, conservation du mois et du filtre, totaux non filtrés, messages, champs date et heure séparés, valeurs par défaut (nature, arrondi, fin au lendemain), chevauchements multiples, astreinte en anomalie, activité introuvable. |
 | 1.2 | 17/11/2026 | Écrans du J2 : menu de navigation et accès réservé, Paramètres, Administration (Grades, Natures, Grille de taux) ; natures archivées dans la saisie. Décisions D-017 à D-028. |
+| 1.3 | 17/11/2026 | Écrans du J3 : Accueil (écran d'arrivée), Astreintes, Rémunération (semaine, mois, historique 12 mois glissants et année civile) ; menu complété ; règles communes (détails dépliables, anomalies, périodes, ventilation, totaux, catégories) ; interventions dans la liste ; case « Est une intervention ». Décisions D-032 à D-035. |
