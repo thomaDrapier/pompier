@@ -4,6 +4,7 @@ import { AdministrationLayout } from '@/features/admin/AdministrationLayout'
 import { GradesScreen } from '@/features/admin/GradesScreen'
 import { NaturesScreen } from '@/features/admin/NaturesScreen'
 import { TauxScreen } from '@/features/admin/TauxScreen'
+import { AccueilScreen } from '@/features/accueil/AccueilScreen'
 import { FormulaireActiviteScreen } from '@/features/activites/FormulaireActiviteScreen'
 import { ListeActivitesScreen } from '@/features/activites/ListeActivitesScreen'
 import { AuthProvider } from '@/features/auth/AuthProvider'
@@ -33,6 +34,7 @@ function App() {
 
             {/* Écrans réservés aux utilisateurs connectés */}
             <Route element={<RouteProtegee />}>
+              <Route path={ADRESSES.accueil} element={<AccueilScreen />} />
               <Route path={ADRESSES.activites} element={<ListeActivitesScreen />} />
               <Route path={ADRESSES.nouvelleActivite} element={<FormulaireActiviteScreen />} />
               <Route path="/activites/:id" element={<FormulaireActiviteScreen />} />
@@ -47,8 +49,8 @@ function App() {
               </Route>
             </Route>
 
-            {/* Racine du site et adresses inconnues : la liste des activités. */}
-            <Route path="*" element={<Navigate to={ADRESSES.activites} replace />} />
+            {/* Racine du site et adresses inconnues : l'accueil (spécifications 1). */}
+            <Route path="*" element={<Navigate to={ADRESSES.accueil} replace />} />
           </Route>
         </Routes>
       </BrowserRouter>

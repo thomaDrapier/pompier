@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useLocation } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { calculerPeriode } from '@/data/calcul'
+import { calculerDetaille, restituerMois } from '@/data/restitutions'
 import type { LigneActivite, LigneNature } from '@/data/conversions'
 import { ListeActivitesScreen } from '@/features/activites/ListeActivitesScreen'
 import type { EtatCalculPeriode } from '@/hooks/useCalculPeriode'
@@ -13,9 +14,11 @@ import { bornesDuMois } from '@/lib/temps'
 const hooks = vi.hoisted(() => ({
   useCalculPeriode: vi.fn(),
   useReferentiel: vi.fn(),
+  useRestitutionMois: vi.fn(),
 }))
 vi.mock('@/hooks/useCalculPeriode', () => ({ useCalculPeriode: hooks.useCalculPeriode }))
 vi.mock('@/hooks/useReferentiel', () => ({ useReferentiel: hooks.useReferentiel }))
+vi.mock('@/hooks/useRestitutions', () => ({ useRestitutionMois: hooks.useRestitutionMois }))
 
 // Référentiel de test. Tous les taux sont fictifs ; la garde n'a pas de taux.
 const natures: LigneNature[] = [
@@ -42,7 +45,14 @@ function ligne(id: string, natureId: string, debut: string, fin: string): LigneA
   }
 }
 
+// Lignes du mois (useCalculPeriode) et totaux du mois (useRestitutionMois),
+// calculés à partir des mêmes activités par le vrai moteur.
 function calculJuin(lignes: LigneActivite[]): EtatCalculPeriode {
+  hooks.useRestitutionMois.mockReturnValue({
+    donnees: restituerMois(calculerDetaille(lignes, natures, historique, taux), '2026-06'),
+    enChargement: false,
+    erreur: null,
+  })
   return {
     calcul: calculerPeriode(lignes, natures, historique, taux, bornesDuMois('2026-06')),
     enChargement: false,

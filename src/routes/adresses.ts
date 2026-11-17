@@ -4,6 +4,8 @@ export const ADRESSES = {
   connexion: '/connexion',
   motDePasseOublie: '/mot-de-passe-oublie',
   nouveauMotDePasse: '/nouveau-mot-de-passe',
+  /** Écran d'arrivée après connexion (spécifications 1 et 7). */
+  accueil: '/accueil',
   activites: '/activites',
   nouvelleActivite: '/activites/nouvelle',
   activite: (id: string) => `/activites/${id}`,

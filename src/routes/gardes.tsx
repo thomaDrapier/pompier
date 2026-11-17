@@ -59,10 +59,10 @@ export function RouteProtegee() {
   )
 }
 
-/** Adresse où aller après la connexion : celle demandée au départ, sinon la liste. */
+/** Adresse où aller après la connexion : celle demandée au départ (D-016), sinon l'accueil. */
 function useDestinationApresConnexion(): string {
   const location = useLocation()
-  return lireEtatNavigation(location.state).depuis ?? ADRESSES.activites
+  return lireEtatNavigation(location.state).depuis ?? ADRESSES.accueil
 }
 
 /** Connexion : un utilisateur déjà connecté est envoyé vers sa destination. */
@@ -107,7 +107,7 @@ export function PageNouveauMotDePasse() {
   const { session, recuperationMotDePasse } = useAuth()
 
   if (!session) return <Navigate to={ADRESSES.connexion} replace />
-  if (!recuperationMotDePasse) return <Navigate to={ADRESSES.activites} replace />
+  if (!recuperationMotDePasse) return <Navigate to={ADRESSES.accueil} replace />
 
   return <NouveauMotDePasseScreen />
 }

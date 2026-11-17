@@ -3,9 +3,9 @@
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
 ## État actuel (mis à jour le 17/11/2026)
-- **En cours** : aucune étape. J3 · étape 3.1 terminée.
-- **Dernière étape terminée** : J3 · étape 3.1 — données et regroupements des restitutions (migration « est une intervention », module de regroupement par période, couche de données, jeu de démonstration).
-- **Prochaine action** : J3 · étape 3.2 (Accueil et liste des activités), consigne fournie par le projet Claude.
+- **En cours** : aucune étape. J3 · étape 3.2 terminée.
+- **Dernière étape terminée** : J3 · étape 3.2 — Accueil (écran d'arrivée) et liste des activités alignée sur les règles du J3.
+- **Prochaine action** : J3 · étape 3.3 (écran Astreintes).
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
@@ -17,6 +17,11 @@
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 17/11/2026 — J3 · étape 3.2 terminée : Accueil et liste des activités
+- **Fait** : écran Accueil `/accueil` (`src/features/accueil/AccueilScreen.tsx`) : mois en cours via `useRestitutionMois`, astreinte nette ventilée (D-033, D-035), interventions avec la règle « Anomalies » et détail dépliable par nature (D-034), rémunération dépliable par catégorie puis par nature, bandeau d'anomalie, mention des astreintes à cheval sur deux mois, message sans grade avec lien vers Paramètres, mois vide, bouton « Nouvelle activité » et lien « Voir les activités du mois ». Navigation : « Accueil » en tête du menu, `/accueil` écran d'arrivée après connexion et après le choix d'un nouveau mot de passe, racine et adresses inconnues renvoyées vers `/accueil`, adresse demandée toujours prioritaire. Liste des activités : totaux du mois lus par le même hook que l'accueil (mêmes chiffres), nombre d'interventions, étiquette « Intervention », filtre « Interventions » (`?nature=interventions`). Éléments communs : `src/components/restitutions.tsx` (détail dépliable, nombre avec anomalies, bandeau), textes et accords dans `src/lib/textes.ts`. Tests : `npm run test` (351), `npm run test:rls` (85), `npm run test:e2e` (80, dont 12 nouveaux dans `tests/e2e/accueil.spec.ts`, parcours a à f sur ordinateur et Pixel 7 ; tests d'authentification adaptés à l'arrivée sur l'accueil), `npm run lint` et `npm run build` sans erreur.
+- **Branche** : feat/j3-2-accueil
+- **Décisions liées** : D-016, D-032, D-033, D-034, D-035, D-036, D-037 (choix techniques de l'étape, consignée par la branche docs/d037-accueil)
 
 ### 17/11/2026 — J3 · étape 3.1 terminée : données et regroupements des restitutions
 - **Fait** : migration `supabase/migrations/20261117140000_interventions.sql` (colonne `activity_types.est_intervention`, contrainte `activity_types_astreinte_ou_intervention`), erreur `ErreurAstreinteEtIntervention` (`src/data/erreurs.ts`), saisie d'une nature avec `estIntervention` facultatif (`src/data/requetes-referentiel.ts`), types régénérés. Moteur : `calculerActivitesDetaillees` expose les plages déclarée, déduites et nettes (résultats identiques à `calculerActivites`) ; `totaliser` aligné sur D-035 (durées d'astreinte « ok » et « taux manquant ») et complété du nombre d'interventions (D-034) ; la liste des activités en hérite. Modules purs `src/engine/periodes.ts` (jour, semaine ISO, mois de Paris, changement d'heure compris ; jours d'une semaine, semaines d'un mois, mois glissants, année civile) et `src/engine/regroupement.ts` (ventilation des durées d'astreinte, rattachement des montants et des autres activités à la période de début, catégories, totaux par catégorie et par nature, interventions et anomalies, astreintes « à cheval », écart et pourcentage, historique mensuel). Couche de données `src/data/restitutions.ts` (une lecture élargie par plage, calcul unique, regroupement) et hooks `src/hooks/useRestitutions.ts` (semaine, mois avec le mois précédent, historique glissant ou année civile), invalidés par `invaliderReferentielEtCalculs` (vérifié par un test). Seed : natures Intervention VSAV, FPT, VRID (taux fictifs identiques), nature « Réunion (démo, sans taux) », jeu de démonstration à dates relatives pour `demo@example.com` (README) ; tests e2e adaptés au renommage de la nature d'intervention. Tests : `npm run test` (344), `npm run test:rls` (85), `npm run test:e2e` (68), `npm run lint` et `npm run build` sans erreur. Aucun nouvel écran.

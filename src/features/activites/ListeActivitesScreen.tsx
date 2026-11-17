@@ -1,17 +1,23 @@
 import { useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Link, useLocation, useSearchParams } from 'react-router'
+import { BandeauAnomalies, NombreAvecAnomalies } from '@/components/restitutions'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import type { CalculPeriode } from '@/data/calcul'
 import type { LigneActivite as Activite, LigneNature } from '@/data/conversions'
-import type { ResultatActivite } from '@/engine'
+import { CATEGORIES } from '@/engine'
+import type { ResultatActivite, TotauxPeriode } from '@/engine'
 import { useCalculPeriode } from '@/hooks/useCalculPeriode'
 import { useReferentiel } from '@/hooks/useReferentiel'
+import { useRestitutionMois } from '@/hooks/useRestitutions'
 import { formaterDuree, formaterMois, formaterMontant, formaterPlage } from '@/lib/formats'
 import { bornesDuMois, estMoisValide, moisDe, moisPrecedent, moisSuivant } from '@/lib/temps'
 import { ADRESSES, adresseListe, lireEtatNavigation } from '@/routes/adresses'
 import type { EtatNavigation } from '@/routes/adresses'
+
+/** Valeur du filtre « Interventions » dans l'adresse (?nature=interventions). */
+const FILTRE_INTERVENTIONS = 'interventions'
 
 const LIBELLES_ANOMALIE = {
   taux_manquant: 'Taux manquant',
@@ -21,8 +27,11 @@ const LIBELLES_ANOMALIE = {
 // Liste des activités d'un mois (spécifications des écrans, section 2).
 // Le mois et le filtre sont dans l'adresse (?mois=2026-06&nature=…) : ils sont
 // conservés par le bouton « retour » et au retour d'un autre écran.
-// Toutes les durées nettes et tous les montants viennent du moteur de calcul
-// (useCalculPeriode) : rien n'est recalculé ici.
+// Toutes les durées nettes et tous les montants viennent du moteur de calcul :
+// rien n'est recalculé ici. Les lignes viennent de useCalculPeriode ; les
+// totaux du mois, de useRestitutionMois, comme l'accueil : un même mois donne
+// donc les mêmes chiffres partout (astreinte nette ventilée, D-033 ; D-034 ;
+// D-035).
 export function ListeActivitesScreen() {
   const location = useLocation()
   const [parametres, setParametres] = useSearchParams()
@@ -36,11 +45,17 @@ export function ListeActivitesScreen() {
   const moisDemande = parametres.get('mois')
   const mois = estMoisValide(moisDemande) ? moisDemande : moisEnCours
   const natures = useMemo(() => referentiel.data?.natures ?? [], [referentiel.data])
+  // Filtre : « Interventions » (toutes les natures d'intervention, D-032), une
+  // nature, ou rien (« Toutes ») si la valeur est inconnue.
   const natureDemandee = parametres.get('nature')
-  const filtre = natures.some((nature) => nature.id === natureDemandee) ? natureDemandee : null
+  const filtre =
+    natureDemandee === FILTRE_INTERVENTIONS || natures.some((nature) => nature.id === natureDemandee)
+      ? natureDemandee
+      : null
 
   const periode = useMemo(() => bornesDuMois(mois), [mois])
   const { calcul, enChargement, erreur } = useCalculPeriode(periode)
+  const restitution = useRestitutionMois(mois)
 
   const adresseCourante = adresseListe(mois, filtre)
   const { message } = lireEtatNavigation(location.state)
@@ -84,6 +99,7 @@ export function ListeActivitesScreen() {
           onChange={(e) => filtrer(e.target.value)}
         >
           <option value="">Toutes</option>
+          <option value={FILTRE_INTERVENTIONS}>Interventions</option>
           {/* Toutes les natures, archivées comprises, pour retrouver les
               activités anciennes (D-018). */}
           {natures.map((nature) => (
@@ -94,13 +110,13 @@ export function ListeActivitesScreen() {
         </select>
       </div>
 
-      {enChargement && (
+      {(enChargement || restitution.enChargement) && !erreur && !restitution.erreur && (
         <p role="status" className="text-muted-foreground">
           Chargement…
         </p>
       )}
 
-      {erreur && (
+      {(erreur || restitution.erreur) && (
         <div className="flex flex-col items-start gap-2">
           <p role="alert" className="text-sm text-destructive">
             Les activités n’ont pas pu être chargées. Vérifiez votre connexion.
@@ -111,10 +127,10 @@ export function ListeActivitesScreen() {
         </div>
       )}
 
-      {calcul && (
+      {calcul && restitution.donnees && (
         <>
-          <TotauxMois calcul={calcul} natures={natures} />
-          <BandeauAnomalies calcul={calcul} />
+          <TotauxMois totaux={restitution.donnees.mois} natures={natures} />
+          <BandeauAnomalies anomalies={restitution.donnees.mois.anomalies} />
           <Lignes
             calcul={calcul}
             natures={natures}
@@ -143,26 +159,40 @@ function libelleNature(natures: readonly LigneNature[], natureId: string): strin
   return natures.find((nature) => nature.id === natureId)?.libelle ?? 'Nature inconnue'
 }
 
-// Totaux du mois entier : ils ne suivent pas le filtre par nature et ne
-// comptent que les activités au statut « ok » (D-011).
+// Totaux du mois entier (spécifications 2, règles « Totaux » et « Ventilation ») :
+// ils ne suivent pas le filtre par nature. Montant et nombre d'activités par
+// nature : activités « ok » (D-011) ; astreinte nette : part des heures du
+// mois, « ok » et « taux manquant » (D-033, D-035) ; interventions : toutes,
+// anomalies signalées (D-034).
 function TotauxMois({
-  calcul,
+  totaux,
   natures,
 }: {
-  calcul: CalculPeriode
+  totaux: TotauxPeriode
   natures: readonly LigneNature[]
 }) {
-  const { totaux } = calcul
+  // Nombre d'activités « ok » par nature, dans l'ordre du référentiel.
+  const parNature = CATEGORIES.flatMap((categorie) => totaux.montants.parCategorie[categorie].parNature)
+    .toSorted(
+      (a, b) =>
+        natures.findIndex((nature) => nature.id === a.natureId) -
+        natures.findIndex((nature) => nature.id === b.natureId),
+    )
   return (
     <section aria-label="Totaux du mois" className="rounded-md border p-3 text-sm">
       <dl className="grid grid-cols-2 gap-x-4 gap-y-1">
         <dt className="text-muted-foreground">Montant total</dt>
-        <dd className="text-right font-semibold">{formaterMontant(totaux.montantCentimes)}</dd>
+        <dd className="text-right font-semibold">{formaterMontant(totaux.montants.totalCentimes)}</dd>
         <dt className="text-muted-foreground">Astreinte nette</dt>
-        <dd className="text-right font-semibold">
-          {formaterDuree(totaux.astreintes.dureeNetteMin)}
+        <dd className="text-right font-semibold">{formaterDuree(totaux.astreintes.dureeNetteMin)}</dd>
+        <dt className="text-muted-foreground">Interventions</dt>
+        <dd className="text-right">
+          <NombreAvecAnomalies
+            nombre={totaux.interventions.nombre}
+            enAnomalie={totaux.interventions.enAnomalie}
+          />
         </dd>
-        {totaux.parNature.map((detail) => (
+        {parNature.map((detail) => (
           <div key={detail.natureId} className="contents">
             <dt className="text-muted-foreground">{libelleNature(natures, detail.natureId)}</dt>
             <dd className="text-right">{detail.nombre}</dd>
@@ -170,26 +200,6 @@ function TotauxMois({
         ))}
       </dl>
     </section>
-  )
-}
-
-// « N activité(s) non comptée(s) : taux manquant (x), chevauchement d'astreintes (y) »
-function BandeauAnomalies({ calcul }: { calcul: CalculPeriode }) {
-  const { taux_manquant: tauxManquant, chevauchement_astreintes: chevauchement } =
-    calcul.totaux.anomalies
-  const total = tauxManquant + chevauchement
-  if (total === 0) return null
-
-  const details = [
-    tauxManquant > 0 ? `taux manquant (${tauxManquant})` : null,
-    chevauchement > 0 ? `chevauchement d’astreintes (${chevauchement})` : null,
-  ].filter((detail) => detail !== null)
-
-  return (
-    <p role="alert" className="rounded-md border border-destructive px-3 py-2 text-sm text-destructive">
-      {total === 1 ? '1 activité non comptée' : `${total} activités non comptées`} :{' '}
-      {details.join(', ')}
-    </p>
   )
 }
 
@@ -208,10 +218,19 @@ function Lignes({
     return <p className="text-muted-foreground">Aucune activité ce mois-ci</p>
   }
 
+  const interventions = new Set(
+    natures.filter((nature) => nature.est_intervention).map((nature) => nature.id),
+  )
   // La plus récente en premier ; le filtre ne s'applique qu'aux lignes.
   const lignes = calcul.activites
     .map((activite, index) => ({ activite, resultat: calcul.resultats[index] }))
-    .filter(({ activite }) => filtre === null || activite.activity_type_id === filtre)
+    .filter(({ activite }) =>
+      filtre === null
+        ? true
+        : filtre === FILTRE_INTERVENTIONS
+          ? interventions.has(activite.activity_type_id)
+          : activite.activity_type_id === filtre,
+    )
     .toReversed()
 
   if (lignes.length === 0) {
@@ -226,6 +245,7 @@ function Lignes({
             activite={activite}
             resultat={resultat}
             nature={libelleNature(natures, activite.activity_type_id)}
+            estIntervention={interventions.has(activite.activity_type_id)}
             adresseCourante={adresseCourante}
           />
         </li>
@@ -238,11 +258,13 @@ function LigneActivite({
   activite,
   resultat,
   nature,
+  estIntervention,
   adresseCourante,
 }: {
   activite: Activite
   resultat: ResultatActivite
   nature: string
+  estIntervention: boolean
   adresseCourante: string
 }) {
   return (
@@ -263,8 +285,13 @@ function LigneActivite({
           ? `déclarée ${formaterDuree(resultat.dureeDeclareeMin)} · déduite ${formaterDuree(resultat.dureeDeduiteMin)} · nette ${formaterDuree(resultat.dureeNetteMin)}`
           : formaterDuree(resultat.dureeNetteMin)}
       </span>
-      {resultat.statut !== 'ok' && (
-        <Badge variant="destructive">{LIBELLES_ANOMALIE[resultat.statut]}</Badge>
+      {(estIntervention || resultat.statut !== 'ok') && (
+        <span className="flex flex-wrap gap-1">
+          {estIntervention && <Badge variant="secondary">Intervention</Badge>}
+          {resultat.statut !== 'ok' && (
+            <Badge variant="destructive">{LIBELLES_ANOMALIE[resultat.statut]}</Badge>
+          )}
+        </span>
       )}
     </Link>
   )

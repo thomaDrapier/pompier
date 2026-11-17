@@ -33,30 +33,30 @@ test('de mauvais identifiants affichent « Identifiants incorrects »', async ({
   await expect(page.getByRole('alert')).toHaveText('Identifiants incorrects')
 })
 
-test('une connexion réussie affiche la liste des activités, sans l’e-mail', async ({ page }) => {
+test('une connexion réussie affiche l’accueil, sans l’e-mail', async ({ page }) => {
   const { email, motDePasse } = compte()
   await seConnecter(page, email, motDePasse)
 
-  await expect(page).toHaveURL(/\/activites$/)
-  await expect(page.getByRole('heading', { name: 'Activités', exact: true })).toBeVisible()
+  await expect(page).toHaveURL(/\/accueil$/)
+  await expect(page.getByRole('heading', { name: 'Accueil', exact: true })).toBeVisible()
   await expect(page.getByText(email)).toHaveCount(0)
 })
 
 test('la session est conservée après rechargement de la page', async ({ page }) => {
   const { email, motDePasse } = compte()
   await seConnecter(page, email, motDePasse)
-  await expect(page.getByRole('heading', { name: 'Activités', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Accueil', exact: true })).toBeVisible()
 
   await page.reload()
 
-  await expect(page.getByRole('heading', { name: 'Activités', exact: true })).toBeVisible()
-  await expect(page).toHaveURL(/\/activites$/)
+  await expect(page.getByRole('heading', { name: 'Accueil', exact: true })).toBeVisible()
+  await expect(page).toHaveURL(/\/accueil$/)
 })
 
 test('la déconnexion ramène à l’écran de connexion', async ({ page }) => {
   const { email, motDePasse } = compte()
   await seConnecter(page, email, motDePasse)
-  await expect(page.getByRole('heading', { name: 'Activités', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Accueil', exact: true })).toBeVisible()
 
   await page.getByRole('button', { name: 'Se déconnecter' }).click()
 
@@ -108,9 +108,9 @@ test('« Nouveau mot de passe » est inaccessible sans lien de réinitialisation
 
   const { email, motDePasse } = compte()
   await seConnecter(page, email, motDePasse)
-  await expect(page.getByRole('heading', { name: 'Activités', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Accueil', exact: true })).toBeVisible()
   await page.goto('/nouveau-mot-de-passe')
-  await expect(page).toHaveURL(/\/activites$/)
+  await expect(page).toHaveURL(/\/accueil$/)
 })
 
 test('réinitialisation complète : demande, e-mail, lien, nouveau mot de passe, connexion', async ({
@@ -138,7 +138,11 @@ test('réinitialisation complète : demande, e-mail, lien, nouveau mot de passe,
 
     await expect(page.getByRole('heading', { name: 'Nouveau mot de passe' })).toBeVisible()
     await expect(page).toHaveURL(/\/nouveau-mot-de-passe$/)
-    expect(adressesVisitees.filter((adresse) => adresse.startsWith('/activites'))).toEqual([])
+    expect(
+      adressesVisitees.filter(
+        (adresse) => adresse.startsWith('/activites') || adresse.startsWith('/accueil'),
+      ),
+    ).toEqual([])
 
     // Tant que le mot de passe n'est pas choisi, les activités restent inaccessibles.
     await page.goto('/activites')
@@ -148,8 +152,8 @@ test('réinitialisation complète : demande, e-mail, lien, nouveau mot de passe,
     await page.getByLabel('Nouveau mot de passe').fill(nouveauMotDePasse)
     await page.getByLabel('Confirmation').fill(nouveauMotDePasse)
     await page.getByRole('button', { name: 'Enregistrer' }).click()
-    await expect(page.getByRole('heading', { name: 'Activités', exact: true })).toBeVisible()
-    await expect(page).toHaveURL(/\/activites$/)
+    await expect(page.getByRole('heading', { name: 'Accueil', exact: true })).toBeVisible()
+    await expect(page).toHaveURL(/\/accueil$/)
 
     // 4. Déconnexion, puis connexion : l'ancien mot de passe est refusé, le nouveau accepté.
     await page.getByRole('button', { name: 'Se déconnecter' }).click()
@@ -157,7 +161,7 @@ test('réinitialisation complète : demande, e-mail, lien, nouveau mot de passe,
     await seConnecter(page, compteDedie.email, compteDedie.motDePasse)
     await expect(page.getByRole('alert')).toHaveText('Identifiants incorrects')
     await seConnecter(page, compteDedie.email, nouveauMotDePasse)
-    await expect(page.getByRole('heading', { name: 'Activités', exact: true })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Accueil', exact: true })).toBeVisible()
   } finally {
     await supprimerCompte(compteDedie)
   }
