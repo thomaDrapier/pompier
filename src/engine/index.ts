@@ -3,12 +3,13 @@
 // Module pur : aucune dépendance à React ni à Supabase. Les mêmes entrées
 // donnent toujours les mêmes résultats, rien n'est lu ni écrit ailleurs.
 
-import { calculerDureesAstreinte, detecterChevauchements } from './astreintes'
+import { calculerDureesAstreinte, detecterChevauchements, plagesAstreinte } from './astreintes'
 import { union } from './intervalles'
 import type { Plage } from './intervalles'
 import { calculerMontantCentimes } from './remuneration'
 import { resoudreTaux } from './taux'
 import type {
+  ActiviteDetaillee,
   ActiviteEntree,
   HistoriqueGrade,
   Nature,
@@ -20,16 +21,24 @@ import type {
 } from './types'
 
 export type {
+  ActiviteDetaillee,
   ActiviteEntree,
+  CompteInterventions,
   DureesAstreinte,
   HistoriqueGrade,
   Nature,
+  PlagesActivite,
   ResultatActivite,
   StatutActivite,
   Taux,
   TotalNature,
   Totaux,
 } from './types'
+export type { Plage } from './intervalles'
+
+// Périodes de Paris et regroupements des restitutions (J3, D-033 à D-035).
+export * from './periodes'
+export * from './regroupement'
 
 // Résolution des lignes datées (grades, taux), réutilisée par l'affichage des
 // historiques et de la grille de taux (src/data/affichage-referentiel.ts).
@@ -95,6 +104,24 @@ export function calculerActivites(
   historiqueGrades: readonly HistoriqueGrade[],
   taux: readonly Taux[],
 ): ResultatActivite[] {
+  return calculerActivitesDetaillees(activites, natures, historiqueGrades, taux).map(
+    ({ resultat }) => resultat,
+  )
+}
+
+/**
+ * Même calcul que calculerActivites, avec en plus les plages de chaque
+ * activité : plage déclarée et, pour une astreinte, ses parties déduites et
+ * nettes. Ces plages servent à ventiler les durées d'astreinte sur plusieurs
+ * périodes (D-033, src/engine/regroupement.ts). Les résultats sont
+ * strictement ceux de calculerActivites.
+ */
+export function calculerActivitesDetaillees(
+  activites: readonly ActiviteEntree[],
+  natures: readonly Nature[],
+  historiqueGrades: readonly HistoriqueGrade[],
+  taux: readonly Taux[],
+): ActiviteDetaillee[] {
   const naturesParId = new Map(natures.map((nature) => [nature.id, nature]))
 
   // Préparation : plage et nature de chaque activité, dans l'ordre reçu.
@@ -122,6 +149,9 @@ export function calculerActivites(
     const durees = nature.estAstreinte
       ? calculerDureesAstreinte(plage, autres)
       : { dureeDeclareeMin, dureeDeduiteMin: 0, dureeNetteMin: dureeDeclareeMin }
+    const plages = nature.estAstreinte
+      ? plagesAstreinte(plage, autres)
+      : { declaree: { ...plage }, deduites: [], nettes: [{ ...plage }] }
 
     // Le taux est choisi à la date de début de l'activité (3.5).
     const centimesParHeure = resoudreTaux(activite.debut, nature.id, historiqueGrades, taux)
@@ -139,33 +169,63 @@ export function calculerActivites(
         : null
 
     return {
-      id: activite.id,
-      natureId: nature.id,
-      estAstreinte: nature.estAstreinte,
-      ...durees,
-      centimesParHeure,
-      montantCentimes,
-      statut,
+      resultat: {
+        id: activite.id,
+        natureId: nature.id,
+        estAstreinte: nature.estAstreinte,
+        ...durees,
+        centimesParHeure,
+        montantCentimes,
+        statut,
+      },
+      plages,
     }
   })
 }
 
 /**
- * Totalise des résultats (D-011). Seules les activités au statut « ok »
- * comptent, pour les durées comme pour les montants ; les autres sont
- * dénombrées par statut d'anomalie.
+ * Totalise des résultats (liste des activités, cahier des charges 3.5).
+ * - Montants, nombre « ok » et détail par nature : activités au statut « ok »
+ *   seulement (D-011).
+ * - Durées d'astreinte : astreintes « ok » et « taux manquant » (D-035) ;
+ *   celles en « chevauchement d'astreintes » restent exclues (D-010).
+ * - Interventions : toutes, quel que soit leur statut, avec le nombre en
+ *   anomalie (D-034).
+ * - Anomalies : nombre d'activités par statut.
+ *
+ * @param natures natures du référentiel (pour reconnaître les interventions)
  */
-export function totaliser(resultats: readonly ResultatActivite[]): Totaux {
+export function totaliser(
+  resultats: readonly ResultatActivite[],
+  natures: readonly Nature[],
+): Totaux {
+  const interventions = new Set(
+    natures.filter((nature) => nature.estIntervention).map((nature) => nature.id),
+  )
   const totaux: Totaux = {
     montantCentimes: 0,
     astreintes: { dureeDeclareeMin: 0, dureeDeduiteMin: 0, dureeNetteMin: 0 },
     parNature: [],
     nbOk: 0,
+    interventions: { nombre: 0, enAnomalie: 0 },
     anomalies: { taux_manquant: 0, chevauchement_astreintes: 0 },
   }
   const parNature = new Map<string, TotalNature>()
 
   for (const resultat of resultats) {
+    // D-034 : toute intervention est comptée, anomalies comprises.
+    if (interventions.has(resultat.natureId)) {
+      totaux.interventions.nombre += 1
+      if (resultat.statut !== 'ok') totaux.interventions.enAnomalie += 1
+    }
+
+    // D-035 : un taux manquant n'enlève rien à la durée effectuée d'une astreinte.
+    if (resultat.estAstreinte && resultat.statut !== 'chevauchement_astreintes') {
+      totaux.astreintes.dureeDeclareeMin += resultat.dureeDeclareeMin
+      totaux.astreintes.dureeDeduiteMin += resultat.dureeDeduiteMin
+      totaux.astreintes.dureeNetteMin += resultat.dureeNetteMin
+    }
+
     if (resultat.statut !== 'ok') {
       totaux.anomalies[resultat.statut] += 1
       continue
@@ -174,12 +234,6 @@ export function totaliser(resultats: readonly ResultatActivite[]): Totaux {
     const montant = resultat.montantCentimes ?? 0
     totaux.nbOk += 1
     totaux.montantCentimes += montant
-
-    if (resultat.estAstreinte) {
-      totaux.astreintes.dureeDeclareeMin += resultat.dureeDeclareeMin
-      totaux.astreintes.dureeDeduiteMin += resultat.dureeDeduiteMin
-      totaux.astreintes.dureeNetteMin += resultat.dureeNetteMin
-    }
 
     let detail = parNature.get(resultat.natureId)
     if (detail === undefined) {

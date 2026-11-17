@@ -45,10 +45,10 @@ describe('tauxEnCentimes', () => {
 })
 
 describe('versNature', () => {
-  it('garde l’identifiant et l’indicateur d’astreinte', () => {
+  it('garde l’identifiant et les indicateurs d’astreinte et d’intervention', () => {
     expect(
-      versNature({ id: 'n1', code: 'AST', libelle: 'Astreinte', est_astreinte: true, actif: true, ordre: 1 }),
-    ).toEqual({ id: 'n1', estAstreinte: true })
+      versNature({ id: 'n1', code: 'AST', libelle: 'Astreinte', est_astreinte: true, est_intervention: false, actif: true, ordre: 1 }),
+    ).toEqual({ id: 'n1', estAstreinte: true, estIntervention: false })
   })
 })
 

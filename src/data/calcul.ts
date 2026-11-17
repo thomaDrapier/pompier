@@ -18,7 +18,7 @@ export interface CalculPeriode {
   activites: LigneActivite[]
   /** Résultat du moteur pour chacune, dans le même ordre que `activites`. */
   resultats: ResultatActivite[]
-  /** Totaux de la période (activités « ok » uniquement, D-011). */
+  /** Totaux de la période (montants « ok », D-011 ; durées d'astreinte, D-035 ; interventions, D-034). */
   totaux: Totaux
 }
 
@@ -42,9 +42,10 @@ export function calculerPeriode(
     (a, b) => new Date(a.debut).getTime() - new Date(b.debut).getTime(),
   )
 
+  const naturesMoteur = natures.map(versNature)
   const tousLesResultats = calculerActivites(
     triees.map(versActivite),
-    natures.map(versNature),
+    naturesMoteur,
     historiqueGrades.map(versHistoriqueGrade),
     taux.map(versTaux),
   )
@@ -58,5 +59,5 @@ export function calculerPeriode(
     }
   })
 
-  return { activites, resultats, totaux: totaliser(resultats) }
+  return { activites, resultats, totaux: totaliser(resultats, naturesMoteur) }
 }

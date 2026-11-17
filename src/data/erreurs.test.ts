@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  ErreurAstreinteEtIntervention,
   ErreurAstreinteVerrouillee,
   ErreurChevauchementAstreintes,
   ErreurDejaServi,
@@ -167,5 +168,26 @@ describe('nomContrainte', () => {
   it('lit le nom de la contrainte dans le message, ou renvoie null', () => {
     expect(nomContrainte(unicite('grades_libelle_unique_ci'))).toBe('grades_libelle_unique_ci')
     expect(nomContrainte({ message: 'réseau indisponible' })).toBeNull()
+  })
+})
+
+describe('traduireErreur : astreinte et intervention à la fois (D-032)', () => {
+  it('reconnaît la contrainte check au code ET au nom, avec le message de la spécification', () => {
+    const erreur = traduireErreur({
+      code: '23514',
+      message:
+        'new row for relation "activity_types" violates check constraint "activity_types_astreinte_ou_intervention"',
+    })
+
+    expect(erreur).toBeInstanceOf(ErreurAstreinteEtIntervention)
+    expect(erreur.message).toBe(
+      'Une nature ne peut pas être à la fois une astreinte et une intervention.',
+    )
+  })
+
+  it('ne la reconnaît pas avec un autre code', () => {
+    expect(
+      traduireErreur({ code: '23505', message: 'constraint "activity_types_astreinte_ou_intervention"' }),
+    ).toBeInstanceOf(ErreurDonnees)
   })
 })

@@ -51,14 +51,14 @@ isOneToOne: false
                   ]
                 },"activity_types": {
                   Row: {
-                    "actif": boolean,"code": string,"est_astreinte": boolean,"id": string,"libelle": string,"ordre": number
+                    "actif": boolean,"code": string,"est_astreinte": boolean,"est_intervention": boolean,"id": string,"libelle": string,"ordre": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "actif"?: boolean,"code": string,"est_astreinte"?: boolean,"id"?: string,"libelle": string,"ordre": number
+                    "actif"?: boolean,"code": string,"est_astreinte"?: boolean,"est_intervention"?: boolean,"id"?: string,"libelle": string,"ordre": number
                   }
                   Update: {
-                    "actif"?: boolean,"code"?: string,"est_astreinte"?: boolean,"id"?: string,"libelle"?: string,"ordre"?: number
+                    "actif"?: boolean,"code"?: string,"est_astreinte"?: boolean,"est_intervention"?: boolean,"id"?: string,"libelle"?: string,"ordre"?: number
                   }
                   Relationships: [
                     

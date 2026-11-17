@@ -47,6 +47,9 @@ export type CasDoublon = keyof typeof CONTRAINTES_UNICITE
 /** Contrainte check du taux positif ou nul (D-027). */
 export const CONTRAINTE_TAUX_POSITIF = 'reference_rates_taux_positif_ou_nul'
 
+/** Contrainte check : une nature n'est pas à la fois astreinte et intervention (D-032). */
+export const CONTRAINTE_ASTREINTE_OU_INTERVENTION = 'activity_types_astreinte_ou_intervention'
+
 /**
  * Clés étrangères qui empêchent de supprimer un grade ou une nature déjà
  * utilisé (D-018) : par un taux, un historique de grade ou une activité.
@@ -123,6 +126,17 @@ export class ErreurTauxNegatif extends Error {
   }
 }
 
+/**
+ * Erreur métier : une nature ne peut pas être à la fois une astreinte et une
+ * intervention (D-032). Message de la spécification des écrans, § 6.3.
+ */
+export class ErreurAstreinteEtIntervention extends Error {
+  constructor() {
+    super('Une nature ne peut pas être à la fois une astreinte et une intervention.')
+    this.name = 'ErreurAstreinteEtIntervention'
+  }
+}
+
 /** Toute autre erreur d'accès aux données (réseau, droits, contrainte…). */
 export class ErreurDonnees extends Error {
   /** Code renvoyé par la base ou l'API, s'il existe. */
@@ -161,8 +175,8 @@ function casDoublon(contrainte: string | null): CasDoublon | null {
  * Traduit une erreur renvoyée par Supabase en erreur de l'application.
  * Le chevauchement d'astreintes et le verrou de « est une astreinte » sont
  * reconnus au code ET au message réunis : le code seul pourrait venir d'une
- * autre contrainte. Les doublons et le taux négatif sont reconnus au code ET
- * au nom de la contrainte.
+ * autre contrainte. Les doublons, le taux négatif et l'exclusion astreinte /
+ * intervention (D-032) sont reconnus au code ET au nom de la contrainte.
  */
 export function traduireErreur(erreur: ErreurSupabase): Error {
   const contrainte = nomContrainte(erreur)
@@ -185,6 +199,9 @@ export function traduireErreur(erreur: ErreurSupabase): Error {
   }
   if (erreur.code === SQLSTATE.check && contrainte === CONTRAINTE_TAUX_POSITIF) {
     return new ErreurTauxNegatif()
+  }
+  if (erreur.code === SQLSTATE.check && contrainte === CONTRAINTE_ASTREINTE_OU_INTERVENTION) {
+    return new ErreurAstreinteEtIntervention()
   }
   return new ErreurDonnees(erreur.message, erreur.code ?? null)
 }

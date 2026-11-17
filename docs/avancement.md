@@ -3,9 +3,9 @@
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
 ## État actuel (mis à jour le 17/11/2026)
-- **En cours** : aucune étape. J3 · étape 3.0 terminée.
-- **Dernière étape terminée** : J3 · étape 3.0 — décisions D-032 à D-035 et docs/specifications_ecrans.md v1.3.
-- **Prochaine action** : J3 · étape 3.1 (migration « est une intervention », module de regroupement par période, jeu de démonstration), plan et consigne fournis par le projet Claude.
+- **En cours** : aucune étape. J3 · étape 3.1 terminée.
+- **Dernière étape terminée** : J3 · étape 3.1 — données et regroupements des restitutions (migration « est une intervention », module de regroupement par période, couche de données, jeu de démonstration).
+- **Prochaine action** : J3 · étape 3.2 (Accueil et liste des activités), consigne fournie par le projet Claude.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
@@ -13,11 +13,15 @@
   - J4 : l'hébergeur statique doit renvoyer index.html pour toute adresse (routage côté navigateur).
   - Désactiver l'inscription publique en production (J4) : `enable_signup` est gardé actif en local, car les tests créent leurs comptes par signUp.
   - Intégration continue GitHub Actions à envisager (lint, build, tests).
-  - J3 (étape 3.1) : jeu de démonstration pour `demo@example.com` — activités fictives sur les 3 mois précédents et le mois en cours, dates relatives à la date de recréation de la       base, cas variés (astreintes nuit/week-end, interventions pendant et hors astreinte, activités à cheval sur deux semaines et deux mois, changement d'heure, promotion de grade,       taux manquant).
   - À revoir avant le J5 (D-033) : rattachement des montants d'une activité à cheval sur deux périodes et taux d'une activité qui traverse un changement de taux ou de grade ; chercher une règle du SDIS.
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 17/11/2026 — J3 · étape 3.1 terminée : données et regroupements des restitutions
+- **Fait** : migration `supabase/migrations/20261117140000_interventions.sql` (colonne `activity_types.est_intervention`, contrainte `activity_types_astreinte_ou_intervention`), erreur `ErreurAstreinteEtIntervention` (`src/data/erreurs.ts`), saisie d'une nature avec `estIntervention` facultatif (`src/data/requetes-referentiel.ts`), types régénérés. Moteur : `calculerActivitesDetaillees` expose les plages déclarée, déduites et nettes (résultats identiques à `calculerActivites`) ; `totaliser` aligné sur D-035 (durées d'astreinte « ok » et « taux manquant ») et complété du nombre d'interventions (D-034) ; la liste des activités en hérite. Modules purs `src/engine/periodes.ts` (jour, semaine ISO, mois de Paris, changement d'heure compris ; jours d'une semaine, semaines d'un mois, mois glissants, année civile) et `src/engine/regroupement.ts` (ventilation des durées d'astreinte, rattachement des montants et des autres activités à la période de début, catégories, totaux par catégorie et par nature, interventions et anomalies, astreintes « à cheval », écart et pourcentage, historique mensuel). Couche de données `src/data/restitutions.ts` (une lecture élargie par plage, calcul unique, regroupement) et hooks `src/hooks/useRestitutions.ts` (semaine, mois avec le mois précédent, historique glissant ou année civile), invalidés par `invaliderReferentielEtCalculs` (vérifié par un test). Seed : natures Intervention VSAV, FPT, VRID (taux fictifs identiques), nature « Réunion (démo, sans taux) », jeu de démonstration à dates relatives pour `demo@example.com` (README) ; tests e2e adaptés au renommage de la nature d'intervention. Tests : `npm run test` (344), `npm run test:rls` (85), `npm run test:e2e` (68), `npm run lint` et `npm run build` sans erreur. Aucun nouvel écran.
+- **Branche** : feat/j3-1-regroupements
+- **Décisions liées** : D-011, D-012, D-015, D-029, D-032, D-033, D-034, D-035, D-036 (choix techniques de l'étape, consignée par la branche docs/d036-regroupements)
 
 ### 17/11/2026 — J3 · étape 3.0 terminée : spécifications des écrans v1.3
 - **Fait** : docs/specifications_ecrans.md v1.3 (Accueil, Astreintes, Rémunération, menu, règles communes, interventions dans la liste, case « Est une intervention »).

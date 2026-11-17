@@ -19,9 +19,9 @@ vi.mock('@/hooks/useReferentiel', () => ({ useReferentiel: hooks.useReferentiel 
 
 // Référentiel de test. Tous les taux sont fictifs ; la garde n'a pas de taux.
 const natures: LigneNature[] = [
-  { id: 'astreinte', code: 'AST', libelle: 'Astreinte', est_astreinte: true, actif: true, ordre: 1 },
-  { id: 'intervention', code: 'INT', libelle: 'Intervention', est_astreinte: false, actif: true, ordre: 2 },
-  { id: 'garde', code: 'GAR', libelle: 'Garde', est_astreinte: false, actif: true, ordre: 3 },
+  { id: 'astreinte', code: 'AST', libelle: 'Astreinte', est_astreinte: true, est_intervention: false, actif: true, ordre: 1 },
+  { id: 'intervention', code: 'INT', libelle: 'Intervention', est_astreinte: false, est_intervention: false, actif: true, ordre: 2 },
+  { id: 'garde', code: 'GAR', libelle: 'Garde', est_astreinte: false, est_intervention: false, actif: true, ordre: 3 },
 ]
 const taux = [
   { id: 't1', grade_id: 'sapeur', activity_type_id: 'astreinte', taux_horaire: 2, date_effet: '2025-01-01' },

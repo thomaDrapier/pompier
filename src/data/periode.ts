@@ -21,9 +21,9 @@ export interface SourceActivites {
 }
 
 /**
- * Une activité appartient à la période où elle commence (hypothèse de 3.8 du
- * cahier des charges, retenue à titre provisoire pour le J1 ; la ventilation
- * au prorata est prévue au J3).
+ * Une activité appartient à la période où elle commence : rattachement de son
+ * montant et, hors astreinte, de sa durée (D-033, règle provisoire). Les
+ * durées d'astreinte sont, elles, ventilées par src/engine/regroupement.ts.
  */
 export function estDansPeriode(debut: Date, periode: Periode): boolean {
   return debut.getTime() >= periode.debut.getTime() && debut.getTime() < periode.fin.getTime()

@@ -117,19 +117,29 @@ doivent voir les activités de tous les utilisateurs, que la RLS cache à
 l'administrateur, sans en révéler aucune (D-029). Le trigger de D-010, lui, reste
 en `security invoker` (D-015).
 
+La quatrième, `…_interventions.sql` (J3, étape 3.1), ajoute l'indicateur
+`activity_types.est_intervention` (faux par défaut, D-032). Il ne sert qu'aux
+restitutions et reste modifiable à tout moment. La contrainte
+`activity_types_astreinte_ou_intervention` (code `23514`) interdit qu'une nature
+soit à la fois une astreinte et une intervention.
+
 ### Données de test (seed)
 
 `supabase/seed.sql` est joué après les migrations par `npx supabase db reset`,
 **sur la base locale uniquement**. Il ne doit jamais être appliqué en production.
 Tout y est **fictif** :
 
-- les 6 natures de la liste initiale (seule « Astreinte » est une astreinte) ;
+- 9 natures : Astreinte (seule astreinte) ; Intervention VSAV, Intervention FPT,
+  Intervention VRID (cochées « est une intervention », D-032) ; Garde, Manœuvre,
+  Formation, Administratif ; « Réunion (démo, sans taux) », volontairement sans
+  aucun taux, pour produire des « taux manquant » ;
 - 3 grades : Sapeur, Caporal, Sergent ;
 - une grille de taux complète au 01/01/2025, puis de nouveaux taux d'astreinte et
-  d'intervention au 01/07/2026. **Ces taux sont inventés** (valeurs rondes) et ne
-  correspondent à aucun barème réel ;
-- un compte de test, `demo@example.com` / `demo-spv-local`, Sapeur depuis le
-  01/01/2025 puis Caporal au 01/07/2026 ;
+  d'intervention au 01/07/2026 ; les trois natures d'intervention ont des taux
+  identiques. **Ces taux sont inventés** (valeurs rondes) et ne correspondent à
+  aucun barème réel ;
+- un compte de test, `demo@example.com` / `demo-spv-local`, avec un **jeu de
+  démonstration** (ci-dessous) ;
 - un compte administrateur de test, `admin@example.com` / `admin-spv-local`
   (rôle `admin`, actif, sans historique de grade), pour les écrans
   d'administration.
@@ -137,6 +147,27 @@ Tout y est **fictif** :
 Après un `db reset`, on peut donc se connecter directement avec ces comptes sur
 http://localhost:5173. Comme le reste du seed, ils ne doivent **jamais** exister en
 production (point à traiter au J4).
+
+**Jeu de démonstration de `demo@example.com`** (section 6 du seed). Les dates sont
+calculées à partir du jour du `db reset`, en heure de Paris : il couvre les 3 mois
+précédents et le mois en cours, jusqu'au moment du reset (rien dans le futur), et
+se rejoue sans erreur à toute date. Il contient :
+
+- un historique de grade relatif : aucun grade pendant les 7 premiers jours (ces
+  activités, astreintes et interventions comprises, sont en « taux manquant »),
+  puis Sapeur, puis promotion Caporal au 15 du mois précédent ;
+- chaque semaine : astreintes de nuit (mardi et jeudi, 18 h → 8 h), de week-end
+  (samedi 8 h → dimanche 8 h, donc la nuit d'un changement d'heure si la période
+  en contient un) et du dimanche 18 h au lundi 8 h (à cheval sur deux semaines) ;
+  interventions VSAV (les plus nombreuses), FPT et VRID, pendant et hors astreinte ;
+  garde ou formation, manœuvre, administratif ; une réunion sans taux toutes les
+  trois semaines ;
+- une astreinte à cheval sur deux mois (la nuit du dernier jour du mois M-2) ;
+- aucune astreinte en chevauchement : une astreinte n'est créée que si elle ne
+  chevauche aucune astreinte déjà créée.
+
+Les tests automatisés ne dépendent pas de ces données : ils créent leurs propres
+comptes.
 
 ```bash
 npx supabase db reset       # recrée la base locale et rejoue toutes les migrations
@@ -178,7 +209,7 @@ de s'exécuter si l'API ou la base visée n'est pas locale (127.0.0.1 / localhos
 | Commande | Contenu |
 | --- | --- |
 | `npm run test` | Tests unitaires Vitest (`src/**/*.test.ts(x)`), dans un DOM simulé, sans Supabase. |
-| `npm run test:rls` | Sécurité de la base (`tests/rls/`) : isolation des données entre utilisateurs, référentiel en lecture seule, rôle protégé, visiteur non connecté refusé, contraintes, refus du chevauchement de deux astreintes (D-010), requêtes de l'application (`src/data/requetes.ts`), règles du référentiel (`tests/rls/referentiel.test.ts` : doublons, taux négatif, suppression d'un élément utilisé, verrou de « est une astreinte », `nature_utilisee`, historique de grades, lecture du rôle). Passe par l'API avec la clé publique, comme l'application. |
+| `npm run test:rls` | Sécurité de la base (`tests/rls/`) : isolation des données entre utilisateurs, référentiel en lecture seule, rôle protégé, visiteur non connecté refusé, contraintes, refus du chevauchement de deux astreintes (D-010), requêtes de l'application (`src/data/requetes.ts`), règles du référentiel (`tests/rls/referentiel.test.ts` : doublons, taux négatif, suppression d'un élément utilisé, verrou de « est une astreinte », `nature_utilisee`, historique de grades, lecture du rôle, indicateur « est une intervention »). Passe par l'API avec la clé publique, comme l'application. |
 | `npm run test:e2e` | Parcours Playwright (`tests/e2e/`) sur l'application buildée (`vite preview`, port 4173), en format ordinateur et smartphone (Pixel 7) : authentification, réinitialisation du mot de passe par le lien reçu dans Mailpit, liste des activités, saisie, modification et suppression ; administration (menu et accès réservé, grades, natures, grille de taux, natures archivées dans la saisie) ; paramètres (grade et historique, recalcul des montants, taux du grade, « Changer le mot de passe » vérifié dans Mailpit). Les tests d'activités créent leurs comptes et leur attribuent le grade « Sapeur » du seed ; les tests d'administration créent leurs propres comptes administrateurs et un référentiel fictif suffixé, supprimé à la fin, et vérifient la connexion du compte `admin@example.com` : **le seed doit être présent** (`npx supabase db reset`). Première fois : `npx playwright install chromium`. Rapport : `npx playwright show-report`. |
 
 La base des tests RLS est lue dans `SUPABASE_DB_URL`, à défaut

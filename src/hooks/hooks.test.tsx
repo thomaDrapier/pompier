@@ -29,8 +29,8 @@ vi.mock('@/features/auth/useAuth', () => ({
 // Référentiel de test. Tous les taux sont fictifs.
 const referentiel: Referentiel = {
   natures: [
-    { id: 'astreinte', code: 'AST', libelle: 'Astreinte', est_astreinte: true, actif: true, ordre: 1 },
-    { id: 'intervention', code: 'INT', libelle: 'Intervention', est_astreinte: false, actif: true, ordre: 2 },
+    { id: 'astreinte', code: 'AST', libelle: 'Astreinte', est_astreinte: true, est_intervention: false, actif: true, ordre: 1 },
+    { id: 'intervention', code: 'INT', libelle: 'Intervention', est_astreinte: false, est_intervention: false, actif: true, ordre: 2 },
   ],
   grades: [{ id: 'sapeur', libelle: 'Sapeur', ordre: 1, actif: true }],
   taux: [

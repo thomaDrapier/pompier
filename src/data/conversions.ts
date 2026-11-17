@@ -34,9 +34,12 @@ export function tauxEnCentimes(tauxHoraire: number): number {
   return centimes
 }
 
-/** Nature d'activité : seuls l'identifiant et l'indicateur d'astreinte servent au calcul. */
+/**
+ * Nature d'activité : l'indicateur d'astreinte sert au calcul ; celui
+ * d'intervention, aux restitutions seulement (D-032).
+ */
 export function versNature(ligne: LigneNature): Nature {
-  return { id: ligne.id, estAstreinte: ligne.est_astreinte }
+  return { id: ligne.id, estAstreinte: ligne.est_astreinte, estIntervention: ligne.est_intervention }
 }
 
 /** Activité : les instants (timestamptz, texte ISO avec fuseau) deviennent des `Date`. */

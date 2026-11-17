@@ -11,8 +11,8 @@ import type { Periode, SourceActivites } from './periode'
 
 // Référentiel de test. Tous les taux sont fictifs.
 const natures: LigneNature[] = [
-  { id: 'astreinte', code: 'AST', libelle: 'Astreinte', est_astreinte: true, actif: true, ordre: 1 },
-  { id: 'intervention', code: 'INT', libelle: 'Intervention', est_astreinte: false, actif: true, ordre: 2 },
+  { id: 'astreinte', code: 'AST', libelle: 'Astreinte', est_astreinte: true, est_intervention: false, actif: true, ordre: 1 },
+  { id: 'intervention', code: 'INT', libelle: 'Intervention', est_astreinte: false, est_intervention: false, actif: true, ordre: 2 },
 ]
 const historique: LigneHistoriqueGrade[] = [
   { id: 'h1', user_id: 'u1', grade_id: 'sapeur', date_effet: '2025-01-01' },
