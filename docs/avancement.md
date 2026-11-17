@@ -3,9 +3,9 @@
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
 ## État actuel (mis à jour le 17/11/2026)
-- **En cours** : J2 · étape 2.0 (spécifications des écrans, projet Claude).
-- **Dernière étape terminée** : D-028, unicité de la date d'effet dans l'historique de grades.
-- **Prochaine action** : rédaction de docs/specifications_ecrans.md v1.2 (bloc fourni par le projet Claude). Validés : navigation (menu Activités / Paramètres / Administration ; adresses /parametres, /admin/grades, /admin/natures, /admin/taux ; « Accès réservé à l'administrateur »), Administration › Grades, Natures, Grille de taux. Proposé, à valider : Paramètres.
+- **En cours** : aucune étape. J2 · étape 2.0 terminée.
+- **Dernière étape terminée** : J2 · étape 2.0 — décisions D-017 à D-028 et docs/specifications_ecrans.md v1.2 (écrans du J2).
+- **Prochaine action** : J2 · étape 2.1 (données : migration, tests RLS, requêtes et hooks), consigne fournie par le projet Claude.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
@@ -18,6 +18,11 @@
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 17/11/2026 — J2 · étape 2.0 terminée : spécifications des écrans v1.2
+- **Fait** : docs/specifications_ecrans.md v1.2 (navigation et accès réservé, Paramètres, Administration › Grades, Natures, Grille de taux ; natures archivées dans la saisie).
+- **Branche** : docs/specifications-ecrans-v1-2
+- **Décisions liées** : D-017 à D-028
 
 ### 17/11/2026 — Décision : date d'effet unique dans l'historique de grades
 - **Fait** : D-028 consignée ; cahier des charges v1.18 (sections 3.7, 7, 13).
