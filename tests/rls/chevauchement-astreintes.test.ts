@@ -72,14 +72,14 @@ beforeAll(async () => {
 
   const astreinte = await base.query<{ id: string }>(
     `insert into public.activity_types (code, libelle, est_astreinte, ordre)
-     values ($1, 'TEST astreinte', true, 9999) returning id`,
-    [`TEST-AST-${suffixe}`],
+     values ($1, $2, true, 9999) returning id`,
+    [`TEST-AST-${suffixe}`, `TEST astreinte ${suffixe}`],
   )
   natureAstreinte = astreinte.rows[0].id
   const intervention = await base.query<{ id: string }>(
     `insert into public.activity_types (code, libelle, est_astreinte, ordre)
-     values ($1, 'TEST intervention', false, 9999) returning id`,
-    [`TEST-INT-${suffixe}`],
+     values ($1, $2, false, 9999) returning id`,
+    [`TEST-INT-${suffixe}`, `TEST intervention ${suffixe}`],
   )
   natureIntervention = intervention.rows[0].id
 })

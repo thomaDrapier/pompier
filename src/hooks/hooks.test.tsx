@@ -32,7 +32,7 @@ const referentiel: Referentiel = {
     { id: 'astreinte', code: 'AST', libelle: 'Astreinte', est_astreinte: true, actif: true, ordre: 1 },
     { id: 'intervention', code: 'INT', libelle: 'Intervention', est_astreinte: false, actif: true, ordre: 2 },
   ],
-  grades: [{ id: 'sapeur', libelle: 'Sapeur', ordre: 1 }],
+  grades: [{ id: 'sapeur', libelle: 'Sapeur', ordre: 1, actif: true }],
   taux: [
     { id: 't1', grade_id: 'sapeur', activity_type_id: 'astreinte', taux_horaire: 2, date_effet: '2025-01-01' },
     { id: 't2', grade_id: 'sapeur', activity_type_id: 'intervention', taux_horaire: 12, date_effet: '2025-01-01' },

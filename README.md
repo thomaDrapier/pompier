@@ -77,6 +77,40 @@ décision D-010 : un trigger refuse l'enregistrement d'une astreinte qui chevauc
 une autre astreinte du même utilisateur (les astreintes contiguës sont acceptées).
 L'erreur porte le code `23P01` et le message `chevauchement_astreintes`.
 
+La troisième, `…_referentiel_j2.sql` (J2, étape 2.1), complète le référentiel :
+
+- **archivage des grades** : colonne `grades.actif` (vrai par défaut, D-018). Le
+  filtre « archivés non proposés » est fait par l'interface, pas par la base ;
+- **contraintes nommées**, que l'application reconnaît à leur code SQLSTATE et à
+  leur nom (`src/data/erreurs.ts`) :
+
+  | Règle | Nom | Code |
+  | --- | --- | --- |
+  | Libellé de grade unique, sans distinction de casse, archivés compris (D-024) | `grades_libelle_unique_ci` | `23505` |
+  | Libellé de nature unique, sans distinction de casse (D-026) | `activity_types_libelle_unique_ci` | `23505` |
+  | Code de nature unique, sans distinction de casse (D-023) | `activity_types_code_unique_ci` | `23505` |
+  | Un seul taux par (grade, nature, date d'effet) | `reference_rates_grade_nature_date_unique` | `23505` |
+  | Une seule date d'effet par utilisateur dans l'historique de grades (D-028) | `user_grade_history_user_date_unique` | `23505` |
+  | Taux horaire positif ou nul (D-027) | `reference_rates_taux_positif_ou_nul` | `23514` |
+
+  Les unicités insensibles à la casse sont des index uniques sur `lower(...)`. La
+  suppression d'un grade ou d'une nature déjà utilisé est refusée par les clés
+  étrangères (`23503`) : il faut l'archiver (D-018) ;
+- **verrou de « est une astreinte »** (D-022) : le trigger
+  `activity_types_verrouiller_est_astreinte` refuse de changer `est_astreinte`
+  dès qu'une activité, de n'importe quel utilisateur, utilise la nature. Erreur :
+  code `SPV01` (propre à l'application), message `est_astreinte_verrouille`, sans
+  autre donnée. Libellé, code et ordre restent modifiables ;
+- **fonction `nature_utilisee(p_activity_type_id uuid) returns boolean`** : vraie si
+  une activité utilise la nature. Réservée à l'administrateur (refus `42501`
+  sinon), exécutable par `authenticated` seulement, jamais par `anon`. Elle ne
+  renvoie qu'un booléen.
+
+Le verrou et `nature_utilisee` sont en `security definer` (search_path vide) : ils
+doivent voir les activités de tous les utilisateurs, que la RLS cache à
+l'administrateur, sans en révéler aucune (D-029). Le trigger de D-010, lui, reste
+en `security invoker` (D-015).
+
 ### Données de test (seed)
 
 `supabase/seed.sql` est joué après les migrations par `npx supabase db reset`,
@@ -134,7 +168,7 @@ de s'exécuter si l'API ou la base visée n'est pas locale (127.0.0.1 / localhos
 | Commande | Contenu |
 | --- | --- |
 | `npm run test` | Tests unitaires Vitest (`src/**/*.test.ts(x)`), dans un DOM simulé, sans Supabase. |
-| `npm run test:rls` | Sécurité de la base (`tests/rls/`) : isolation des données entre utilisateurs, référentiel en lecture seule, rôle protégé, visiteur non connecté refusé, contraintes, refus du chevauchement de deux astreintes (D-010), requêtes de l'application (`src/data/requetes.ts`). Passe par l'API avec la clé publique, comme l'application. |
+| `npm run test:rls` | Sécurité de la base (`tests/rls/`) : isolation des données entre utilisateurs, référentiel en lecture seule, rôle protégé, visiteur non connecté refusé, contraintes, refus du chevauchement de deux astreintes (D-010), requêtes de l'application (`src/data/requetes.ts`), règles du référentiel (`tests/rls/referentiel.test.ts` : doublons, taux négatif, suppression d'un élément utilisé, verrou de « est une astreinte », `nature_utilisee`, historique de grades, lecture du rôle). Passe par l'API avec la clé publique, comme l'application. |
 | `npm run test:e2e` | Parcours Playwright (`tests/e2e/`) sur l'application buildée (`vite preview`, port 4173), en format ordinateur et smartphone (Pixel 7) : authentification, réinitialisation du mot de passe par le lien reçu dans Mailpit, liste des activités, saisie, modification et suppression. Les tests d'activités créent leurs comptes et leur attribuent le grade « Sapeur » du seed : **le seed doit être présent** (`npx supabase db reset`). Première fois : `npx playwright install chromium`. Rapport : `npx playwright show-report`. |
 
 La base des tests RLS est lue dans `SUPABASE_DB_URL`, à défaut

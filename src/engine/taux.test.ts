@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import { paris } from './aides-test'
-import { dateParis, gradeEnVigueur, resoudreTaux, tauxEnVigueur } from './taux'
+import {
+  dateParis,
+  estDateEffetPassee,
+  gradeEnVigueur,
+  ligneEnVigueur,
+  prochaineLigne,
+  resoudreTaux,
+  statutLigne,
+  tauxDuCouple,
+  tauxEnVigueur,
+} from './taux'
 import type { HistoriqueGrade, Taux } from './types'
 
 // Tous les taux de ce fichier sont fictifs.
@@ -138,5 +148,97 @@ describe('resoudreTaux (cahier des charges 3.5)', () => {
   it("renvoie null sans grade en vigueur à la date de l'activité", () => {
     expect(resoudreTaux(paris('2024-06-26 08:00'), 'intervention', historique, taux)).toBeNull()
     expect(resoudreTaux(paris('2026-06-26 08:00'), 'intervention', [], taux)).toBeNull()
+  })
+})
+
+describe('ligneEnVigueur et prochaineLigne', () => {
+  // Ordre volontairement mélangé : le résultat ne dépend pas de l'ordre reçu.
+  const lignes = [
+    { id: 'b', dateEffet: '2026-07-01' },
+    { id: 'c', dateEffet: '2027-07-01' },
+    { id: 'a', dateEffet: '2026-01-01' },
+    { id: 'd', dateEffet: '2028-01-01' },
+  ]
+
+  it('renvoie la ligne en vigueur, objet reçu compris (pour afficher sa date d’effet)', () => {
+    expect(ligneEnVigueur(lignes, '2026-06-30')).toBe(lignes[2])
+    expect(ligneEnVigueur(lignes, '2026-07-01')?.id).toBe('b')
+    expect(ligneEnVigueur(lignes, '2027-12-31')?.id).toBe('c')
+  })
+
+  it('renvoie null avant la première date d’effet, ou pour une liste vide', () => {
+    expect(ligneEnVigueur(lignes, '2025-12-31')).toBeNull()
+    expect(ligneEnVigueur([], '2026-06-30')).toBeNull()
+  })
+
+  it('renvoie la prochaine ligne strictement future, la plus proche', () => {
+    expect(prochaineLigne(lignes, '2026-06-30')?.id).toBe('b')
+    expect(prochaineLigne(lignes, '2026-07-01')?.id).toBe('c')
+    expect(prochaineLigne(lignes, '2025-01-01')?.id).toBe('a')
+  })
+
+  it('renvoie null quand aucune ligne n’est future', () => {
+    expect(prochaineLigne(lignes, '2028-01-01')).toBeNull()
+    expect(prochaineLigne([], '2026-06-30')).toBeNull()
+  })
+})
+
+describe('statutLigne', () => {
+  const lignes = [{ dateEffet: '2025-01-01' }, { dateEffet: '2026-07-01' }, { dateEffet: '2027-01-01' }]
+  const aujourdhui = '2026-11-17'
+
+  it('marque « en vigueur » la seule ligne retenue à la date', () => {
+    expect(statutLigne(lignes, lignes[1], aujourdhui)).toBe('en_vigueur')
+  })
+
+  it('marque « passé » une ligne antérieure remplacée depuis', () => {
+    expect(statutLigne(lignes, lignes[0], aujourdhui)).toBe('passe')
+  })
+
+  it('marque « à venir » une ligne future', () => {
+    expect(statutLigne(lignes, lignes[2], aujourdhui)).toBe('a_venir')
+  })
+
+  it('une ligne datée du jour même est « en vigueur »', () => {
+    expect(statutLigne(lignes, lignes[1], '2026-07-01')).toBe('en_vigueur')
+    expect(statutLigne(lignes, lignes[0], '2026-07-01')).toBe('passe')
+  })
+
+  it('sans ligne en vigueur, toutes les lignes sont « à venir »', () => {
+    expect(lignes.map((ligne) => statutLigne(lignes, ligne, '2024-12-31'))).toEqual([
+      'a_venir',
+      'a_venir',
+      'a_venir',
+    ])
+  })
+})
+
+describe('estDateEffetPassee', () => {
+  it('la date du jour à Paris est passée ; le lendemain est futur', () => {
+    const maintenant = paris('2026-11-17 10:00')
+
+    expect(estDateEffetPassee('2026-11-16', maintenant)).toBe(true)
+    expect(estDateEffetPassee('2026-11-17', maintenant)).toBe(true)
+    expect(estDateEffetPassee('2026-11-18', maintenant)).toBe(false)
+  })
+
+  it('se fonde sur la date de Paris, pas sur la date UTC', () => {
+    // 01/01/2027 à 00:30 à Paris = 31/12/2026 à 23:30 UTC.
+    const maintenant = paris('2027-01-01 00:30')
+
+    expect(estDateEffetPassee('2027-01-01', maintenant)).toBe(true)
+  })
+})
+
+describe('tauxDuCouple', () => {
+  it('ne garde que les taux du couple (grade, nature), objets reçus compris', () => {
+    const taux = [
+      { gradeId: 'sapeur', natureId: 'astreinte', centimesParHeure: 200, dateEffet: '2026-01-01', id: 't1' },
+      { gradeId: 'sapeur', natureId: 'intervention', centimesParHeure: 1200, dateEffet: '2026-01-01', id: 't2' },
+      { gradeId: 'caporal', natureId: 'astreinte', centimesParHeure: 300, dateEffet: '2026-01-01', id: 't3' },
+      { gradeId: 'sapeur', natureId: 'astreinte', centimesParHeure: 250, dateEffet: '2027-01-01', id: 't4' },
+    ]
+
+    expect(tauxDuCouple(taux, 'sapeur', 'astreinte').map((ligne) => ligne.id)).toEqual(['t1', 't4'])
   })
 })

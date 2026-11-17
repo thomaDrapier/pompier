@@ -31,6 +31,20 @@ export type {
   Totaux,
 } from './types'
 
+// Résolution des lignes datées (grades, taux), réutilisée par l'affichage des
+// historiques et de la grille de taux (src/data/affichage-referentiel.ts).
+export {
+  dateParis,
+  estDateEffetPassee,
+  gradeEnVigueur,
+  ligneEnVigueur,
+  prochaineLigne,
+  statutLigne,
+  tauxDuCouple,
+  tauxEnVigueur,
+} from './taux'
+export type { LigneDatee, StatutLigne } from './taux'
+
 const MS_PAR_MINUTE = 60_000
 
 /** Tronque un instant à la minute (D-012) et le renvoie en millisecondes UTC. */

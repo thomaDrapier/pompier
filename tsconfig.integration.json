@@ -1,8 +1,8 @@
 {
-  // Vérification des types du test d'intégration des requêtes
-  // (tests/rls/requetes.test.ts), lors de « npm run build » (tsc -b).
-  // Ce test importe le code de l'application (src/data/, alias « @/ ») : il lui
-  // faut la résolution de modules de l'application (bundler) en plus des types
+  // Vérification des types des tests d'intégration qui importent le code de
+  // l'application (tests/rls/requetes.test.ts et tests/rls/referentiel.test.ts),
+  // lors de « npm run build » (tsc -b). Ils importent src/data/ (alias « @/ ») :
+  // il leur faut la résolution de modules de l'application (bundler) en plus des types
   // de Node, d'où cette configuration séparée de tsconfig.tests.json.
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.integration.tsbuildinfo",
@@ -28,5 +28,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["tests/rls/requetes.test.ts"]
+  "include": ["tests/rls/requetes.test.ts", "tests/rls/referentiel.test.ts"]
 }

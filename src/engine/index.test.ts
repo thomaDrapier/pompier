@@ -185,6 +185,45 @@ describe('calculerActivites', () => {
     })
   })
 
+  describe('taux nul (D-027)', () => {
+    it('un taux de 0,00 €/h donne le statut ok, un montant nul et des durées comptées dans les totaux', () => {
+      const tauxAvecZero: Taux[] = [
+        ...taux,
+        { gradeId: 'sapeur', natureId: 'manoeuvre', centimesParHeure: 0, dateEffet: '2025-01-01' },
+      ]
+      const resultats = calculerActivites(
+        [
+          activite('a1', 'astreinte', '2026-06-26 08:00', '2026-06-26 12:00'),
+          activite('m1', 'manoeuvre', '2026-06-26 09:00', '2026-06-26 10:30'),
+        ],
+        natures,
+        historiqueGrades,
+        tauxAvecZero,
+      )
+
+      expect(resultats[1]).toMatchObject({
+        id: 'm1',
+        statut: 'ok',
+        centimesParHeure: 0,
+        dureeNetteMin: 90,
+        montantCentimes: 0,
+      })
+      // La manœuvre à taux nul est bien déduite de l'astreinte (4 h − 1 h 30).
+      expect(resultats[0]).toMatchObject({ statut: 'ok', dureeNetteMin: 150, montantCentimes: 500 })
+
+      const totaux = totaliser(resultats)
+      expect(totaux.nbOk).toBe(2)
+      expect(totaux.anomalies).toEqual({ taux_manquant: 0, chevauchement_astreintes: 0 })
+      expect(totaux.montantCentimes).toBe(500)
+      expect(totaux.parNature).toContainEqual({
+        natureId: 'manoeuvre',
+        nombre: 1,
+        dureeRetenueMin: 90,
+        montantCentimes: 0,
+      })
+    })
+  })
+
   describe('taux manquant (3.5, D-011)', () => {
     it('pas de taux pour le couple : statut taux_manquant, durées calculées, exclue des totaux', () => {
       const resultats = calculer([
