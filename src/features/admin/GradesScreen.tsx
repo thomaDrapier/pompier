@@ -11,7 +11,7 @@ import {
   MessageErreur,
   MessageReussite,
   Section,
-} from '@/features/admin/communs'
+} from '@/components/communs'
 import { MESSAGES, messageErreur } from '@/features/admin/messages'
 import { lireSaisieGrade } from '@/features/admin/regles-admin'
 import type { ChampGrade, ChampsGrade } from '@/features/admin/regles-admin'

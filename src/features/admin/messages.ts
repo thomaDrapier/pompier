@@ -9,6 +9,7 @@ import {
   ErreurTauxNegatif,
 } from '@/data/erreurs'
 import { formaterJour } from '@/lib/formats'
+import { MESSAGES_COMMUNS } from '@/lib/messages'
 
 export const MESSAGES = {
   gradeAjoute: 'Grade ajouté',
@@ -33,9 +34,8 @@ export const MESSAGES = {
   /** D-019 */
   confirmationCorrectionTaux: 'Cette correction modifie les montants des activités concernées.',
   accesReserve: 'Accès réservé à l’administrateur',
-  horsLigne: 'Pas de connexion réseau : la modification ne peut pas être enregistrée.',
-  erreurServeur: 'L’enregistrement a échoué. Vérifiez votre connexion et réessayez.',
-  erreurChargement: 'Les données n’ont pas pu être chargées. Vérifiez votre connexion.',
+  horsLigne: MESSAGES_COMMUNS.horsLigne,
+  erreurServeur: MESSAGES_COMMUNS.erreurServeur,
 } as const
 
 /** D-020 : confirmation d'une date d'effet passée (nouveau taux ou correction). */

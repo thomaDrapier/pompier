@@ -9,6 +9,7 @@
 import { ligneEnVigueur, prochaineLigne, statutLigne } from '@/engine'
 import type { StatutLigne } from '@/engine'
 import type { LigneHistoriqueGrade, LigneTaux } from '@/data/conversions'
+import { formaterJour, formaterTaux } from '@/lib/formats'
 
 // Date du jour à Paris (dateParis) et date d'effet « passée »
 // (estDateEffetPassee) : fonctions du moteur, réexportées pour les écrans.
@@ -91,4 +92,14 @@ export function gradeALaDate(
   date: string,
 ): LigneHistoriqueGrade | null {
   return ligneEnVigueur(dater(historique), date)?.ligne ?? null
+}
+
+/** « 12,00 €/h depuis le 01/01/2026 » : taux en vigueur (spécifications 5.2 et 6.4). */
+export function texteTauxEnVigueur(ligne: LigneTaux): string {
+  return `${formaterTaux(ligne.taux_horaire)} depuis le ${formaterJour(ligne.date_effet)}`
+}
+
+/** « 12,50 €/h à partir du 01/07/2027 » : prochain taux (spécifications 5.2 et 6.4). */
+export function texteProchainTaux(ligne: LigneTaux): string {
+  return `${formaterTaux(ligne.taux_horaire)} à partir du ${formaterJour(ligne.date_effet)}`
 }

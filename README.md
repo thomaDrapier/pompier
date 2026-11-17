@@ -60,8 +60,14 @@ avec une adresse fictive (par exemple `prenom@example.test`) et un mot de passe
 d'au moins 8 caractères, en cochant « Auto Confirm User ». Se connecter ensuite sur
 http://localhost:5173 (`npm run dev`).
 
-Les e-mails envoyés par Supabase local (réinitialisation du mot de passe) ne partent
-pas : ils arrivent dans **Mailpit**, http://127.0.0.1:54324.
+**Grade de l'utilisateur** : il se renseigne dans l'application, écran **Paramètres**
+(`/parametres`, menu « Paramètres ») : grade et date d'effet, puis historique des
+promotions (D-017). Il n'est plus nécessaire de saisir `user_grade_history` dans le
+Studio. Tant qu'aucun grade n'est renseigné, les activités sont en « taux manquant ».
+
+Les e-mails envoyés par Supabase local (réinitialisation du mot de passe, y compris
+« Changer le mot de passe » dans Paramètres) ne partent pas : ils arrivent dans
+**Mailpit**, http://127.0.0.1:54324.
 
 ## Base de données
 
@@ -173,7 +179,7 @@ de s'exécuter si l'API ou la base visée n'est pas locale (127.0.0.1 / localhos
 | --- | --- |
 | `npm run test` | Tests unitaires Vitest (`src/**/*.test.ts(x)`), dans un DOM simulé, sans Supabase. |
 | `npm run test:rls` | Sécurité de la base (`tests/rls/`) : isolation des données entre utilisateurs, référentiel en lecture seule, rôle protégé, visiteur non connecté refusé, contraintes, refus du chevauchement de deux astreintes (D-010), requêtes de l'application (`src/data/requetes.ts`), règles du référentiel (`tests/rls/referentiel.test.ts` : doublons, taux négatif, suppression d'un élément utilisé, verrou de « est une astreinte », `nature_utilisee`, historique de grades, lecture du rôle). Passe par l'API avec la clé publique, comme l'application. |
-| `npm run test:e2e` | Parcours Playwright (`tests/e2e/`) sur l'application buildée (`vite preview`, port 4173), en format ordinateur et smartphone (Pixel 7) : authentification, réinitialisation du mot de passe par le lien reçu dans Mailpit, liste des activités, saisie, modification et suppression ; administration (menu et accès réservé, grades, natures, grille de taux, natures archivées dans la saisie). Les tests d'activités créent leurs comptes et leur attribuent le grade « Sapeur » du seed ; les tests d'administration créent leurs propres comptes administrateurs et un référentiel fictif suffixé, supprimé à la fin, et vérifient la connexion du compte `admin@example.com` : **le seed doit être présent** (`npx supabase db reset`). Première fois : `npx playwright install chromium`. Rapport : `npx playwright show-report`. |
+| `npm run test:e2e` | Parcours Playwright (`tests/e2e/`) sur l'application buildée (`vite preview`, port 4173), en format ordinateur et smartphone (Pixel 7) : authentification, réinitialisation du mot de passe par le lien reçu dans Mailpit, liste des activités, saisie, modification et suppression ; administration (menu et accès réservé, grades, natures, grille de taux, natures archivées dans la saisie) ; paramètres (grade et historique, recalcul des montants, taux du grade, « Changer le mot de passe » vérifié dans Mailpit). Les tests d'activités créent leurs comptes et leur attribuent le grade « Sapeur » du seed ; les tests d'administration créent leurs propres comptes administrateurs et un référentiel fictif suffixé, supprimé à la fin, et vérifient la connexion du compte `admin@example.com` : **le seed doit être présent** (`npx supabase db reset`). Première fois : `npx playwright install chromium`. Rapport : `npx playwright show-report`. |
 
 La base des tests RLS est lue dans `SUPABASE_DB_URL`, à défaut
 `postgresql://postgres:postgres@127.0.0.1:54322/postgres` (valeur de
@@ -195,11 +201,12 @@ Routage côté navigateur avec React Router (D-013) :
 | `/connexion`, `/mot-de-passe-oublie`, `/nouveau-mot-de-passe` | Authentification |
 | `/activites?mois=AAAA-MM&nature=<id>` | Liste des activités d'un mois, filtre facultatif |
 | `/activites/nouvelle`, `/activites/<id>` | Saisie, modification |
+| `/parametres` | Paramètres : grade et historique de grades, taux du grade, compte |
 | `/admin` | Administration : redirige vers `/admin/grades` |
 | `/admin/grades`, `/admin/natures` | Administration des grades, des natures |
 | `/admin/taux?grade=<id>&nature=<id>` | Grille de taux d'un grade ; avec `nature`, historique du couple |
 
-Les adresses d'activités et d'administration sont protégées : sans session,
+Les adresses d'activités, de paramètres et d'administration sont protégées : sans session,
 l'application renvoie vers `/connexion`, puis ramène à l'adresse demandée. Les
 adresses `/admin/…` affichent « Accès réservé à l'administrateur » à tout autre
 utilisateur (la base refuse de toute façon ses écritures, RLS). En production, l'hébergeur statique

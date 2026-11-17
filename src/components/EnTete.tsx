@@ -15,7 +15,7 @@ import { ADRESSES } from '@/routes/adresses'
 // pas de menu déroulant à ouvrir, chaque entrée se touche d'un pouce.
 // « Administration » n'apparaît que pour un administrateur (useProfil) ;
 // masquer l'entrée n'est qu'un confort, la protection est assurée par la base.
-// « Paramètres » sera ajouté à l'étape 2.3.
+// « Paramètres » est visible pour tout utilisateur connecté.
 export function EnTete() {
   const queryClient = useQueryClient()
   const profil = useProfil()
@@ -43,6 +43,7 @@ export function EnTete() {
       </div>
       <nav aria-label="Menu principal" className="flex gap-1 px-2 pb-2">
         <EntreeMenu to={ADRESSES.activites}>Activités</EntreeMenu>
+        <EntreeMenu to={ADRESSES.parametres}>Paramètres</EntreeMenu>
         {profil.data?.estAdmin && <EntreeMenu to={ADRESSES.admin}>Administration</EntreeMenu>}
       </nav>
     </header>

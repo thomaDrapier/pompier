@@ -2,7 +2,14 @@ import { useId, useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { avecStatut, dateParis, estDateEffetPassee, tauxCouple } from '@/data/affichage-referentiel'
+import {
+  avecStatut,
+  dateParis,
+  estDateEffetPassee,
+  tauxCouple,
+  texteProchainTaux,
+  texteTauxEnVigueur,
+} from '@/data/affichage-referentiel'
 import type { StatutLigne } from '@/data/affichage-referentiel'
 import type { LigneGrade, LigneNature, LigneTaux } from '@/data/conversions'
 import type { CorrectionTaux } from '@/data/requetes-referentiel'
@@ -14,7 +21,7 @@ import {
   MessageErreur,
   MessageReussite,
   Section,
-} from '@/features/admin/communs'
+} from '@/components/communs'
 import { MESSAGES, messageDateEffetPassee, messageErreur } from '@/features/admin/messages'
 import { choisirGrade, lireSaisieTaux, tauxVersChamp } from '@/features/admin/regles-admin'
 import type { ChampTaux, ChampsTaux } from '@/features/admin/regles-admin'
@@ -162,24 +169,16 @@ function Grille({
                 <span className="font-medium">{nature.libelle}</span>
                 {!nature.actif && <Badge variant="secondary">Archivée</Badge>}
               </span>
-              <span>{enVigueur ? texteEnVigueur(enVigueur) : 'Aucun taux'}</span>
-              {prochain && <span className="text-muted-foreground">{texteProchain(prochain)}</span>}
+              <span>{enVigueur ? texteTauxEnVigueur(enVigueur) : 'Aucun taux'}</span>
+              {prochain && (
+                <span className="text-muted-foreground">{texteProchainTaux(prochain)}</span>
+              )}
             </Link>
           </li>
         )
       })}
     </ul>
   )
-}
-
-/** « 12,00 €/h depuis le 01/01/2026 » (spécifications 5.2). */
-function texteEnVigueur(ligne: LigneTaux): string {
-  return `${formaterTaux(ligne.taux_horaire)} depuis le ${formaterJour(ligne.date_effet)}`
-}
-
-/** « 12,50 €/h à partir du 01/07/2027 » (spécifications 5.2). */
-function texteProchain(ligne: LigneTaux): string {
-  return `${formaterTaux(ligne.taux_horaire)} à partir du ${formaterJour(ligne.date_effet)}`
 }
 
 /** Écriture demandée dans l'historique d'un couple. */

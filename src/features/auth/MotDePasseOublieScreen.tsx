@@ -2,8 +2,8 @@ import { useState, type FormEvent } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { supabase } from '@/lib/supabase'
 import { EcranAuth } from '@/features/auth/EcranAuth'
+import { envoyerLienReinitialisation } from '@/features/auth/reinitialisation'
 
 // Demande de réinitialisation du mot de passe : Supabase envoie un e-mail
 // contenant un lien qui ramène sur l'application (redirectTo), où l'écran
@@ -19,9 +19,7 @@ export function MotDePasseOublieScreen({ onRetour }: { onRetour: () => void }) {
     setEnvoi(true)
     // Le résultat n'est volontairement pas exploité : afficher une erreur
     // permettrait de deviner si l'adresse correspond à un compte.
-    await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin,
-    })
+    await envoyerLienReinitialisation(email)
     setEnvoi(false)
     setEnvoye(true)
   }

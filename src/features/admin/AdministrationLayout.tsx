@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation } from 'react-router'
 import { Button } from '@/components/ui/button'
-import { EtatLecture } from '@/features/admin/communs'
+import { EtatLecture } from '@/components/communs'
 import { MESSAGES } from '@/features/admin/messages'
 import { useProfil } from '@/hooks/useProfil'
 import { cn } from '@/lib/utils'

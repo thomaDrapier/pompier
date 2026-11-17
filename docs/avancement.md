@@ -3,22 +3,26 @@
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
 ## État actuel (mis à jour le 17/11/2026)
-- **En cours** : aucune étape. J2 · étape 2.2 terminée.
-- **Dernière étape terminée** : J2 · étape 2.2 — écrans d'administration (menu, garde d'accès, Grades, Natures, Grille de taux) et natures archivées dans la saisie.
-- **Prochaine action** : J2 · étape 2.3 (écran Paramètres), consigne fournie par le projet Claude.
+- **En cours** : aucune étape. J2 terminé.
+- **Dernière étape terminée** : J2 · étape 2.3 — écran Paramètres (grade et historique de grades, taux du grade, compte). J2 terminé.
+- **Prochaine action** : J3 · Restitutions : plan et spécifications à préparer dans le projet Claude, en commençant par le point en attente « identification des interventions ».
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
   - J4 : garantir que le seed et ses comptes de test (`demo@example.com` et l'administrateur `admin@example.com`) ne sont jamais appliqués en production.
   - J4 : l'hébergeur statique doit renvoyer index.html pour toute adresse (routage côté navigateur).
   - Identification des interventions (mise en avant, nombre d'interventions de l'accueil) : aucun indicateur dans le modèle ; à trancher avant le J3.
-  - Grade du porteur saisi à la main dans le Studio jusqu'à l'étape 2.3 (écran Paramètres).
   - Désactiver l'inscription publique en production (J4) : `enable_signup` est gardé actif en local, car les tests créent leurs comptes par signUp.
   - Intégration continue GitHub Actions à envisager (lint, build, tests).
   - J3 (étape 3.1) : jeu de démonstration pour `demo@example.com` — activités fictives sur les 3 mois précédents et le mois en cours, dates relatives à la date de recréation de la       base, cas variés (astreintes nuit/week-end, interventions pendant et hors astreinte, activités à cheval sur deux semaines et deux mois, changement d'heure, promotion de grade,       taux manquant).
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 17/11/2026 — J2 · étape 2.3 terminée : écran Paramètres (J2 terminé)
+- **Fait** : écran Paramètres `/parametres` (`src/features/parametres/ParametresScreen.tsx`), entrée « Paramètres » du menu entre « Activités » et « Administration », visible pour tout utilisateur connecté (`src/components/EnTete.tsx`, `src/App.tsx`, `src/routes/adresses.ts`). Mon grade : grade actuel ou « Aucun grade renseigné… », historique du plus récent au plus ancien (« Actuel », « À venir », « Archivé »), ajout (grades actifs, date du jour par défaut), correction (grade archivé conservable), suppression, confirmations de D-021 et doublon de date (D-028). Taux de mon grade en lecture seule, une ligne par nature active. Compte : e-mail en lecture seule, « Changer le mot de passe » par le lien de réinitialisation existant (`src/features/auth/reinitialisation.ts`, partagé avec « Mot de passe oublié », même `redirectTo`). Règles en fonctions pures (`regles-parametres.ts` : date à confirmer, contrôle du formulaire, grades proposés, messages). Mutualisation : éléments d'interface communs déplacés dans `src/components/communs.tsx`, messages communs dans `src/lib/messages.ts`, textes des taux (« depuis le », « à partir du ») dans `src/data/affichage-referentiel.ts`, lecture de Mailpit dans `tests/e2e/aides.ts`. Invalidations de D-029 vérifiées : après l'ajout d'un grade, la liste des activités se recalcule sans rechargement (test e2e b). README : le grade se renseigne dans Paramètres, plus dans le Studio. Tests : `npm run test` (285), `npm run test:rls` (81), `npm run test:e2e` (68, dont 16 nouveaux dans `tests/e2e/parametres.spec.ts`, parcours a à h sur ordinateur et Pixel 7), `npm run lint` et `npm run build` sans erreur. Vérification visuelle sur téléphone simulé (375 × 812).
+- **Branche** : feat/j2-3-parametres
+- **Décisions liées** : D-016, D-017, D-018, D-021, D-028, D-029, D-031 (choix techniques de l'étape, consignée par la branche docs/d031-parametres)
 
 ### 17/11/2026 — J2 · étape 2.2 terminée : écrans d'administration
 - **Fait** : menu de navigation dans l'en-tête (`src/components/EnTete.tsx` : « Activités », « Administration » pour l'administrateur seulement). Routes `/admin` (redirige vers `/admin/grades`), `/admin/grades`, `/admin/natures`, `/admin/taux` (`src/App.tsx`, `src/routes/adresses.ts`), reliées par des onglets ; garde d'accès (`src/features/admin/AdministrationLayout.tsx` : chargement, puis « Accès réservé à l'administrateur » et « Retour aux activités »). Écrans `GradesScreen.tsx`, `NaturesScreen.tsx` (case « Est une astreinte » grisée selon `nature_utilisee`, avec l'explication de D-022), `TauxScreen.tsx` (grade dans l'adresse, une ligne par nature, historique d'un couple, nouveau taux, correction et suppression avec les confirmations de D-019 et D-020). Contrôles des formulaires en fonctions pures (`regles-admin.ts`), messages des spécifications et traduction des erreurs (`messages.ts`), éléments communs (`communs.tsx`) ; formats `formaterTaux` et `formaterJour` (`src/lib/formats.ts`). Saisie d'une activité : nature archivée signalée « (Archivée) » et conservée en modification ; filtre de la liste : toutes les natures, archivées signalées. Seed : compte administrateur fictif `admin@example.com` ; README (seed, adresses, tests). Tests : `npm run test` (270), `npm run test:rls` (81), `npm run test:e2e` (52, dont 14 nouveaux dans `tests/e2e/administration.spec.ts`, parcours a à f sur ordinateur et Pixel 7), `npm run lint` et `npm run build` sans erreur. Vérification visuelle sur téléphone simulé (375 × 812). Aucun écran Paramètres (étape 2.3).

@@ -1,6 +1,6 @@
-// Éléments communs aux écrans d'administration : messages, champs et boîte
-// de confirmation. Composants shadcn/ui par défaut, sans travail graphique
-// (D-014).
+// Éléments communs aux écrans d'administration et de paramètres : messages,
+// champs et boîte de confirmation. Composants shadcn/ui par défaut, sans
+// travail graphique (D-014).
 
 import { useId, type ReactNode } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
@@ -17,7 +17,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { MESSAGES } from '@/features/admin/messages'
+import { MESSAGES_COMMUNS } from '@/lib/messages'
 
 /** Message de réussite, en haut de l'écran (spécifications, règles communes). */
 export function MessageReussite({ message }: { message: string | null }) {
@@ -45,7 +45,7 @@ export function EtatLecture({ enChargement, erreur }: { enChargement: boolean; e
   if (erreur) {
     return (
       <div className="flex flex-col items-start gap-2">
-        <MessageErreur message={MESSAGES.erreurChargement} />
+        <MessageErreur message={MESSAGES_COMMUNS.erreurChargement} />
         <Button variant="outline" onClick={() => queryClient.refetchQueries()}>
           Réessayer
         </Button>

@@ -48,6 +48,30 @@ export async function nettoyerReferentiel(suffixe: string): Promise<void> {
   await requeteSql(`delete from public.grades where libelle ilike $1`, [motif])
 }
 
+// Boîte mail de test de Supabase local (reçoit les e-mails de réinitialisation).
+const URL_MAILPIT = process.env.MAILPIT_URL ?? 'http://127.0.0.1:54324'
+
+/** Lit dans Mailpit le lien de réinitialisation envoyé à une adresse (attente de 20 s au plus). */
+export async function lienDeReinitialisation(email: string): Promise<string> {
+  const recherche = `${URL_MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:${email}`)}`
+  let lien: string | undefined
+  await expect
+    .poll(
+      async () => {
+        const reponse = await fetch(recherche)
+        const { messages } = (await reponse.json()) as { messages: { ID: string }[] }
+        if (messages.length === 0) return false
+        const detail = await fetch(`${URL_MAILPIT}/api/v1/message/${messages[0].ID}`)
+        const { Text } = (await detail.json()) as { Text: string }
+        lien = /https?:\/\/\S*\/auth\/v1\/verify\?\S+/.exec(Text)?.[0]
+        return lien !== undefined
+      },
+      { message: 'e-mail de réinitialisation attendu dans Mailpit', timeout: 20_000 },
+    )
+    .toBe(true)
+  return (lien as string).replace(/[)>\].,]+$/, '')
+}
+
 /** Date du jour à Paris, au format AAAA-MM-JJ (valeur d'un champ date). */
 export function dateDuJourParis(): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(new Date())
