@@ -17,6 +17,7 @@ import { randomUUID } from 'node:crypto'
 import type pg from 'pg'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import {
+  ErreurAstreinteEtIntervention,
   ErreurAstreinteVerrouillee,
   ErreurDejaServi,
   ErreurDoublon,
@@ -590,5 +591,72 @@ describe('8. Lecture du rôle', () => {
 
     expect(error).toBeNull()
     expect(data).toEqual([])
+  })
+})
+
+describe('9. Indicateur « est une intervention » (D-032)', () => {
+  it('une nature à la fois astreinte et intervention est refusée, à la création comme en modification', async () => {
+    const creation = await admin.client.from('activity_types').insert({
+      code: `REF-AI-${s}`,
+      libelle: `REF Astreinte intervention ${s}`,
+      ordre: 9999,
+      est_astreinte: true,
+      est_intervention: true,
+    })
+    expect(creation.error?.code).toBe(VIOLATION_CHECK)
+    expect(traduireErreur(creation.error!)).toBeInstanceOf(ErreurAstreinteEtIntervention)
+
+    // natureLibre devient une astreinte (elle n'a jamais servi), puis ne peut
+    // pas devenir aussi une intervention.
+    await admin.client.from('activity_types').update({ est_astreinte: true }).eq('id', natureLibre)
+    const modification = await admin.client
+      .from('activity_types')
+      .update({ est_intervention: true })
+      .eq('id', natureLibre)
+    expect(traduireErreur(modification.error!)).toBeInstanceOf(ErreurAstreinteEtIntervention)
+    await admin.client.from('activity_types').update({ est_astreinte: false }).eq('id', natureLibre)
+  })
+
+  it('un non-administrateur ne peut pas modifier l’indicateur', async () => {
+    const { data, error } = await a.client
+      .from('activity_types')
+      .update({ est_intervention: true })
+      .eq('id', natureLibre)
+      .select('id')
+
+    expect(error).toBeNull()
+    expect(data).toEqual([])
+    expect(await lireEnBase('activity_types', 'est_intervention', natureLibre)).toBe(false)
+  })
+
+  it('l’administrateur le modifie à tout moment, même pour une nature utilisée par un autre utilisateur', async () => {
+    const coche = await admin.client
+      .from('activity_types')
+      .update({ est_intervention: true })
+      .eq('id', natureUtiliseeParB)
+      .select('est_intervention')
+      .single()
+    expect(coche.error).toBeNull()
+    expect(coche.data?.est_intervention).toBe(true)
+
+    const decoche = await admin.client
+      .from('activity_types')
+      .update({ est_intervention: false })
+      .eq('id', natureUtiliseeParB)
+      .select('est_intervention')
+      .single()
+    expect(decoche.error).toBeNull()
+    expect(decoche.data?.est_intervention).toBe(false)
+  })
+
+  it('une nature est créée sans être une intervention par défaut', async () => {
+    const { data, error } = await admin.client
+      .from('activity_types')
+      .insert({ code: `REF-DEF-${s}`, libelle: `REF Defaut ${s}`, ordre: 9999 })
+      .select('id, est_intervention')
+      .single()
+    expect(error).toBeNull()
+    naturesCreees.push(data!.id)
+    expect(data?.est_intervention).toBe(false)
   })
 })

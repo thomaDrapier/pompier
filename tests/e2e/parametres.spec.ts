@@ -3,7 +3,7 @@
 //
 // Chaque test crée ses propres comptes fictifs ; aucun test ne lit ni ne
 // modifie l'historique d'un autre utilisateur. Les grades et taux utilisés
-// sont ceux du seed (FICTIFS) : Sapeur, Caporal ; pour un Sapeur, intervention
+// sont ceux du seed (FICTIFS) : Sapeur, Caporal ; pour un Sapeur, intervention VSAV
 // à 10,00 €/h jusqu'au 30/06/2026 et garde à 8,00 €/h depuis le 01/01/2025.
 
 import { randomUUID } from 'node:crypto'
@@ -110,11 +110,11 @@ test('b) une activité en « taux manquant » prend un montant après l’ajout 
   page,
 }) => {
   const compte = await compteSansGrade()
-  // Intervention de 2 h le 10/06/2026, saisie avant tout grade.
+  // Intervention VSAV de 2 h le 10/06/2026, saisie avant tout grade.
   await requeteSql(
     `insert into public.activities (user_id, activity_type_id, debut, fin)
      select $1, t.id, '2026-06-10T08:00:00+02:00', '2026-06-10T10:00:00+02:00'
-     from public.activity_types t where t.code = 'INT'`,
+     from public.activity_types t where t.code = 'VSAV'`,
     [compte.id],
   )
 

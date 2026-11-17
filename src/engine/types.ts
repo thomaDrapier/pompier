@@ -21,6 +21,11 @@ export interface Nature {
   id: string
   /** C'est cet indicateur qui déclenche la règle de déduction (3.4). */
   estAstreinte: boolean
+  /**
+   * Nature d'intervention (D-032) : ne sert qu'aux restitutions (comptage,
+   * catégorie « Interventions ») ; aucun effet sur les durées ni les montants.
+   */
+  estIntervention: boolean
 }
 
 /** Une ligne de l'historique des grades de l'utilisateur. */
@@ -81,22 +86,54 @@ export interface TotalNature {
   montantCentimes: number
 }
 
+/** Nombre d'interventions (D-034) : toutes, quel que soit leur statut. */
+export interface CompteInterventions {
+  nombre: number
+  /** Dont celles qui ne sont pas au statut « ok ». */
+  enAnomalie: number
+}
+
 /**
- * Totaux d'un ensemble de résultats (D-011). Durées comme montants ne
- * comptent que les activités au statut « ok ».
+ * Totaux d'un ensemble de résultats.
+ * - Montants, nombre et détail par nature : activités « ok » seulement (D-011).
+ * - Durées d'astreinte : astreintes « ok » et « taux manquant » (D-035) ;
+ *   celles en « chevauchement d'astreintes » restent exclues.
+ * - Interventions : toutes, anomalies comprises et dénombrées (D-034).
  */
 export interface Totaux {
   /** Montant total en centimes. */
   montantCentimes: number
-  /** Durées des astreintes, totalisées à part des autres natures. */
+  /** Durées des astreintes, totalisées à part des autres natures (D-035). */
   astreintes: DureesAstreinte
-  /** Détail par nature, dans l'ordre de première apparition. */
+  /** Détail par nature (activités « ok »), dans l'ordre de première apparition. */
   parNature: TotalNature[]
   /** Nombre d'activités au statut « ok ». */
   nbOk: number
-  /** Nombre d'activités en anomalie, par statut (exclues des totaux). */
+  /** Nombre d'interventions, anomalies comprises (D-034). */
+  interventions: CompteInterventions
+  /** Nombre d'activités en anomalie, par statut (montants exclus des totaux). */
   anomalies: {
     taux_manquant: number
     chevauchement_astreintes: number
   }
+}
+
+/**
+ * Plages d'une activité, bornes en millisecondes UTC tronquées à la minute
+ * (D-012). Elles permettent de ventiler une astreinte sur plusieurs périodes
+ * (D-033).
+ */
+export interface PlagesActivite {
+  /** [début, fin) de l'activité. */
+  declaree: { debut: number; fin: number }
+  /** Parties déduites d'une astreinte (couvertes par d'autres activités) ; vide hors astreinte. */
+  deduites: { debut: number; fin: number }[]
+  /** Parties nettes d'une astreinte ; hors astreinte, la plage déclarée entière. */
+  nettes: { debut: number; fin: number }[]
+}
+
+/** Résultat du calcul d'une activité, avec ses plages. */
+export interface ActiviteDetaillee {
+  resultat: ResultatActivite
+  plages: PlagesActivite
 }

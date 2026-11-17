@@ -5,9 +5,9 @@ import type { ActiviteEntree, HistoriqueGrade, Nature, Taux } from './index'
 
 // Référentiel de test. Tous les taux sont fictifs (2,00 €/h et 12,00 €/h).
 const natures: Nature[] = [
-  { id: 'astreinte', estAstreinte: true },
-  { id: 'intervention', estAstreinte: false },
-  { id: 'manoeuvre', estAstreinte: false }, // volontairement sans taux
+  { id: 'astreinte', estAstreinte: true, estIntervention: false },
+  { id: 'intervention', estAstreinte: false, estIntervention: true },
+  { id: 'manoeuvre', estAstreinte: false, estIntervention: false }, // volontairement sans taux
 ]
 const historiqueGrades: HistoriqueGrade[] = [{ gradeId: 'sapeur', dateEffet: '2025-01-01' }]
 const taux: Taux[] = [
@@ -54,7 +54,7 @@ describe('calculerActivites', () => {
         statut: 'ok',
       },
     ])
-    expect(totaliser(resultats)).toEqual({
+    expect(totaliser(resultats, natures)).toEqual({
       montantCentimes: 1550,
       astreintes: { dureeDeclareeMin: 240, dureeDeduiteMin: 45, dureeNetteMin: 195 },
       parNature: [
@@ -62,6 +62,7 @@ describe('calculerActivites', () => {
         { natureId: 'intervention', nombre: 1, dureeRetenueMin: 45, montantCentimes: 900 },
       ],
       nbOk: 2,
+      interventions: { nombre: 1, enAnomalie: 0 },
       anomalies: { taux_manquant: 0, chevauchement_astreintes: 0 },
     })
   })
@@ -137,7 +138,7 @@ describe('calculerActivites', () => {
         montantCentimes: 1200,
         statut: 'ok',
       })
-      expect(totaliser(resultats).anomalies.chevauchement_astreintes).toBe(0)
+      expect(totaliser(resultats, natures).anomalies.chevauchement_astreintes).toBe(0)
     })
 
     it('deux astreintes qui se chevauchent : en anomalie et exclues des totaux, sans effet sur les autres activités', () => {
@@ -172,7 +173,7 @@ describe('calculerActivites', () => {
       expect(resultats[2]).toMatchObject({ dureeNetteMin: 30, montantCentimes: 600, statut: 'ok' })
       expect(resultats[3]).toMatchObject({ dureeNetteMin: 240, montantCentimes: 800, statut: 'ok' })
 
-      expect(totaliser(resultats)).toEqual({
+      expect(totaliser(resultats, natures)).toEqual({
         montantCentimes: 1400,
         astreintes: { dureeDeclareeMin: 240, dureeDeduiteMin: 0, dureeNetteMin: 240 },
         parNature: [
@@ -180,6 +181,7 @@ describe('calculerActivites', () => {
           { natureId: 'astreinte', nombre: 1, dureeRetenueMin: 240, montantCentimes: 800 },
         ],
         nbOk: 2,
+        interventions: { nombre: 1, enAnomalie: 0 },
         anomalies: { taux_manquant: 0, chevauchement_astreintes: 2 },
       })
     })
@@ -211,7 +213,7 @@ describe('calculerActivites', () => {
       // La manœuvre à taux nul est bien déduite de l'astreinte (4 h − 1 h 30).
       expect(resultats[0]).toMatchObject({ statut: 'ok', dureeNetteMin: 150, montantCentimes: 500 })
 
-      const totaux = totaliser(resultats)
+      const totaux = totaliser(resultats, natures)
       expect(totaux.nbOk).toBe(2)
       expect(totaux.anomalies).toEqual({ taux_manquant: 0, chevauchement_astreintes: 0 })
       expect(totaux.montantCentimes).toBe(500)
@@ -242,11 +244,12 @@ describe('calculerActivites', () => {
         montantCentimes: null,
         statut: 'taux_manquant',
       })
-      expect(totaliser(resultats)).toEqual({
+      expect(totaliser(resultats, natures)).toEqual({
         montantCentimes: 1200,
         astreintes: { dureeDeclareeMin: 0, dureeDeduiteMin: 0, dureeNetteMin: 0 },
         parNature: [{ natureId: 'intervention', nombre: 1, dureeRetenueMin: 60, montantCentimes: 1200 }],
         nbOk: 1,
+        interventions: { nombre: 1, enAnomalie: 0 },
         anomalies: { taux_manquant: 1, chevauchement_astreintes: 0 },
       })
     })
@@ -266,7 +269,7 @@ describe('calculerActivites', () => {
         statut: 'taux_manquant',
       })
       expect(resultats[1]).toMatchObject({ dureeNetteMin: 45, statut: 'taux_manquant' })
-      expect(totaliser(resultats)).toMatchObject({
+      expect(totaliser(resultats, natures)).toMatchObject({
         montantCentimes: 0,
         nbOk: 0,
         anomalies: { taux_manquant: 2, chevauchement_astreintes: 0 },
@@ -300,7 +303,7 @@ describe('calculerActivites', () => {
         montantCentimes: null,
         statut: 'chevauchement_astreintes',
       })
-      expect(totaliser(resultats).anomalies).toEqual({
+      expect(totaliser(resultats, natures).anomalies).toEqual({
         taux_manquant: 0,
         chevauchement_astreintes: 2,
       })
@@ -376,11 +379,12 @@ describe('calculerActivites', () => {
 
 describe('totaliser', () => {
   it('renvoie des totaux à zéro pour une liste vide', () => {
-    expect(totaliser([])).toEqual({
+    expect(totaliser([], natures)).toEqual({
       montantCentimes: 0,
       astreintes: { dureeDeclareeMin: 0, dureeDeduiteMin: 0, dureeNetteMin: 0 },
       parNature: [],
       nbOk: 0,
+      interventions: { nombre: 0, enAnomalie: 0 },
       anomalies: { taux_manquant: 0, chevauchement_astreintes: 0 },
     })
   })
@@ -394,7 +398,7 @@ describe('totaliser', () => {
       activite('i3', 'intervention', '2026-06-29 10:00', '2026-06-29 10:07'),
     ])
 
-    expect(totaliser(resultats)).toEqual({
+    expect(totaliser(resultats, natures)).toEqual({
       // 650 + 900 + 2100 (630 min à 2,00 €/h) + 1800 + 140 (7 min à 12,00 €/h)
       montantCentimes: 5590,
       astreintes: { dureeDeclareeMin: 960, dureeDeduiteMin: 135, dureeNetteMin: 825 },
@@ -403,6 +407,7 @@ describe('totaliser', () => {
         { natureId: 'intervention', nombre: 3, dureeRetenueMin: 142, montantCentimes: 2840 },
       ],
       nbOk: 5,
+      interventions: { nombre: 3, enAnomalie: 0 },
       anomalies: { taux_manquant: 0, chevauchement_astreintes: 0 },
     })
   })

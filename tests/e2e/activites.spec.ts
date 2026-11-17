@@ -4,7 +4,7 @@
 // Chaque test crée son propre compte fictif, avec le grade « Sapeur » du seed :
 // les tests peuvent tourner en parallèle sans se gêner.
 // Taux FICTIFS du seed pour un Sapeur en juin 2026 : astreinte 1,00 €/h,
-// intervention 10,00 €/h.
+// intervention VSAV 10,00 €/h.
 
 import { expect, test } from '@playwright/test'
 import type { CompteTest } from '../helpers/comptes.ts'
@@ -41,7 +41,7 @@ test('a) exemple de référence : astreinte nette de 3 h 15 et montants du seed'
   await saisirActivite(page, astreinteMatin)
   await expect(page.getByText('Activité enregistrée')).toBeVisible()
   await saisirActivite(page, {
-    nature: 'Intervention',
+    nature: 'Intervention VSAV',
     dateDebut: '2026-06-26',
     heureDebut: '08:00',
     heureFin: '08:45',
@@ -56,7 +56,7 @@ test('a) exemple de référence : astreinte nette de 3 h 15 et montants du seed'
   // 3 h 15 à 1,00 €/h (taux fictif).
   await expect(astreinte).toContainText('3,25 €')
 
-  const intervention = lignesActivites(page).filter({ hasText: 'Intervention' })
+  const intervention = lignesActivites(page).filter({ hasText: 'Intervention VSAV' })
   await expect(intervention).toContainText('0 h 45')
   // 0 h 45 à 10,00 €/h (taux fictif).
   await expect(intervention).toContainText('7,50 €')
@@ -127,7 +127,7 @@ test('d) modification puis suppression d’une activité', async ({ page }) => {
 test('e) navigation entre mois et filtre par nature', async ({ page }) => {
   await saisirActivite(page, astreinteMatin)
   await saisirActivite(page, {
-    nature: 'Intervention',
+    nature: 'Intervention VSAV',
     dateDebut: '2026-06-27',
     heureDebut: '14:00',
     heureFin: '15:00',
@@ -145,9 +145,9 @@ test('e) navigation entre mois et filtre par nature', async ({ page }) => {
   // Filtre : une seule ligne, totaux inchangés (mois entier).
   const totaux = page.getByRole('region', { name: 'Totaux du mois' })
   await expect(totaux).toContainText('14,00 €')
-  await page.getByLabel('Nature').selectOption({ label: 'Intervention' })
+  await page.getByLabel('Nature').selectOption({ label: 'Intervention VSAV' })
   await expect(lignesActivites(page)).toHaveCount(1)
-  await expect(lignesActivites(page).first()).toContainText('Intervention')
+  await expect(lignesActivites(page).first()).toContainText('Intervention VSAV')
   await expect(totaux).toContainText('14,00 €')
 
   // Le mois et le filtre sont conservés au retour d'un autre écran.
@@ -173,7 +173,7 @@ test('paramètres d’adresse invalides : mois en cours et filtre « Toutes »',
 
 test('doublon exact : avertissement, puis « Enregistrer quand même »', async ({ page }) => {
   const intervention = {
-    nature: 'Intervention',
+    nature: 'Intervention VSAV',
     dateDebut: '2026-06-26',
     heureDebut: '08:00',
     heureFin: '08:45',

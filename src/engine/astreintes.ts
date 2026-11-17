@@ -1,9 +1,26 @@
 // Règles propres aux astreintes : durée nette (cahier des charges 3.4) et
 // détection des astreintes qui se chevauchent (D-010).
 
-import { duree, soustraire } from './intervalles'
+import { duree, intersection, soustraire } from './intervalles'
 import type { Plage } from './intervalles'
-import type { DureesAstreinte } from './types'
+import type { DureesAstreinte, PlagesActivite } from './types'
+
+/**
+ * Plages d'une astreinte (règle 3.4) : la plage déclarée, ses parties
+ * déduites (couvertes par une autre activité) et ses parties nettes (le
+ * reste). Déduites et nettes sont disjointes et forment ensemble la plage
+ * déclarée : leurs durées sont celles de calculerDureesAstreinte.
+ *
+ * @param astreinte plage de l'astreinte
+ * @param autres plages de toutes les activités qui ne sont pas des astreintes
+ */
+export function plagesAstreinte(astreinte: Plage, autres: readonly Plage[]): PlagesActivite {
+  return {
+    declaree: { debut: astreinte.debut, fin: astreinte.fin },
+    deduites: intersection([astreinte], autres),
+    nettes: soustraire([astreinte], autres),
+  }
+}
 
 const MS_PAR_MINUTE = 60_000
 

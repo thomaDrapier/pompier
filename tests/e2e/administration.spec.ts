@@ -345,7 +345,7 @@ test('f) une nature archivée est absente de la création, conservée en modific
   await ouvrir(page, '/activites/nouvelle', utilisateur)
   await expect(page.getByRole('heading', { name: 'Nouvelle activité' })).toBeVisible()
   const nature = page.getByLabel('Nature')
-  await expect(nature.locator('option', { hasText: 'Intervention' })).toHaveCount(1)
+  await expect(nature.locator('option', { hasText: 'Intervention VSAV' })).toHaveCount(1)
   await expect(nature.locator('option', { hasText: libelle })).toHaveCount(0)
 
   await page.goto(`/activites/${activiteId}`)

@@ -91,6 +91,11 @@ export interface SaisieNature {
   code: string
   ordre: number
   estAstreinte: boolean
+  /**
+   * Nature d'intervention (D-032), modifiable à tout moment. Absent : la
+   * valeur enregistrée est conservée (case ajoutée à l'écran à l'étape 3.4).
+   */
+  estIntervention?: boolean
 }
 
 /** Toutes les natures : actives d'abord, puis archivées, chacune par ordre d'affichage. */
@@ -114,6 +119,7 @@ export async function creerNature(saisie: SaisieNature): Promise<LigneNature> {
       code: saisie.code,
       ordre: saisie.ordre,
       est_astreinte: saisie.estAstreinte,
+      ...(saisie.estIntervention === undefined ? {} : { est_intervention: saisie.estIntervention }),
     })
     .select('*')
     .single()
@@ -135,6 +141,7 @@ export async function modifierNature(id: string, saisie: SaisieNature): Promise<
       code: saisie.code,
       ordre: saisie.ordre,
       est_astreinte: saisie.estAstreinte,
+      ...(saisie.estIntervention === undefined ? {} : { est_intervention: saisie.estIntervention }),
     })
     .eq('id', id)
     .select('*')
