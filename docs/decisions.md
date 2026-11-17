@@ -323,3 +323,14 @@
   - L'unicité est contrôlée dans la base ; l'interface affiche « Une nature porte déjà ce libellé. »
 - **Conséquences** : migration à l'étape 2.1 (contrainte d'unicité insensible à la casse sur `activity_types.libelle`, test de refus d'un doublon, vérification que le seed la respecte) ; écran d'administration des natures (étape 2.2) ; cahier des charges v1.16 (sections 3.3, 7 et 13).
 - **Statut** : intégrée au cahier des charges v1.16
+
+## D-027 — Taux horaire nul autorisé
+- **Date** : 17/11/2026
+- **Origine** : projet Claude
+- **Contexte** : étape 2.0 du J2, spécification de la grille de taux. Le signe autorisé d'un taux horaire n'était pas défini. Sans taux, une activité est en « taux manquant » et exclue de tous les totaux, durées comprises (D-011) ; une nature non rémunérée serait donc toujours en anomalie.
+- **Décision** :
+  - Un taux horaire est positif ou nul (≥ 0,00 €/h), avec 2 décimales au plus. Un taux négatif est refusé.
+  - Une activité dont le taux applicable est 0,00 €/h a le statut « ok » : son montant est 0,00 € et ses durées sont comptées dans les totaux.
+  - Le contrôle est appliqué dans l'interface et dans la base.
+- **Conséquences** : migration à l'étape 2.1 (contrainte `taux_horaire >= 0` sur `reference_rates` si elle n'existe pas déjà, test de refus d'un taux négatif, test d'acceptation d'un taux nul) ; moteur de calcul : vérifier par un test qu'un taux nul donne le statut « ok » et un montant nul (aucune autre modification attendue) ; écran de la grille de taux (étape 2.2) ; cahier des charges v1.17 (sections 3.5, 7 et 13).
+- **Statut** : intégrée au cahier des charges v1.17
