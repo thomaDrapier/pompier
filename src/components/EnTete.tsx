@@ -34,7 +34,7 @@ export function EnTete() {
   return (
     <header className="border-b">
       <div className="flex items-center justify-between gap-2 px-4 py-2">
-        <Link to={ADRESSES.activites} className="font-semibold">
+        <Link to={ADRESSES.accueil} className="font-semibold">
           SPV Activités
         </Link>
         <Button variant="outline" size="sm" onClick={seDeconnecter} disabled={envoi}>
@@ -42,6 +42,7 @@ export function EnTete() {
         </Button>
       </div>
       <nav aria-label="Menu principal" className="flex gap-1 px-2 pb-2">
+        <EntreeMenu to={ADRESSES.accueil}>Accueil</EntreeMenu>
         <EntreeMenu to={ADRESSES.activites}>Activités</EntreeMenu>
         <EntreeMenu to={ADRESSES.parametres}>Paramètres</EntreeMenu>
         {profil.data?.estAdmin && <EntreeMenu to={ADRESSES.admin}>Administration</EntreeMenu>}
