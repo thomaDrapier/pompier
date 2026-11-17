@@ -1,6 +1,8 @@
 // Textes des restitutions (spécifications des écrans v1.3), avec les accords
 // au singulier et au pluriel (D-016). Fonctions pures.
 
+import { formaterDuree } from '@/lib/formats'
+
 /** « 1 activité », « 3 activités » ; `pluriel` par défaut : singulier + « s ». */
 export function compter(nombre: number, singulier: string, pluriel = `${singulier}s`): string {
   return `${nombre} ${nombre === 1 ? singulier : pluriel}`
@@ -46,3 +48,14 @@ export const LIBELLES_CATEGORIES = {
   intervention: 'Interventions',
   autre: 'Autres activités',
 } as const
+
+/** Durées d'astreinte « déclarée · déduite · nette » : « 14 h 00 · 1 h 30 · 12 h 30 ». */
+export function texteDureesAstreinte(durees: {
+  dureeDeclareeMin: number
+  dureeDeduiteMin: number
+  dureeNetteMin: number
+}): string {
+  return [durees.dureeDeclareeMin, durees.dureeDeduiteMin, durees.dureeNetteMin]
+    .map(formaterDuree)
+    .join(' · ')
+}

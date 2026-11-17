@@ -9,6 +9,7 @@ export const ADRESSES = {
   activites: '/activites',
   nouvelleActivite: '/activites/nouvelle',
   activite: (id: string) => `/activites/${id}`,
+  astreintes: '/astreintes',
   parametres: '/parametres',
   // Administration (administrateur uniquement, spécifications 6.1).
   admin: '/admin',
@@ -59,4 +60,9 @@ export function lireEtatNavigation(etat: unknown): EtatNavigation {
     retour: interne(brut.retour),
     message: texte(brut.message),
   }
+}
+
+/** Écran Astreintes : vue Semaine (clé « 2026-W47 ») ou Mois (clé « 2026-11 »). */
+export function adresseAstreintes(vue: 'semaine' | 'mois', periode: string): string {
+  return `${ADRESSES.astreintes}?${new URLSearchParams({ vue, periode }).toString()}`
 }

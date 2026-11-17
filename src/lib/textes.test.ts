@@ -4,6 +4,7 @@ import {
   texteActivitesNonComptees,
   texteAstreintesAChevalMois,
   texteDontAnomalies,
+  texteDureesAstreinte,
 } from './textes'
 
 describe('compter', () => {
@@ -55,5 +56,13 @@ describe('texteAstreintesAChevalMois', () => {
     expect(texteAstreintesAChevalMois(2)).toBe(
       '2 astreintes à cheval sur deux mois : heures réparties, montant compté sur le mois de début.',
     )
+  })
+})
+
+describe('texteDureesAstreinte', () => {
+  it('« déclarée · déduite · nette »', () => {
+    expect(
+      texteDureesAstreinte({ dureeDeclareeMin: 840, dureeDeduiteMin: 90, dureeNetteMin: 750 }),
+    ).toBe('14 h 00 · 1 h 30 · 12 h 30')
   })
 })

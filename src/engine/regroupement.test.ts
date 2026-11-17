@@ -12,6 +12,7 @@ import {
 } from './periodes'
 import {
   CATEGORIES,
+  astreintesDeLaPeriode,
   categorieDe,
   ecart,
   historiqueMensuel,
@@ -367,5 +368,55 @@ describe('historiqueMensuel', () => {
     expect(annee.map((mois) => mois?.montants.totalCentimes ?? null)).toEqual([
       2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, null,
     ])
+  })
+})
+
+describe('astreintesDeLaPeriode (détail d’un jour)', () => {
+  it('donne la part de chaque astreinte dans le jour, marquée « à cheval »', () => {
+    const activites = detailler([
+      activite('a1', 'astreinte', '2026-11-15 18:00', '2026-11-16 08:00'),
+      activite('i1', 'vsav', '2026-11-15 23:00', '2026-11-16 01:00'),
+      activite('a2', 'astreinte', '2026-11-16 09:00', '2026-11-16 12:00'),
+    ])
+    const [dimanche, lundi] = [periodeJour('2026-11-15'), periodeJour('2026-11-16')]
+
+    expect(astreintesDeLaPeriode(activites, natures, dimanche)).toEqual([
+      {
+        id: 'a1',
+        natureId: 'astreinte',
+        debut: paris('2026-11-15 18:00').getTime(),
+        fin: paris('2026-11-16 08:00').getTime(),
+        dureeDeclareeMin: 360,
+        dureeDeduiteMin: 60,
+        dureeNetteMin: 300,
+        aCheval: true,
+      },
+    ])
+    expect(
+      astreintesDeLaPeriode(activites, natures, lundi).map((part) => [
+        part.id,
+        part.dureeNetteMin,
+        part.dureeDeduiteMin,
+        part.aCheval,
+      ]),
+    ).toEqual([
+      ['a1', 420, 60, true],
+      ['a2', 180, 0, false],
+    ])
+  })
+
+  it('la somme des parts est égale aux durées de la période ; le chevauchement est exclu', () => {
+    const activites = detailler([
+      activite('a1', 'astreinte', '2026-11-17 08:00', '2026-11-17 12:00'),
+      activite('a2', 'astreinte', '2026-11-17 10:00', '2026-11-17 14:00'),
+      activite('a3', 'astreinte', '2026-11-17 18:00', '2026-11-18 08:00'),
+    ])
+    const jour = periodeJour('2026-11-17')
+    const parts = astreintesDeLaPeriode(activites, natures, jour)
+
+    expect(parts.map((part) => part.id)).toEqual(['a3'])
+    expect(parts.reduce((total, part) => total + part.dureeNetteMin, 0)).toBe(
+      totaliserPeriode(activites, natures, jour).astreintes.dureeNetteMin,
+    )
   })
 })

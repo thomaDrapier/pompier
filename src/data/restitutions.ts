@@ -7,6 +7,7 @@
 // regroupement (src/engine/regroupement.ts) répartit les résultats.
 
 import {
+  astreintesDeLaPeriode,
   calculerActivitesDetaillees,
   decalerMois,
   ecart,
@@ -18,7 +19,14 @@ import {
   semainesDuMois,
   totaliserPeriode,
 } from '@/engine'
-import type { ActiviteDetaillee, Ecart, Nature, PeriodeNommee, TotauxPeriode } from '@/engine'
+import type {
+  ActiviteDetaillee,
+  Ecart,
+  Nature,
+  PartAstreinte,
+  PeriodeNommee,
+  TotauxPeriode,
+} from '@/engine'
 import { versActivite, versHistoriqueGrade, versNature, versTaux } from '@/data/conversions'
 import type {
   LigneActivite,
@@ -73,12 +81,18 @@ export interface RestitutionSemaine {
   semaine: TotauxPeriode
   /** Du lundi au dimanche. */
   jours: TotauxPeriode[]
+  /** Pour chaque jour (même ordre), ses astreintes et leur part du jour (écran Astreintes). */
+  astreintesParJour: PartAstreinte[][]
 }
 
 export function restituerSemaine(calcul: CalculDetaille, cle: string): RestitutionSemaine {
+  const jours = joursDeLaSemaine(cle)
   return {
     semaine: totaliserPeriode(calcul.activites, calcul.natures, periodeSemaine(cle)),
-    jours: regrouper(calcul.activites, calcul.natures, joursDeLaSemaine(cle)),
+    jours: regrouper(calcul.activites, calcul.natures, jours),
+    astreintesParJour: jours.map((jour) =>
+      astreintesDeLaPeriode(calcul.activites, calcul.natures, jour),
+    ),
   }
 }
 

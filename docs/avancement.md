@@ -3,9 +3,9 @@
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
 ## État actuel (mis à jour le 17/11/2026)
-- **En cours** : aucune étape. J3 · étape 3.2 terminée.
-- **Dernière étape terminée** : J3 · étape 3.2 — Accueil (écran d'arrivée) et liste des activités alignée sur les règles du J3.
-- **Prochaine action** : J3 · étape 3.3 (écran Astreintes).
+- **En cours** : aucune étape. J3 · étape 3.3 terminée.
+- **Dernière étape terminée** : J3 · étape 3.3 — écran Astreintes (vues Semaine et Mois).
+- **Prochaine action** : J3 · étape 3.4 (écran Rémunération et case « Est une intervention »).
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
@@ -17,6 +17,11 @@
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 17/11/2026 — J3 · étape 3.3 terminée : écran Astreintes
+- **Fait** : écran Astreintes `/astreintes` (`src/features/astreintes/AstreintesScreen.tsx`) : vues « Semaine » (par défaut) et « Mois », précédent / suivant, vue et période dans l'adresse (`?vue=semaine&periode=2026-W47`, `?vue=mois&periode=2026-11`), valeurs invalides ignorées ; totaux « déclarée · déduite · nette » avec détail par nature d'astreinte s'il y en a plusieurs ; une ligne par jour (dépliable en astreintes : horaires, part du jour, « à cheval », lien de modification) ou par semaine ISO limitée au mois ; bandeau des astreintes en chevauchement ; période vide. Entrée « Astreintes » du menu après « Activités » ; le menu passe à la ligne sur un écran étroit (il débordait du Pixel 7 avec cinq entrées), vérifié par les tests de parcours ; sur l'accueil, l'astreinte nette ouvre la vue Mois du mois en cours. Moteur : `astreintesDeLaPeriode` (part de chaque astreinte dans une période), exposée par `restituerSemaine`. Aides : `texteDureesAstreinte`, `formaterPlageJours` ; aides SQL des tests de parcours réunies dans `tests/e2e/aides.ts`. Tests : `npm run test` (355), `npm run test:rls` (85), `npm run test:e2e` (90, dont 10 nouveaux dans `tests/e2e/astreintes.spec.ts`, parcours a à e sur ordinateur et Pixel 7), `npm run lint` et `npm run build` sans erreur.
+- **Branche** : feat/j3-3-astreintes
+- **Décisions liées** : D-033, D-035, D-036, D-038 (choix techniques de l'étape, consignée par la branche docs/d038-astreintes)
 
 ### 17/11/2026 — J3 · étape 3.2 terminée : Accueil et liste des activités
 - **Fait** : écran Accueil `/accueil` (`src/features/accueil/AccueilScreen.tsx`) : mois en cours via `useRestitutionMois`, astreinte nette ventilée (D-033, D-035), interventions avec la règle « Anomalies » et détail dépliable par nature (D-034), rémunération dépliable par catégorie puis par nature, bandeau d'anomalie, mention des astreintes à cheval sur deux mois, message sans grade avec lien vers Paramètres, mois vide, bouton « Nouvelle activité » et lien « Voir les activités du mois ». Navigation : « Accueil » en tête du menu, `/accueil` écran d'arrivée après connexion et après le choix d'un nouveau mot de passe, racine et adresses inconnues renvoyées vers `/accueil`, adresse demandée toujours prioritaire. Liste des activités : totaux du mois lus par le même hook que l'accueil (mêmes chiffres), nombre d'interventions, étiquette « Intervention », filtre « Interventions » (`?nature=interventions`). Éléments communs : `src/components/restitutions.tsx` (détail dépliable, nombre avec anomalies, bandeau), textes et accords dans `src/lib/textes.ts`. Tests : `npm run test` (351), `npm run test:rls` (85), `npm run test:e2e` (80, dont 12 nouveaux dans `tests/e2e/accueil.spec.ts`, parcours a à f sur ordinateur et Pixel 7 ; tests d'authentification adaptés à l'arrivée sur l'accueil), `npm run lint` et `npm run build` sans erreur.

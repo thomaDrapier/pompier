@@ -11,11 +11,15 @@ import { expect, test, type Page } from '@playwright/test'
 import { creerCompte, type CompteTest } from '../helpers/comptes.ts'
 import {
   creerCompteAvecGrade,
-  dateDuJourParis,
+  insererActivite as activite,
+  jourDuMois,
+  lendemain,
   nettoyerReferentiel,
   requeteSql,
   seConnecter,
   supprimerCompte,
+  veilleDuMois,
+  verifierSansDefilementHorizontal,
 } from './aides.ts'
 
 let comptes: CompteTest[] = []
@@ -35,42 +39,6 @@ async function compteSapeur(): Promise<CompteTest> {
   const compte = await creerCompteAvecGrade('e2e-accueil')
   comptes.push(compte)
   return compte
-}
-
-/** Jour `jour` du mois en cours (Paris), « AAAA-MM-JJ ». */
-function jourDuMois(jour: number): string {
-  return `${dateDuJourParis().slice(0, 7)}-${String(jour).padStart(2, '0')}`
-}
-
-/** Dernier jour du mois précédent (Paris), « AAAA-MM-JJ ». */
-function veilleDuMois(): string {
-  const [annee, mois] = dateDuJourParis().split('-').map(Number)
-  return new Date(Date.UTC(annee, mois - 1, 0)).toISOString().slice(0, 10)
-}
-
-/** Lendemain d'une date « AAAA-MM-JJ ». */
-function lendemain(date: string): string {
-  const [annee, mois, jour] = date.split('-').map(Number)
-  return new Date(Date.UTC(annee, mois - 1, jour + 1)).toISOString().slice(0, 10)
-}
-
-/** Crée une activité (heures de Paris) ; la nature est désignée par son code. */
-async function activite(
-  compte: CompteTest,
-  code: string,
-  jourDebut: string,
-  heureDebut: string,
-  jourFin: string,
-  heureFin: string,
-): Promise<void> {
-  await requeteSql(
-    `insert into public.activities (user_id, activity_type_id, debut, fin)
-     select $1, t.id,
-            ($3::date + $4::time) at time zone 'Europe/Paris',
-            ($5::date + $6::time) at time zone 'Europe/Paris'
-     from public.activity_types t where t.code = $2`,
-    [compte.id, code, jourDebut, heureDebut, jourFin, heureFin],
-  )
 }
 
 /**
@@ -114,6 +82,7 @@ test('a) arrivée sur l’accueil ; racine et adresse inconnue y renvoient ; adr
   // Le menu commence par « Accueil ».
   const menu = page.getByRole('navigation', { name: 'Menu principal' }).getByRole('link')
   await expect(menu.first()).toHaveText('Accueil')
+  await verifierSansDefilementHorizontal(page)
 })
 
 test('b) accueil : astreinte nette, interventions et rémunération, détails dépliables', async ({
