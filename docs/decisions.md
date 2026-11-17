@@ -383,3 +383,18 @@
   - Tests de parcours : chaque test d'administration crée ses propres comptes (administrateur promu par SQL) et un référentiel fictif suffixé, d'ordre élevé (900 et plus), supprimé à la fin ; aucun élément du seed n'est modifié. Le compte `admin@example.com` n'est utilisé qu'en lecture (connexion et menu).
 - **Conséquences** : `src/components/EnTete.tsx`, `src/App.tsx`, `src/routes/adresses.ts`, `src/features/admin/`, `src/features/activites/`, `src/lib/formats.ts`, `supabase/seed.sql`, `tests/e2e/`, README. Aucun impact métier.
 - **Statut** : validée
+
+## D-031 — Choix techniques de l'écran Paramètres (étape 2.3)
+- **Date** : 17/11/2026
+- **Origine** : Claude Code
+- **Contexte** : J2, étape 2.3 (écran Paramètres, docs/specifications_ecrans.md v1.2, section 5). Plan validé dans le projet Claude. La spécification demande, en correction d'une ligne de l'historique de grades, la confirmation de D-021 « si la date d'effet résultante, ancienne ou nouvelle, est passée », sans dire quelle date citer dans « à partir du JJ/MM/AAAA ».
+- **Décision** :
+  - Date citée dans la confirmation d'une correction : la plus ancienne des dates passées parmi l'ancienne et la nouvelle date d'effet, puisque c'est à partir d'elle que les montants changent (une date future ne modifie aucun montant déjà affiché). Ajout : la date d'effet saisie, si elle est passée. Fonction pure `dateAConfirmer` (`src/features/parametres/regles-parametres.ts`), testée. **Point à valider dans le projet Claude.**
+  - Formulaire de grade : liste déroulante native, sans grade présélectionné à l'ajout (« Choisir… »), la spécification ne fixant pas de valeur par défaut ; date d'effet préremplie avec la date du jour à Paris. En correction, le grade de la ligne est proposé même s'il est archivé, signalé « (Archivé) ».
+  - Grade actuel, statuts « Actuel » / « À venir » et taux du grade : fonctions de `src/data/affichage-referentiel.ts` (moteur de calcul), lues avec la date du jour à Paris fixée à l'ouverture de l'écran. Taux : une ligne par nature active, dans l'ordre du référentiel.
+  - « Changer le mot de passe » : même appel que « Mot de passe oublié » (`envoyerLienReinitialisation`, `src/features/auth/reinitialisation.ts`, `redirectTo` inchangé, D-016). L'utilisateur étant connecté, un échec d'envoi est signalé, contrairement à « Mot de passe oublié », qui reste neutre.
+  - Messages : réussites de « Mon grade » en haut de l'écran ; message du lien envoyé dans la section « Compte », à côté du bouton.
+  - Mutualisation, sans changement de comportement : éléments d'interface communs déplacés de `src/features/admin/` vers `src/components/communs.tsx` ; messages hors ligne, d'erreur serveur et de chargement dans `src/lib/messages.ts` ; textes « … depuis le … » et « … à partir du … » des taux dans `src/data/affichage-referentiel.ts`, utilisés par la grille de taux et par Paramètres ; lecture de Mailpit dans `tests/e2e/aides.ts`.
+  - Recalcul des montants : les invalidations de D-029 suffisent (après une écriture de l'historique, le référentiel, les historiques de grades et les activités sont relus). Vérifié par un test de parcours : une activité en « taux manquant » prend son montant après l'ajout d'un grade, sans recharger la page.
+- **Conséquences** : `src/features/parametres/`, `src/components/EnTete.tsx`, `src/App.tsx`, `src/routes/adresses.ts`, `src/features/auth/`, `tests/e2e/parametres.spec.ts`, README. Seul impact métier possible : la date citée dans la confirmation d'une correction (texte affiché, sans effet sur le calcul).
+- **Statut** : à valider
