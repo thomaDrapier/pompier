@@ -3,9 +3,9 @@
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
 ## État actuel (mis à jour le 17/11/2026)
-- **En cours** : J3 · étape 3.0 (décisions et spécifications, projet Claude).
-- **Dernière étape terminée** : D-035, durées d'astreinte des activités en « taux manquant ».
-- **Prochaine action** : suite de docs/specifications_ecrans.md v1.3 dans le projet Claude. Validés, à consigner avec la v1.3 : Accueil (/accueil, écran d'arrivée ; astreinte nette, interventions avec détail par nature et anomalies en rouge, rémunération totale avec détail Astreintes / Interventions / Autres activités puis par nature) et Astreintes (/astreintes ; vues Semaine et Mois ; déclarée · déduite · nette ; mention « à cheval »). Restent : Rémunération, mise en avant des interventions dans la liste, case « Est une intervention » dans l'administration des natures.
+- **En cours** : aucune étape. J3 · étape 3.0 terminée.
+- **Dernière étape terminée** : J3 · étape 3.0 — décisions D-032 à D-035 et docs/specifications_ecrans.md v1.3.
+- **Prochaine action** : J3 · étape 3.1 (migration « est une intervention », module de regroupement par période, jeu de démonstration), plan et consigne fournis par le projet Claude.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
@@ -18,6 +18,11 @@
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 17/11/2026 — J3 · étape 3.0 terminée : spécifications des écrans v1.3
+- **Fait** : docs/specifications_ecrans.md v1.3 (Accueil, Astreintes, Rémunération, menu, règles communes, interventions dans la liste, case « Est une intervention »).
+- **Branche** : docs/specifications-ecrans-v1-3
+- **Décisions liées** : D-032, D-033, D-034, D-035
 
 ### 17/11/2026 — Décision : durées d'astreinte en « taux manquant »
 - **Fait** : D-035 consignée ; cahier des charges v1.22 (sections 3.5, 3.8, 13).
