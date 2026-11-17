@@ -437,3 +437,14 @@
   - Exception limitée au comptage : les durées et les montants des interventions en anomalie restent exclus des totaux (D-011).
 - **Conséquences** : module de regroupement (étape 3.1) ; spécifications des écrans v1.3 ; cahier des charges v1.21 (sections 3.5, 3.8 et 13).
 - **Statut** : intégrée au cahier des charges v1.21
+
+## D-035 — Durées d'astreinte des activités en « taux manquant »
+- **Date** : 17/11/2026
+- **Origine** : projet Claude
+- **Contexte** : J3, étape 3.0, spécification de l'écran Astreintes. D-011 exclut des totaux, durées comme montants, toute activité qui n'est pas au statut « ok ». Or un taux manquant n'enlève rien à la durée réellement effectuée d'une astreinte ; un écran consacré aux durées ne doit pas la masquer.
+- **Décision** :
+  - Les totaux de durées d'astreinte (déclarée, déduite, nette) comptent les astreintes au statut « taux manquant ». Seul leur montant reste exclu des totaux de rémunération (D-011).
+  - Les astreintes au statut « chevauchement d'astreintes » restent exclues de tous les totaux (D-010, D-011) : leur durée nette n'est pas fiable.
+  - La règle s'applique à tous les totaux de durées d'astreinte, pour qu'un même chiffre soit identique partout : accueil, écran Astreintes, et totaux de la liste des activités (comportement du J1 à adapter).
+- **Conséquences** : moteur ou module de regroupement (fonction de totalisation : durées d'astreinte « ok » et « taux manquant » ; tests) ; liste des activités (J1) ; spécifications des écrans v1.3 ; cahier des charges v1.22 (sections 3.5, 3.8 et 13).
+- **Statut** : intégrée au cahier des charges v1.22

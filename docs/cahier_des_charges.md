@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Version** | 1.21 |
+| **Version** | 1.22 |
 | **Date** | 17/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
@@ -144,7 +144,7 @@ gantt
 
 **Taux nul (D-027) :** un taux de 0,00 €/h est un taux valide : l'activité a le statut « ok », un montant de 0,00 € et ses durées sont comptées dans les totaux. Un taux négatif est refusé.
 
-**Statuts d'une activité (D-011) :** chaque activité a un seul statut : « ok », « taux manquant » ou « chevauchement d'astreintes » (3.4). Si une astreinte est à la fois en chevauchement et sans taux, « chevauchement d'astreintes » l'emporte. Pour une activité en anomalie, les durées et, s'il existe, le taux restent affichés, mais le montant n'est pas calculé. La déduction d'une activité sur une astreinte ne dépend pas de son taux : une activité en « taux manquant » est quand même déduite. Les totaux, durées comme montants, ne comptent que les activités au statut « ok » ; les durées d'astreinte y sont totalisées à part, avec un détail par nature. Exception (D-034) : le nombre d'interventions compte toutes les interventions, quel que soit leur statut ; celles en anomalie sont identifiables visuellement.
+**Statuts d'une activité (D-011) :** chaque activité a un seul statut : « ok », « taux manquant » ou « chevauchement d'astreintes » (3.4). Si une astreinte est à la fois en chevauchement et sans taux, « chevauchement d'astreintes » l'emporte. Pour une activité en anomalie, les durées et, s'il existe, le taux restent affichés, mais le montant n'est pas calculé. La déduction d'une activité sur une astreinte ne dépend pas de son taux : une activité en « taux manquant » est quand même déduite. Les totaux, durées comme montants, ne comptent que les activités au statut « ok » ; les durées d'astreinte y sont totalisées à part, avec un détail par nature. Exception (D-034) : le nombre d'interventions compte toutes les interventions, quel que soit leur statut ; celles en anomalie sont identifiables visuellement. Exception (D-035) : les totaux de durées d'astreinte comptent aussi les astreintes en « taux manquant » ; celles en « chevauchement d'astreintes » restent exclues.
 
 Les taux sont fixés pour tous les agents : aucun utilisateur ne peut les modifier ni créer de taux personnalisé.
 
@@ -193,7 +193,7 @@ flowchart TD
 L'utilisateur doit pouvoir consulter :
 
 1. **Les interventions effectuées** : liste chronologique filtrable (période, nature), avec date, durée, montant.
-2. **Les heures d'astreinte effectuées** : durée déclarée, durée déduite, durée nette, par jour, par semaine et par mois.
+2. **Les heures d'astreinte effectuées** : durée déclarée, durée déduite, durée nette, par jour, par semaine et par mois ; les astreintes en « taux manquant » y sont comptées (D-035).
 3. **La rémunération par intervention** (et plus généralement par activité).
 4. **La rémunération par semaine** : semaine ISO (lundi à dimanche), avec détail par nature.
 5. **L'historique de rémunération par mois** : tableau et graphique, avec total par nature et comparaison au mois précédent.
@@ -527,3 +527,4 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.19 | 17/11/2026 | Intégration de la décision D-032 : indicateur « est une intervention » sur les natures, une nature par type d'intervention (VSAV, FPT, VRID), exclusif de « est une astreinte », sans effet sur le calcul. Sections 3.3, 7, 8 et 11 mises à jour. |
 | 1.20 | 17/11/2026 | Intégration de la décision D-033 : durées d'astreinte ventilées par découpage exact aux limites de période ; montants rattachés à la période de début (provisoire, à revoir avant le J5). Sections 3.8 et 11 mises à jour. |
 | 1.21 | 17/11/2026 | Intégration de la décision D-034 : le nombre d'interventions compte aussi les interventions en anomalie, signalées visuellement ; durées et montants restent exclus des totaux. Sections 3.5 et 3.8 mises à jour. |
+| 1.22 | 17/11/2026 | Intégration de la décision D-035 : les totaux de durées d'astreinte comptent les astreintes en « taux manquant » (accueil, écran Astreintes, liste des activités) ; le chevauchement reste exclu. Sections 3.5 et 3.8 mises à jour. |
