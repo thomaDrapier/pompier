@@ -99,7 +99,7 @@ export function NaturesScreen() {
       {ajout ? (
         <FormulaireNature
           titre="Nouvelle nature"
-          initial={{ libelle: '', code: '', ordre: '', estAstreinte: false }}
+          initial={{ libelle: '', code: '', ordre: '', estAstreinte: false, estIntervention: false }}
           etatAstreinte="libre"
           onEnregistrer={ajouter}
           onAnnuler={() => setAjout(false)}
@@ -142,6 +142,7 @@ export function NaturesScreen() {
                     <span className="font-medium">{nature.libelle}</span>
                     <span className="flex gap-1">
                       {nature.est_astreinte && <Badge variant="outline">Astreinte</Badge>}
+                      {nature.est_intervention && <Badge variant="outline">Intervention</Badge>}
                       {!nature.actif && <Badge variant="secondary">Archivée</Badge>}
                     </span>
                   </div>
@@ -238,6 +239,7 @@ function ModificationNature({
         code: nature.code,
         ordre: String(nature.ordre),
         estAstreinte: nature.est_astreinte,
+        estIntervention: nature.est_intervention,
       }}
       etatAstreinte={etatAstreinte}
       onEnregistrer={enregistrer}
@@ -270,11 +272,17 @@ function FormulaireNature({
   // Case grisée : la valeur d'origine est conservée, quoi qu'on ait coché.
   const caseLibre = etatAstreinte === 'libre'
   const estAstreinte = caseLibre ? champs.estAstreinte : initial.estAstreinte
+  const estIntervention = champs.estIntervention
+  // D-032 : les deux cases s'excluent ; cocher l'une grise l'autre.
+  const astreinteExclue = estIntervention && !estAstreinte
+  const interventionExclue = estAstreinte
+  const idCaseIntervention = useId()
+  const idExclusion = useId()
 
   async function soumettre(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setErreur(null)
-    const lecture = lireSaisieNature({ ...champs, estAstreinte })
+    const lecture = lireSaisieNature({ ...champs, estAstreinte, estIntervention })
     setErreurs(lecture.erreurs)
     if (lecture.saisie === null) return
     if (!enLigne) {
@@ -321,8 +329,14 @@ function FormulaireNature({
             type="checkbox"
             className="size-4"
             checked={estAstreinte}
-            disabled={!caseLibre}
-            aria-describedby={etatAstreinte === 'verrouillee' ? idExplication : undefined}
+            disabled={!caseLibre || astreinteExclue}
+            aria-describedby={
+              etatAstreinte === 'verrouillee'
+                ? idExplication
+                : astreinteExclue
+                  ? idExclusion
+                  : undefined
+            }
             onChange={(e) => setChamps((c) => ({ ...c, estAstreinte: e.target.checked }))}
           />
           <label htmlFor={idCase} className="text-sm font-medium">
@@ -332,6 +346,29 @@ function FormulaireNature({
         {etatAstreinte === 'verrouillee' && (
           <p id={idExplication} className="text-sm text-muted-foreground">
             {MESSAGES.astreinteVerrouillee}
+          </p>
+        )}
+      </div>
+      {/* « Est une intervention » : modifiable à tout moment, même pour une
+          nature déjà utilisée (D-032) ; seule l'exclusion la grise. */}
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <input
+            id={idCaseIntervention}
+            type="checkbox"
+            className="size-4"
+            checked={estIntervention}
+            disabled={interventionExclue}
+            aria-describedby={interventionExclue ? idExclusion : undefined}
+            onChange={(e) => setChamps((c) => ({ ...c, estIntervention: e.target.checked }))}
+          />
+          <label htmlFor={idCaseIntervention} className="text-sm font-medium">
+            Est une intervention
+          </label>
+        </div>
+        {(astreinteExclue || interventionExclue) && (
+          <p id={idExclusion} className="text-sm text-muted-foreground">
+            {MESSAGES.astreinteEtIntervention}
           </p>
         )}
       </div>

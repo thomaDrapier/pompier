@@ -80,3 +80,21 @@ export function formaterPlageJours(debut: number, fin: number): string {
   const dernier = format(aParis(new Date(fin - 1)), 'dd/MM/yyyy')
   return `du ${premier} au ${dernier}`
 }
+
+/** Montant signé : « +42,50 € », « -12,00 € », « 0,00 € » (écarts). */
+export function formaterMontantSigne(centimes: number): string {
+  const signe = centimes > 0 ? '+' : centimes < 0 ? '-' : ''
+  return `${signe}${formaterMontant(Math.abs(centimes))}`
+}
+
+/** Nom d'un mois « 2026-10 » : « octobre ». */
+export function formaterNomMois(mois: string): string {
+  const [annee, numero] = mois.split('-').map(Number)
+  return format(new Date(annee, numero - 1, 1), 'MMMM', { locale: fr })
+}
+
+/** Libellé court d'un mois « 2026-11 » pour un axe de graphique : « nov. 26 ». */
+export function formaterMoisCourt(mois: string): string {
+  const [annee, numero] = mois.split('-').map(Number)
+  return format(new Date(annee, numero - 1, 1), 'MMM yy', { locale: fr })
+}

@@ -5,7 +5,10 @@ import {
   formaterHeure,
   formaterJour,
   formaterMois,
+  formaterMoisCourt,
   formaterMontant,
+  formaterMontantSigne,
+  formaterNomMois,
   formaterPlage,
   formaterPlageJours,
   formaterTaux,
@@ -94,5 +97,19 @@ describe('formaterPlageJours', () => {
     const debut = new Date('2026-11-15T23:00:00Z').getTime() // lundi 16/11 0 h à Paris
     const fin = new Date('2026-11-22T23:00:00Z').getTime() // lundi 23/11 0 h à Paris
     expect(formaterPlageJours(debut, fin)).toBe('du 16/11/2026 au 22/11/2026')
+  })
+})
+
+describe('formaterMontantSigne, formaterNomMois, formaterMoisCourt', () => {
+  it('montant signé', () => {
+    expect(formaterMontantSigne(4250)).toBe('+42,50 €')
+    expect(formaterMontantSigne(-1200)).toBe('-12,00 €')
+    expect(formaterMontantSigne(0)).toBe('0,00 €')
+  })
+
+  it('nom et libellé court d’un mois', () => {
+    expect(formaterNomMois('2026-10')).toBe('octobre')
+    expect(formaterMoisCourt('2026-11')).toBe('nov. 26')
+    expect(formaterMoisCourt('2027-05')).toBe('mai 27')
   })
 })

@@ -83,16 +83,21 @@ export interface RestitutionSemaine {
   jours: TotauxPeriode[]
   /** Pour chaque jour (même ordre), ses astreintes et leur part du jour (écran Astreintes). */
   astreintesParJour: PartAstreinte[][]
+  /** Activités qui commencent dans la semaine, par début croissant (écran Rémunération). */
+  activites: ActiviteDetaillee[]
 }
 
 export function restituerSemaine(calcul: CalculDetaille, cle: string): RestitutionSemaine {
   const jours = joursDeLaSemaine(cle)
+  const semaine = totaliserPeriode(calcul.activites, calcul.natures, periodeSemaine(cle))
+  const parId = new Map(calcul.activites.map((activite) => [activite.resultat.id, activite]))
   return {
-    semaine: totaliserPeriode(calcul.activites, calcul.natures, periodeSemaine(cle)),
+    semaine,
     jours: regrouper(calcul.activites, calcul.natures, jours),
     astreintesParJour: jours.map((jour) =>
       astreintesDeLaPeriode(calcul.activites, calcul.natures, jour),
     ),
+    activites: semaine.activites.flatMap((id) => parId.get(id) ?? []),
   }
 }
 
@@ -149,6 +154,8 @@ export interface RestitutionHistorique {
   mois: MoisHistorique[]
   /** Total des mois affichés (année civile : total annuel). */
   totalCentimes: number
+  /** Activités en anomalie des mois affichés, par statut (bandeau). */
+  anomalies: { taux_manquant: number; chevauchement_astreintes: number }
 }
 
 /**
@@ -179,5 +186,50 @@ export function restituerHistorique(
   return {
     mois: lignes,
     totalCentimes: lignes.reduce((total, ligne) => total + (ligne.totaux?.montants.totalCentimes ?? 0), 0),
+    anomalies: lignes.reduce(
+      (total, ligne) => ({
+        taux_manquant: total.taux_manquant + (ligne.totaux?.anomalies.taux_manquant ?? 0),
+        chevauchement_astreintes:
+          total.chevauchement_astreintes + (ligne.totaux?.anomalies.chevauchement_astreintes ?? 0),
+      }),
+      { taux_manquant: 0, chevauchement_astreintes: 0 },
+    ),
   }
+}
+
+/** Une barre du graphique de l'historique : un mois, montants en euros par catégorie. */
+export interface BarreHistorique {
+  /** Clé du mois « AAAA-MM ». */
+  cle: string
+  /** Libellé court de l'axe : « nov. 26 ». */
+  libelle: string
+  /** Montants en euros (le graphique attend des nombres) ; null pour un mois futur (barre vide). */
+  astreinte: number | null
+  intervention: number | null
+  autre: number | null
+}
+
+/**
+ * Données du graphique en barres de l'historique (spécifications 9.3) : une
+ * barre par mois, découpée en Astreintes / Interventions / Autres activités.
+ * Les montants sont convertis de centimes en euros pour l'affichage
+ * seulement ; aucun calcul n'est refait.
+ *
+ * @param libelleMois libellé court d'un mois « AAAA-MM » (formaterMoisCourt)
+ */
+export function donneesGraphique(
+  historique: RestitutionHistorique,
+  libelleMois: (cle: string) => string,
+): BarreHistorique[] {
+  return historique.mois.map(({ cle, totaux }) => {
+    const euros = (categorie: 'astreinte' | 'intervention' | 'autre') =>
+      totaux === null ? null : totaux.montants.parCategorie[categorie].montantCentimes / 100
+    return {
+      cle,
+      libelle: libelleMois(cle),
+      astreinte: euros('astreinte'),
+      intervention: euros('intervention'),
+      autre: euros('autre'),
+    }
+  })
 }

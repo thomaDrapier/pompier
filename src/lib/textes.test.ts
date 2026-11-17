@@ -3,8 +3,11 @@ import {
   compter,
   texteActivitesNonComptees,
   texteAstreintesAChevalMois,
+  texteAstreintesAChevalMontant,
   texteDontAnomalies,
   texteDureesAstreinte,
+  texteEcart,
+  texteEcartCourt,
 } from './textes'
 
 describe('compter', () => {
@@ -64,5 +67,33 @@ describe('texteDureesAstreinte', () => {
     expect(
       texteDureesAstreinte({ dureeDeclareeMin: 840, dureeDeduiteMin: 90, dureeNetteMin: 750 }),
     ).toBe('14 h 00 · 1 h 30 · 12 h 30')
+  })
+})
+
+describe('texteEcart et texteEcartCourt (spécifications 9.2)', () => {
+  it('« +42,50 € (+8 %) par rapport à octobre »', () => {
+    expect(texteEcart({ centimes: 4250, pourcentage: 8 }, '2026-10')).toBe(
+      '+42,50 € (+8 %) par rapport à octobre',
+    )
+  })
+
+  it('baisse, écart nul, et pourcentage « — » quand le mois précédent vaut 0 €', () => {
+    expect(texteEcartCourt({ centimes: -1200, pourcentage: -5 })).toBe('-12,00 € (-5 %)')
+    expect(texteEcartCourt({ centimes: 0, pourcentage: 0 })).toBe('0,00 € (0 %)')
+    expect(texteEcart({ centimes: 1600, pourcentage: null }, '2026-09')).toBe(
+      '+16,00 € (—) par rapport à septembre',
+    )
+  })
+})
+
+describe('texteAstreintesAChevalMontant', () => {
+  it('singulier, pluriel, et null sans astreinte à cheval', () => {
+    expect(texteAstreintesAChevalMontant(0)).toBeNull()
+    expect(texteAstreintesAChevalMontant(1)).toBe(
+      '1 astreinte à cheval : montant compté sur la période de début.',
+    )
+    expect(texteAstreintesAChevalMontant(3)).toBe(
+      '3 astreintes à cheval : montant compté sur la période de début.',
+    )
   })
 })

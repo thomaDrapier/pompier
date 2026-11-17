@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { LigneActivite, LigneHistoriqueGrade, LigneNature, LigneTaux } from './conversions'
 import {
   calculerDetaille,
+  donneesGraphique,
   plageHistorique,
   plageMois,
   plageSemaine,
@@ -119,5 +120,32 @@ describe('restituerHistorique', () => {
     expect(historique3.mois[1].ecart).toEqual({ centimes: -4000, pourcentage: -77 })
     expect(historique3.mois[2].ecart).toBeNull()
     expect(historique3.totalCentimes).toBe(6400)
+  })
+})
+
+describe('donneesGraphique (historique)', () => {
+  it('une barre par mois, montants en euros par catégorie ; mois futur vide', () => {
+    const historique3 = restituerHistorique(calcul, ['2026-05', '2026-06', '2026-07'], '2026-06')
+    expect(donneesGraphique(historique3, (cle) => `L${cle}`)).toEqual([
+      { cle: '2026-05', libelle: 'L2026-05', astreinte: 28, intervention: 24, autre: 0 },
+      { cle: '2026-06', libelle: 'L2026-06', astreinte: 0, intervention: 12, autre: 0 },
+      { cle: '2026-07', libelle: 'L2026-07', astreinte: null, intervention: null, autre: null },
+    ])
+  })
+
+  it('l’historique additionne les anomalies des mois affichés', () => {
+    expect(restituerHistorique(calcul, ['2026-05', '2026-06'], '2026-06').anomalies).toEqual({
+      taux_manquant: 0,
+      chevauchement_astreintes: 0,
+    })
+  })
+})
+
+describe('restituerSemaine : activités de la semaine', () => {
+  it('liste les activités qui commencent dans la semaine, avec leur résultat', () => {
+    const semaine = restituerSemaine(calcul, '2026-W24')
+    expect(semaine.activites.map((activite) => [activite.resultat.id, activite.resultat.montantCentimes])).toEqual([
+      ['i2', 1200],
+    ])
   })
 })
