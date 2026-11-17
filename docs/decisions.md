@@ -413,3 +413,16 @@
   - Aucune nature n'est fixée par cette décision : elles sont créées par l'administrateur depuis l'écran d'administration (en production, au J4). Le seed peut en créer avec des taux fictifs.
 - **Conséquences** : migration au J3 (colonne, contrainte d'exclusion astreinte / intervention, tests) ; écran d'administration des natures (case « Est une intervention ») et restitutions, à décrire dans docs/specifications_ecrans.md v1.3 ; seed et jeu de démonstration (étape 3.1) ; cahier des charges v1.19 (sections 3.3, 7, 8, 11 et 13).
 - **Statut** : intégrée au cahier des charges v1.19
+
+## D-033 — Ventilation des activités à cheval sur plusieurs périodes
+- **Date** : 17/11/2026
+- **Origine** : projet Claude
+- **Contexte** : J3, étape 3.0. Section 3.8 (hypothèse de ventilation) et point ouvert de la section 11. Depuis le J1, une activité est rattachée en entier à la période où elle commence (règle provisoire, D-015). Le porteur ne connaît pas de règle du SDIS sur ce point.
+- **Décision** :
+  - Durées d'astreinte : les durées déclarée, déduite et nette d'une astreinte sont ventilées sur chaque période qu'elle traverse, par découpage exact de ses plages aux limites de période en heure de Paris : minuit pour le jour, lundi 0 h pour la semaine ISO, le 1er à 0 h pour le mois. Chaque période reçoit les heures qui s'y déroulent (changement d'heure compris).
+  - Montants (règle PROVISOIRE) : le montant d'une activité, astreinte comprise, est rattaché en entier à la période de sa date de début et calculé avec le taux en vigueur à cette date (section 3.5).
+  - Autres activités : rattachées en entier à la période de leur date de début (nombre, durée, montant).
+  - Les écrans de restitution signalent les astreintes dont les heures sont réparties sur plusieurs périodes alors que le montant est rattaché à la période de début.
+  - À revoir en fin de projet, au plus tard avant l'ouverture aux collègues (J5), si possible avec une règle du SDIS : rattachement des montants à cheval sur deux périodes, et taux appliqué à une activité qui traverse une date de changement de taux ou de grade.
+- **Conséquences** : module de regroupement par période (étape 3.1, module pur et tests, dont le changement d'heure) ; spécifications des écrans v1.3 ; précise la règle provisoire de D-015 pour les durées d'astreinte ; cahier des charges v1.20 (sections 3.8, 11 et 13) ; docs/avancement.md (point en attente).
+- **Statut** : intégrée au cahier des charges v1.20
