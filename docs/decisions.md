@@ -500,3 +500,19 @@
   - Tests de parcours : les aides SQL (activité à des heures de Paris, jours du mois en cours) sont réunies dans `tests/e2e/aides.ts`.
 - **Conséquences** : `src/features/astreintes/`, `src/engine/regroupement.ts`, `src/data/restitutions.ts`, `src/lib/`, `src/routes/adresses.ts`, `src/App.tsx`, `src/components/EnTete.tsx`, `src/features/accueil/`, `tests/e2e/`. Aucun impact métier.
 - **Statut** : validée
+
+## D-039 — Choix techniques de l'écran Rémunération et de la case « Est une intervention » (étape 3.4)
+- **Date** : 17/11/2026
+- **Origine** : Claude Code
+- **Contexte** : J3, étape 3.4 (écran Rémunération, docs/specifications_ecrans.md v1.3, sections 1, 6.3 et 9). Plan validé dans le projet Claude.
+- **Décision** :
+  - Adresse : `/remuneration?vue=semaine|mois|historique&periode=…`, plus `mode=glissant|annee` pour l'historique (période : mois de fin « 2026-11 » ou année « 2026 »). Vue inconnue : « Mois » ; mode inconnu : « 12 derniers mois » ; période invalide : période en cours. « Précédent / suivant » recule ou avance d'une semaine, d'un mois, de 12 mois (glissant) ou d'une année (année civile). En changeant de vue, la période est gardée autant que possible (mois du lundi de la semaine, semaine du 1er du mois) ; l'historique s'ouvre en « 12 derniers mois » finissant au mois affiché.
+  - Écart : « +42,50 € (+8 %) par rapport à octobre » ; une baisse s'écrit « -12,00 € (-5 %) », un écart nul « 0,00 € (0 %) » ; le pourcentage devient « (—) » si le mois précédent vaut 0 €. Dans le tableau de l'historique, l'écart est écrit sans « par rapport à … ». Fonctions pures `texteEcart`, `texteEcartCourt`, `formaterMontantSigne`.
+  - Astreintes à cheval : sous le total, « N astreinte(s) à cheval : montant compté sur la période de début. » ; dans la liste des activités de la semaine, une astreinte qui finit après la semaine porte « à cheval : montant compté sur la période de début ».
+  - Historique : le bandeau d'anomalie additionne les anomalies des mois affichés ; le total annuel n'est affiché qu'en « Année civile » (spécifications 9.3). Graphique Recharts : barres empilées (Astreintes, Interventions, Autres activités), légende, montants en euros convertis des centimes pour l'affichage seulement (`donneesGraphique`, testée) ; mois futurs sans barre ; couleurs prises dans les variables de thème shadcn/ui (`--chart-2`, `--chart-5`, `--chart-1`), sans travail graphique (D-014) ; animation désactivée.
+  - Liste des activités de la semaine : `restituerSemaine` fournit désormais les activités qui commencent dans la semaine, avec leur résultat (aucun calcul dans l'écran).
+  - Composants communs : `DetailRemuneration` (total dépliable par catégorie puis par nature, utilisé par l'accueil et la rémunération) et `MentionIndicative`.
+  - Administration › Natures : case « Est une intervention » (case à cocher native, comme « Est une astreinte »), toujours modifiable ; les deux cases s'excluent : cocher l'une grise l'autre, avec l'explication « Une nature ne peut pas être à la fois une astreinte et une intervention. » ; `ErreurAstreinteEtIntervention` affiche le même message. La saisie d'une nature transmet toujours les deux indicateurs.
+  - Dépendance : `recharts` 3.10.1 (stack imposée). Le fichier JavaScript principal atteint 1,09 Mo (317 ko compressé) et Vite le signale ; un découpage (chargement différé de l'écran Rémunération) pourra être envisagé au J4.
+- **Conséquences** : `src/features/remuneration/`, `src/features/admin/`, `src/components/restitutions.tsx`, `src/features/accueil/`, `src/data/restitutions.ts`, `src/lib/`, `src/routes/adresses.ts`, `src/App.tsx`, `src/components/EnTete.tsx`, `package.json`, `tests/e2e/`. Aucun impact métier.
+- **Statut** : validée
