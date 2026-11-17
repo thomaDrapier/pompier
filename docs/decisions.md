@@ -483,3 +483,20 @@
   - Composants : shadcn/ui existants et HTML natif, sans nouvelle dépendance.
 - **Conséquences** : `src/features/accueil/`, `src/features/activites/ListeActivitesScreen.tsx`, `src/components/`, `src/lib/textes.ts`, `src/routes/`, `src/App.tsx`, `tests/e2e/`. Aucun impact métier.
 - **Statut** : validée
+
+## D-038 — Choix techniques de l'écran Astreintes (étape 3.3)
+- **Date** : 17/11/2026
+- **Origine** : Claude Code
+- **Contexte** : J3, étape 3.3 (écran Astreintes, docs/specifications_ecrans.md v1.3, section 8). Plan validé dans le projet Claude.
+- **Décision** :
+  - Adresse : `/astreintes?vue=semaine&periode=2026-W47` ou `?vue=mois&periode=2026-11`, clés de `src/engine/periodes.ts`. Vue inconnue : « Semaine » ; période invalide : période en cours. Précédent / suivant et changement de vue ajoutent une entrée d'historique : le bouton retour les parcourt.
+  - Changement de vue : la période est conservée autant que possible, en passant au mois qui contient le lundi de la semaine affichée, ou à la semaine qui contient le 1er du mois affiché.
+  - Détail d'un jour : la part de chaque astreinte dans une période est un calcul ; il est fait par une nouvelle fonction du module de regroupement, `astreintesDeLaPeriode` (testée : la somme des parts est égale aux durées de la période), exposée par `restituerSemaine` (`astreintesParJour`). L'écran ne fait qu'afficher. Le détail ne liste que les astreintes comptées dans les durées (« ok » et « taux manquant ») ; « à cheval » y signale une astreinte qui commence avant le jour ou finit après lui.
+  - Bandeau : seules les astreintes en « chevauchement d'astreintes » y sont citées (« N activité(s) non comptée(s) : chevauchement d'astreintes (N) »), puisque les astreintes en « taux manquant » sont comptées dans les durées (D-035).
+  - Durées affichées avec le format commun « 14 h 00 · 1 h 30 · 12 h 30 » (`texteDureesAstreinte`, `formaterDuree`), sous l'intitulé « Déclarée · déduite · nette » ; l'exemple « 14 h » de la spécification est écrit « 14 h 00 », comme toutes les durées de l'application.
+  - Titres de période : « novembre 2026 » ; « Semaine 47, du 16/11/2026 au 22/11/2026 » ; lignes de la vue Mois : « Semaine 44 » et « du 01/11/2026 au 01/11/2026 » pour une semaine limitée au mois.
+  - Accueil : la ligne « Astreinte nette » devient un lien vers la vue Mois du mois en cours.
+  - Menu : la rangée de liens de l'en-tête passe à la ligne sur un écran étroit (`flex-wrap`) ; avec cinq entrées, elle débordait de la largeur du Pixel 7. Les tests de parcours vérifient l'absence de défilement horizontal (utilisateur et administrateur).
+  - Tests de parcours : les aides SQL (activité à des heures de Paris, jours du mois en cours) sont réunies dans `tests/e2e/aides.ts`.
+- **Conséquences** : `src/features/astreintes/`, `src/engine/regroupement.ts`, `src/data/restitutions.ts`, `src/lib/`, `src/routes/adresses.ts`, `src/App.tsx`, `src/components/EnTete.tsx`, `src/features/accueil/`, `tests/e2e/`. Aucun impact métier.
+- **Statut** : validée
