@@ -7,6 +7,7 @@ export const ADRESSES = {
   activites: '/activites',
   nouvelleActivite: '/activites/nouvelle',
   activite: (id: string) => `/activites/${id}`,
+  parametres: '/parametres',
   // Administration (administrateur uniquement, spécifications 6.1).
   admin: '/admin',
   adminGrades: '/admin/grades',

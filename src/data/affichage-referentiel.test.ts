@@ -1,7 +1,29 @@
 import { describe, expect, it } from 'vitest'
 import type { LigneHistoriqueGrade, LigneTaux } from './conversions'
 import { estAdministrateur } from './conversions'
-import { avecStatut, gradeALaDate, tauxCouple } from './affichage-referentiel'
+import {
+  avecStatut,
+  gradeALaDate,
+  tauxCouple,
+  texteProchainTaux,
+  texteTauxEnVigueur,
+} from './affichage-referentiel'
+
+describe('texteTauxEnVigueur et texteProchainTaux (spécifications 5.2)', () => {
+  it('écrivent le taux et sa date d’effet (taux fictifs)', () => {
+    const ligne: LigneTaux = {
+      id: 't',
+      grade_id: 'g',
+      activity_type_id: 'n',
+      taux_horaire: 12,
+      date_effet: '2026-01-01',
+    }
+    expect(texteTauxEnVigueur(ligne)).toBe('12,00 €/h depuis le 01/01/2026')
+    expect(texteProchainTaux({ ...ligne, taux_horaire: 12.5, date_effet: '2027-07-01' })).toBe(
+      '12,50 €/h à partir du 01/07/2027',
+    )
+  })
+})
 
 // Tous les taux de ce fichier sont fictifs.
 

@@ -7,6 +7,7 @@ import { TauxScreen } from '@/features/admin/TauxScreen'
 import { FormulaireActiviteScreen } from '@/features/activites/FormulaireActiviteScreen'
 import { ListeActivitesScreen } from '@/features/activites/ListeActivitesScreen'
 import { AuthProvider } from '@/features/auth/AuthProvider'
+import { ParametresScreen } from '@/features/parametres/ParametresScreen'
 import { ADRESSES } from '@/routes/adresses'
 import {
   PageConnexion,
@@ -35,6 +36,7 @@ function App() {
               <Route path={ADRESSES.activites} element={<ListeActivitesScreen />} />
               <Route path={ADRESSES.nouvelleActivite} element={<FormulaireActiviteScreen />} />
               <Route path="/activites/:id" element={<FormulaireActiviteScreen />} />
+              <Route path={ADRESSES.parametres} element={<ParametresScreen />} />
 
               {/* Administration : garde d'accès et onglets (spécifications 6.1). */}
               <Route path={ADRESSES.admin} element={<AdministrationLayout />}>

@@ -6,10 +6,7 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test } from '@playwright/test'
 import { creerCompte } from '../helpers/comptes.ts'
-import { seConnecter, supprimerCompte } from './aides.ts'
-
-// Boîte mail de test de Supabase local (reçoit les e-mails de réinitialisation).
-const URL_MAILPIT = process.env.MAILPIT_URL ?? 'http://127.0.0.1:54324'
+import { lienDeReinitialisation, seConnecter, supprimerCompte } from './aides.ts'
 
 function compte(): { email: string; motDePasse: string } {
   const email = process.env.E2E_EMAIL
@@ -115,27 +112,6 @@ test('« Nouveau mot de passe » est inaccessible sans lien de réinitialisation
   await page.goto('/nouveau-mot-de-passe')
   await expect(page).toHaveURL(/\/activites$/)
 })
-
-// Lit dans Mailpit le lien de réinitialisation envoyé à une adresse.
-async function lienDeReinitialisation(email: string): Promise<string> {
-  const recherche = `${URL_MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:${email}`)}`
-  let lien: string | undefined
-  await expect
-    .poll(
-      async () => {
-        const reponse = await fetch(recherche)
-        const { messages } = (await reponse.json()) as { messages: { ID: string }[] }
-        if (messages.length === 0) return false
-        const detail = await fetch(`${URL_MAILPIT}/api/v1/message/${messages[0].ID}`)
-        const { Text } = (await detail.json()) as { Text: string }
-        lien = /https?:\/\/\S*\/auth\/v1\/verify\?\S+/.exec(Text)?.[0]
-        return lien !== undefined
-      },
-      { message: 'e-mail de réinitialisation attendu dans Mailpit', timeout: 20_000 },
-    )
-    .toBe(true)
-  return (lien as string).replace(/[)>\].,]+$/, '')
-}
 
 test('réinitialisation complète : demande, e-mail, lien, nouveau mot de passe, connexion', async ({
   page,
