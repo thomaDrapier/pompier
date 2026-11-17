@@ -70,3 +70,13 @@ export function formaterMois(mois: string): string {
   const [annee, numero] = mois.split('-').map(Number)
   return format(new Date(annee, numero - 1, 1), 'MMMM yyyy', { locale: fr })
 }
+
+/**
+ * Jours d'une période [debut, fin) en millisecondes, heure de Paris :
+ * « du 16/11/2026 au 22/11/2026 » (le dernier jour est celui qui précède la fin).
+ */
+export function formaterPlageJours(debut: number, fin: number): string {
+  const premier = format(aParis(new Date(debut)), 'dd/MM/yyyy')
+  const dernier = format(aParis(new Date(fin - 1)), 'dd/MM/yyyy')
+  return `du ${premier} au ${dernier}`
+}

@@ -20,6 +20,7 @@ import {
   requeteSql,
   seConnecter,
   supprimerCompte,
+  verifierSansDefilementHorizontal,
 } from './aides.ts'
 
 let comptes: CompteTest[] = []
@@ -112,6 +113,8 @@ test('a) le compte administrateur fictif du seed voit « Administration »', asy
   // /admin mène à l'onglet Grades.
   await expect(page).toHaveURL(/\/admin\/grades$/)
   await expect(page.getByRole('heading', { name: 'Administration' })).toBeVisible()
+  // Menu complet de l'administrateur : il tient dans la largeur de l'écran.
+  await verifierSansDefilementHorizontal(page)
 })
 
 test('b) grades : ajouter, modifier, archiver, réactiver, supprimer ; doublon de libellé refusé', async ({

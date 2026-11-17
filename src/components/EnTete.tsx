@@ -11,7 +11,8 @@ import { ADRESSES } from '@/routes/adresses'
 // et menu de navigation (spécifications des écrans, section 1). L'e-mail de
 // l'utilisateur n'est jamais affiché.
 //
-// Le menu est une rangée de liens toujours visible sous la barre de titre :
+// Le menu est une rangée de liens toujours visible sous la barre de titre,
+// qui passe à la ligne sur un écran étroit (jamais de défilement horizontal) :
 // pas de menu déroulant à ouvrir, chaque entrée se touche d'un pouce.
 // « Administration » n'apparaît que pour un administrateur (useProfil) ;
 // masquer l'entrée n'est qu'un confort, la protection est assurée par la base.
@@ -41,9 +42,10 @@ export function EnTete() {
           Se déconnecter
         </Button>
       </div>
-      <nav aria-label="Menu principal" className="flex gap-1 px-2 pb-2">
+      <nav aria-label="Menu principal" className="flex flex-wrap gap-1 px-2 pb-2">
         <EntreeMenu to={ADRESSES.accueil}>Accueil</EntreeMenu>
         <EntreeMenu to={ADRESSES.activites}>Activités</EntreeMenu>
+        <EntreeMenu to={ADRESSES.astreintes}>Astreintes</EntreeMenu>
         <EntreeMenu to={ADRESSES.parametres}>Paramètres</EntreeMenu>
         {profil.data?.estAdmin && <EntreeMenu to={ADRESSES.admin}>Administration</EntreeMenu>}
       </nav>

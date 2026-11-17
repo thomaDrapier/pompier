@@ -6,6 +6,7 @@ import { NaturesScreen } from '@/features/admin/NaturesScreen'
 import { TauxScreen } from '@/features/admin/TauxScreen'
 import { AccueilScreen } from '@/features/accueil/AccueilScreen'
 import { FormulaireActiviteScreen } from '@/features/activites/FormulaireActiviteScreen'
+import { AstreintesScreen } from '@/features/astreintes/AstreintesScreen'
 import { ListeActivitesScreen } from '@/features/activites/ListeActivitesScreen'
 import { AuthProvider } from '@/features/auth/AuthProvider'
 import { ParametresScreen } from '@/features/parametres/ParametresScreen'
@@ -36,6 +37,7 @@ function App() {
             <Route element={<RouteProtegee />}>
               <Route path={ADRESSES.accueil} element={<AccueilScreen />} />
               <Route path={ADRESSES.activites} element={<ListeActivitesScreen />} />
+              <Route path={ADRESSES.astreintes} element={<AstreintesScreen />} />
               <Route path={ADRESSES.nouvelleActivite} element={<FormulaireActiviteScreen />} />
               <Route path="/activites/:id" element={<FormulaireActiviteScreen />} />
               <Route path={ADRESSES.parametres} element={<ParametresScreen />} />

@@ -7,6 +7,7 @@ import {
   formaterMois,
   formaterMontant,
   formaterPlage,
+  formaterPlageJours,
   formaterTaux,
 } from './formats'
 
@@ -85,5 +86,13 @@ describe('formaterMois', () => {
     expect(formaterMois('2026-06')).toBe('juin 2026')
     expect(formaterMois('2026-12')).toBe('décembre 2026')
     expect(formaterMois('2027-01')).toBe('janvier 2027')
+  })
+})
+
+describe('formaterPlageJours', () => {
+  it('« du … au … » : le dernier jour précède la fin, heure de Paris', () => {
+    const debut = new Date('2026-11-15T23:00:00Z').getTime() // lundi 16/11 0 h à Paris
+    const fin = new Date('2026-11-22T23:00:00Z').getTime() // lundi 23/11 0 h à Paris
+    expect(formaterPlageJours(debut, fin)).toBe('du 16/11/2026 au 22/11/2026')
   })
 })

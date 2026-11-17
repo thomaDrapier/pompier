@@ -12,7 +12,7 @@ import { useReferentiel } from '@/hooks/useReferentiel'
 import { useRestitutionMois } from '@/hooks/useRestitutions'
 import { formaterDuree, formaterMois, formaterMontant } from '@/lib/formats'
 import { LIBELLES_CATEGORIES, compter, texteAstreintesAChevalMois } from '@/lib/textes'
-import { ADRESSES } from '@/routes/adresses'
+import { ADRESSES, adresseAstreintes } from '@/routes/adresses'
 import type { EtatNavigation } from '@/routes/adresses'
 
 // Accueil — /accueil (spécifications des écrans v1.3, section 7) : l'essentiel
@@ -92,10 +92,14 @@ function SyntheseMois({
       <BandeauAnomalies anomalies={totaux.anomalies} />
 
       <section aria-label="Synthèse du mois" className="flex flex-col gap-2 rounded-md border p-3">
-        <div className="flex items-baseline justify-between gap-2">
+        {/* Toucher : écran Astreintes, vue Mois, mois en cours (spécifications 7). */}
+        <Link
+          to={adresseAstreintes('mois', totaux.periode.cle)}
+          className="flex items-baseline justify-between gap-2 py-1 underline-offset-4 hover:underline"
+        >
           <span>Astreinte nette</span>
           <span className="font-semibold">{formaterDuree(totaux.astreintes.dureeNetteMin)}</span>
-        </div>
+        </Link>
 
         <Depliable
           libelle="Interventions"

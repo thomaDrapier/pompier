@@ -245,6 +245,48 @@ export function regrouper(
   return periodes.map((periode) => totaliserPeriode(activites, natures, periode))
 }
 
+/** Part d'une astreinte dans une période (détail d'un jour, écran Astreintes). */
+export interface PartAstreinte extends DureesAstreinte {
+  id: string
+  natureId: string
+  /** Plage déclarée entière de l'astreinte, en millisecondes UTC. */
+  debut: number
+  fin: number
+  /** L'astreinte commence avant la période ou finit après elle (D-033). */
+  aCheval: boolean
+}
+
+/**
+ * Astreintes comptées dans les durées d'une période (statuts « ok » et
+ * « taux manquant », D-035), avec leur part de durées dans la période
+ * (D-033), par début croissant. La somme des parts est égale aux durées
+ * d'astreinte de totaliserPeriode.
+ */
+export function astreintesDeLaPeriode(
+  activites: readonly ActiviteDetaillee[],
+  natures: readonly Nature[],
+  periode: PeriodeNommee,
+): PartAstreinte[] {
+  const astreintes = new Set(natures.filter((n) => n.estAstreinte).map((n) => n.id))
+  return activites
+    .filter(
+      ({ resultat }) =>
+        astreintes.has(resultat.natureId) && resultat.statut !== 'chevauchement_astreintes',
+    )
+    .map(({ resultat, plages }) => ({
+      id: resultat.id,
+      natureId: resultat.natureId,
+      debut: plages.declaree.debut,
+      fin: plages.declaree.fin,
+      dureeDeclareeMin: dureeDans([plages.declaree], periode),
+      dureeDeduiteMin: dureeDans(plages.deduites, periode),
+      dureeNetteMin: dureeDans(plages.nettes, periode),
+      aCheval: plages.declaree.debut < periode.debut || plages.declaree.fin > periode.fin,
+    }))
+    .filter((part) => part.dureeDeclareeMin > 0)
+    .toSorted((a, b) => a.debut - b.debut)
+}
+
 /** Écart d'un montant avec celui de la période précédente. */
 export interface Ecart {
   /** Écart en centimes (négatif en cas de baisse). */

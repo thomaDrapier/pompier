@@ -153,3 +153,53 @@ export async function saisirActivite(page: Page, saisie: SaisieTest): Promise<vo
 export function lignesActivites(page: Page) {
   return page.getByRole('list', { name: 'Activités du mois' }).getByRole('link')
 }
+
+/** Jour `jour` du mois en cours (Paris), « AAAA-MM-JJ ». */
+export function jourDuMois(jour: number): string {
+  return `${dateDuJourParis().slice(0, 7)}-${String(jour).padStart(2, '0')}`
+}
+
+/** Dernier jour du mois précédent (Paris), « AAAA-MM-JJ ». */
+export function veilleDuMois(): string {
+  const [annee, mois] = dateDuJourParis().split('-').map(Number)
+  return new Date(Date.UTC(annee, mois - 1, 0)).toISOString().slice(0, 10)
+}
+
+/** Lendemain d'une date « AAAA-MM-JJ ». */
+export function lendemain(date: string): string {
+  const [annee, mois, jour] = date.split('-').map(Number)
+  return new Date(Date.UTC(annee, mois - 1, jour + 1)).toISOString().slice(0, 10)
+}
+
+/**
+ * Crée une activité d'un compte, aux heures de Paris données ; la nature est
+ * désignée par son code (rôle postgres, préparation des données, D-008).
+ */
+export async function insererActivite(
+  compte: CompteTest,
+  code: string,
+  jourDebut: string,
+  heureDebut: string,
+  jourFin: string,
+  heureFin: string,
+): Promise<string> {
+  const r = await requeteSql<{ id: string }>(
+    `insert into public.activities (user_id, activity_type_id, debut, fin)
+     select $1, t.id,
+            ($3::date + $4::time) at time zone 'Europe/Paris',
+            ($5::date + $6::time) at time zone 'Europe/Paris'
+     from public.activity_types t where t.code = $2
+     returning id`,
+    [compte.id, code, jourDebut, heureDebut, jourFin, heureFin],
+  )
+  if (r.rowCount !== 1) throw new Error(`Nature « ${code} » introuvable.`)
+  return r.rows[0].id
+}
+
+/** L'écran tient dans la largeur de l'appareil : aucun défilement horizontal (smartphone). */
+export async function verifierSansDefilementHorizontal(page: Page): Promise<void> {
+  const deborde = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+  )
+  expect(deborde, 'la page ne doit pas défiler horizontalement').toBe(false)
+}
