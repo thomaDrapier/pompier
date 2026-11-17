@@ -3,10 +3,26 @@ import {
   formaterDate,
   formaterDuree,
   formaterHeure,
+  formaterJour,
   formaterMois,
   formaterMontant,
   formaterPlage,
+  formaterTaux,
 } from './formats'
+
+describe('formaterTaux et formaterJour (taux et dates d’effet)', () => {
+  it('écrit un taux « 12,00 €/h » (taux fictifs)', () => {
+    expect(formaterTaux(12)).toBe('12,00 €/h')
+    expect(formaterTaux(12.5)).toBe('12,50 €/h')
+    expect(formaterTaux(0)).toBe('0,00 €/h')
+    expect(formaterTaux(1.15)).toBe('1,15 €/h')
+  })
+
+  it('écrit une date d’effet « JJ/MM/AAAA », sans conversion de fuseau', () => {
+    expect(formaterJour('2026-01-01')).toBe('01/01/2026')
+    expect(formaterJour('2027-07-31')).toBe('31/07/2027')
+  })
+})
 
 describe('formaterDate et formaterHeure', () => {
   it('donnent la date abrégée en français et l’heure sur 24 h, à Paris', () => {

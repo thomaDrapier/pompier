@@ -1,15 +1,24 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { Button } from '@/components/ui/button'
+import { useProfil } from '@/hooks/useProfil'
 import { supabase } from '@/lib/supabase'
+import { cn } from '@/lib/utils'
 import { ADRESSES } from '@/routes/adresses'
 
-// En-tête des écrans connectés : nom de l'application et bouton de
-// déconnexion. L'e-mail de l'utilisateur n'est pas affiché (spécifications
-// des écrans, section 1).
+// En-tête des écrans connectés : nom de l'application, bouton de déconnexion
+// et menu de navigation (spécifications des écrans, section 1). L'e-mail de
+// l'utilisateur n'est jamais affiché.
+//
+// Le menu est une rangée de liens toujours visible sous la barre de titre :
+// pas de menu déroulant à ouvrir, chaque entrée se touche d'un pouce.
+// « Administration » n'apparaît que pour un administrateur (useProfil) ;
+// masquer l'entrée n'est qu'un confort, la protection est assurée par la base.
+// « Paramètres » sera ajouté à l'étape 2.3.
 export function EnTete() {
   const queryClient = useQueryClient()
+  const profil = useProfil()
   const [envoi, setEnvoi] = useState(false)
 
   async function seDeconnecter() {
@@ -23,13 +32,33 @@ export function EnTete() {
   }
 
   return (
-    <header className="flex items-center justify-between gap-2 border-b px-4 py-2">
-      <Link to={ADRESSES.activites} className="font-semibold">
-        SPV Activités
-      </Link>
-      <Button variant="outline" size="sm" onClick={seDeconnecter} disabled={envoi}>
-        Se déconnecter
-      </Button>
+    <header className="border-b">
+      <div className="flex items-center justify-between gap-2 px-4 py-2">
+        <Link to={ADRESSES.activites} className="font-semibold">
+          SPV Activités
+        </Link>
+        <Button variant="outline" size="sm" onClick={seDeconnecter} disabled={envoi}>
+          Se déconnecter
+        </Button>
+      </div>
+      <nav aria-label="Menu principal" className="flex gap-1 px-2 pb-2">
+        <EntreeMenu to={ADRESSES.activites}>Activités</EntreeMenu>
+        {profil.data?.estAdmin && <EntreeMenu to={ADRESSES.admin}>Administration</EntreeMenu>}
+      </nav>
     </header>
+  )
+}
+
+function EntreeMenu({ to, children }: { to: string; children: React.ReactNode }) {
+  const { pathname } = useLocation()
+  // L'entrée de la rubrique affichée est mise en évidence : /activites et
+  // /activites/…, /admin et /admin/….
+  const active = pathname === to || pathname.startsWith(`${to}/`)
+  return (
+    <Button asChild variant="ghost" size="sm" className={cn(active && 'bg-muted font-semibold')}>
+      <Link to={to} aria-current={active ? 'page' : undefined}>
+        {children}
+      </Link>
+    </Button>
   )
 }

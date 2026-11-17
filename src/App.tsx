@@ -1,5 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { OfflineBanner } from '@/components/OfflineBanner'
+import { AdministrationLayout } from '@/features/admin/AdministrationLayout'
+import { GradesScreen } from '@/features/admin/GradesScreen'
+import { NaturesScreen } from '@/features/admin/NaturesScreen'
+import { TauxScreen } from '@/features/admin/TauxScreen'
 import { FormulaireActiviteScreen } from '@/features/activites/FormulaireActiviteScreen'
 import { ListeActivitesScreen } from '@/features/activites/ListeActivitesScreen'
 import { AuthProvider } from '@/features/auth/AuthProvider'
@@ -31,6 +35,14 @@ function App() {
               <Route path={ADRESSES.activites} element={<ListeActivitesScreen />} />
               <Route path={ADRESSES.nouvelleActivite} element={<FormulaireActiviteScreen />} />
               <Route path="/activites/:id" element={<FormulaireActiviteScreen />} />
+
+              {/* Administration : garde d'accès et onglets (spécifications 6.1). */}
+              <Route path={ADRESSES.admin} element={<AdministrationLayout />}>
+                <Route index element={<Navigate to={ADRESSES.adminGrades} replace />} />
+                <Route path={ADRESSES.adminGrades} element={<GradesScreen />} />
+                <Route path={ADRESSES.adminNatures} element={<NaturesScreen />} />
+                <Route path={ADRESSES.adminTaux} element={<TauxScreen />} />
+              </Route>
             </Route>
 
             {/* Racine du site et adresses inconnues : la liste des activités. */}

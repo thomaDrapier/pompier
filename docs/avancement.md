@@ -3,13 +3,13 @@
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
 ## État actuel (mis à jour le 17/11/2026)
-- **En cours** : aucune étape. J2 · étape 2.1 terminée.
-- **Dernière étape terminée** : J2 · étape 2.1 — données du référentiel (migration, verrou de « est une astreinte », couche de données, tests).
-- **Prochaine action** : J2 · étape 2.2 (écrans d'administration), consigne fournie par le projet Claude.
+- **En cours** : aucune étape. J2 · étape 2.2 terminée.
+- **Dernière étape terminée** : J2 · étape 2.2 — écrans d'administration (menu, garde d'accès, Grades, Natures, Grille de taux) et natures archivées dans la saisie.
+- **Prochaine action** : J2 · étape 2.3 (écran Paramètres), consigne fournie par le projet Claude.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
-  - J4 : garantir que le seed et le compte de test ne sont jamais appliqués en production.
+  - J4 : garantir que le seed et ses comptes de test (`demo@example.com` et l'administrateur `admin@example.com`) ne sont jamais appliqués en production.
   - J4 : l'hébergeur statique doit renvoyer index.html pour toute adresse (routage côté navigateur).
   - Identification des interventions (mise en avant, nombre d'interventions de l'accueil) : aucun indicateur dans le modèle ; à trancher avant le J3.
   - Grade du porteur saisi à la main dans le Studio jusqu'à l'étape 2.3 (écran Paramètres).
@@ -19,6 +19,11 @@
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 17/11/2026 — J2 · étape 2.2 terminée : écrans d'administration
+- **Fait** : menu de navigation dans l'en-tête (`src/components/EnTete.tsx` : « Activités », « Administration » pour l'administrateur seulement). Routes `/admin` (redirige vers `/admin/grades`), `/admin/grades`, `/admin/natures`, `/admin/taux` (`src/App.tsx`, `src/routes/adresses.ts`), reliées par des onglets ; garde d'accès (`src/features/admin/AdministrationLayout.tsx` : chargement, puis « Accès réservé à l'administrateur » et « Retour aux activités »). Écrans `GradesScreen.tsx`, `NaturesScreen.tsx` (case « Est une astreinte » grisée selon `nature_utilisee`, avec l'explication de D-022), `TauxScreen.tsx` (grade dans l'adresse, une ligne par nature, historique d'un couple, nouveau taux, correction et suppression avec les confirmations de D-019 et D-020). Contrôles des formulaires en fonctions pures (`regles-admin.ts`), messages des spécifications et traduction des erreurs (`messages.ts`), éléments communs (`communs.tsx`) ; formats `formaterTaux` et `formaterJour` (`src/lib/formats.ts`). Saisie d'une activité : nature archivée signalée « (Archivée) » et conservée en modification ; filtre de la liste : toutes les natures, archivées signalées. Seed : compte administrateur fictif `admin@example.com` ; README (seed, adresses, tests). Tests : `npm run test` (270), `npm run test:rls` (81), `npm run test:e2e` (52, dont 14 nouveaux dans `tests/e2e/administration.spec.ts`, parcours a à f sur ordinateur et Pixel 7), `npm run lint` et `npm run build` sans erreur. Vérification visuelle sur téléphone simulé (375 × 812). Aucun écran Paramètres (étape 2.3).
+- **Branche** : feat/j2-2-admin
+- **Décisions liées** : D-014, D-016, D-018, D-019, D-020, D-022, D-023, D-024, D-026, D-027, D-030 (choix techniques de l'étape, consignée par la branche docs/d030-ecrans-admin)
 
 ### 17/11/2026 — J2 · étape 2.1 terminée : données du référentiel
 - **Fait** : migration `supabase/migrations/20261117120000_referentiel_j2.sql` : colonne `grades.actif` ; unicités insensibles à la casse (index sur `lower(...)`, archivés compris) du libellé des grades, du libellé et du code des natures ; contraintes du taux positif ou nul, de l'unicité des taux et de la date d'effet unique de l'historique de grades renommées (elles existaient depuis la migration 0001) ; trigger de verrou de « est une astreinte » (code `SPV01`, message `est_astreinte_verrouille`) et fonction `nature_utilisee()`, tous deux en `security definer` ; RLS vérifiée, sans modification. Seed vérifié : il respecte toutes les contraintes, sans changement. Moteur (`src/engine/taux.ts`) : règle de la ligne en vigueur extraite dans `ligneEnVigueur` (réutilisée par `gradeEnVigueur` et `tauxEnVigueur`), fonctions `prochaineLigne`, `statutLigne`, `estDateEffetPassee`, `tauxDuCouple` ; test du taux nul (statut « ok », montant nul, durées comptées). Données : `src/data/requetes-referentiel.ts` (grades, natures, taux, historique de grades, profil), `src/data/affichage-referentiel.ts` (taux en vigueur et prochain taux, statuts, grade à une date), erreurs typées dans `src/data/erreurs.ts` (`ErreurDoublon`, `ErreurDejaServi`, `ErreurAstreinteVerrouillee`, `ErreurTauxNegatif`), clés dans `src/data/cles.ts`. Hooks : `useAdministrationReferentiel.ts`, `useEcritureHistoriqueGrades.ts`, `useProfil.ts`, `invalidation.ts` (référentiel et calculs de période invalidés après chaque écriture). Types régénérés (`src/types/database.ts`) ; README, section « Base de données ». Tests : `npm run test` (234), `npm run test:rls` (81, dont `tests/rls/referentiel.test.ts`), `npm run test:e2e` (38), `npm run lint` et `npm run build` sans erreur ; libellés des natures de test suffixés pour respecter D-026. Aucun écran (étapes 2.2 et 2.3).

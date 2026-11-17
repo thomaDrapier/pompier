@@ -1,7 +1,63 @@
 // Aides communes aux tests de parcours.
 
 import { expect, type Page } from '@playwright/test'
+import type pg from 'pg'
 import { connexionBase, creerCompte, supprimerComptes, type CompteTest } from '../helpers/comptes.ts'
+
+/**
+ * Exécute une requête SQL avec le rôle postgres, pour préparer ou nettoyer
+ * les données d'un test (D-008). Ne sert jamais à vérifier les droits.
+ */
+export async function requeteSql<T extends pg.QueryResultRow = pg.QueryResultRow>(
+  sql: string,
+  parametres: unknown[] = [],
+): Promise<pg.QueryResult<T>> {
+  const base = await connexionBase()
+  try {
+    return await base.query<T>(sql, parametres)
+  } finally {
+    await base.end()
+  }
+}
+
+/** Crée un compte fictif propre à un test et le promeut administrateur (rôle postgres, D-008). */
+export async function creerCompteAdmin(prefixe: string): Promise<CompteTest> {
+  const compte = await creerCompte(prefixe)
+  await requeteSql(`update public.profiles set role = 'admin' where id = $1`, [compte.id])
+  return compte
+}
+
+/**
+ * Supprime le référentiel fictif d'un test : taux, natures et grades dont le
+ * libellé ou le code contient le suffixe unique du test. À appeler APRÈS la
+ * suppression des comptes (leurs activités et historiques utilisent ces lignes).
+ */
+export async function nettoyerReferentiel(suffixe: string): Promise<void> {
+  const motif = `%${suffixe}%`
+  await requeteSql(
+    `delete from public.reference_rates r
+     using public.grades g, public.activity_types t
+     where r.grade_id = g.id and r.activity_type_id = t.id
+       and (g.libelle ilike $1 or t.libelle ilike $1 or t.code ilike $1)`,
+    [motif],
+  )
+  await requeteSql(
+    `delete from public.activity_types where libelle ilike $1 or code ilike $1`,
+    [motif],
+  )
+  await requeteSql(`delete from public.grades where libelle ilike $1`, [motif])
+}
+
+/** Date du jour à Paris, au format AAAA-MM-JJ (valeur d'un champ date). */
+export function dateDuJourParis(): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(new Date())
+}
+
+/** « 2026-11-17 » → « 17/11/2026 » */
+export function jourFrancais(date: string): string {
+  const [annee, mois, jour] = date.split('-')
+  return `${jour}/${mois}/${annee}`
+}
 
 /** Remplit l'écran de connexion et valide. */
 export async function seConnecter(page: Page, email: string, motDePasse: string): Promise<void> {
