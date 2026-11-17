@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Version** | 1.19 |
+| **Version** | 1.20 |
 | **Date** | 17/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
@@ -200,7 +200,7 @@ L'utilisateur doit pouvoir consulter :
 
 **Écran d'accueil :** synthèse du mois en cours (heures d'astreinte nettes, nombre d'interventions, rémunération cumulée) et accès direct à la saisie.
 
-**Règle de ventilation temporelle (hypothèse à valider) :** une activité à cheval sur deux semaines ou deux mois est rattachée à la période de sa date de début pour la rémunération ; les durées d'astreinte nettes sont, elles, ventilées au prorata sur chaque période.
+**Règle de ventilation temporelle (D-033) :** les durées déclarée, déduite et nette d'une astreinte sont ventilées sur chaque période qu'elle traverse, par découpage exact aux limites de période en heure de Paris (minuit ; lundi 0 h ; le 1er à 0 h). Le montant d'une activité, et toute autre activité, sont rattachés en entier à la période de la date de début (règle provisoire, à revoir avant le J5). Les écrans signalent les astreintes dont les heures sont réparties sur plusieurs périodes.
 
 ## 4. Améliorations proposées (hors MVP, par ordre de priorité)
 
@@ -458,7 +458,7 @@ flowchart LR
 - Liste définitive des natures d'activité et lesquelles sont considérées comme « astreinte ». Interventions : une nature par type d'engin (VSAV, FPT, VRID), D-032.
 - ~~Qui renseigne le grade d'un utilisateur et ses promotions~~ : tranché par D-017, c'est l'utilisateur lui-même.
 - Règle d'arrondi : proratisation à la minute avec arrondi au centime par activité (hypothèse retenue), ou arrondi réglementaire du SDIS.
-- Règle de ventilation d'une activité à cheval sur deux semaines ou deux mois (voir 3.8).
+- Rattachement des montants d'une activité à cheval sur deux périodes, et taux d'une activité qui traverse une date de changement de taux ou de grade : règle provisoire (D-033), à revoir avant le J5, si possible avec une règle du SDIS.
 - Existence de plafonds, majorations (nuit, jours fériés), forfaits par intervention ou autres règles propres au SDIS qui ne seraient pas de simples taux horaires.
 - Traitement des montants affichés (bruts, indicatifs) et information éventuelle sur leur régime fiscal et social : à vérifier auprès du SDIS, l'application n'en fait pas de calcul.
 - Revérification des limites de l'offre gratuite Supabase au moment de la mise en production.
@@ -525,3 +525,4 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.17 | 17/11/2026 | Intégration de la décision D-027 : taux horaire positif ou nul ; un taux nul donne le statut « ok » et un montant nul. Sections 3.5 et 7 mises à jour. |
 | 1.18 | 17/11/2026 | Intégration de la décision D-028 : une seule ligne par date d'effet dans l'historique de grades d'un utilisateur, contrôlée en base. Sections 3.7 et 7 mises à jour. |
 | 1.19 | 17/11/2026 | Intégration de la décision D-032 : indicateur « est une intervention » sur les natures, une nature par type d'intervention (VSAV, FPT, VRID), exclusif de « est une astreinte », sans effet sur le calcul. Sections 3.3, 7, 8 et 11 mises à jour. |
+| 1.20 | 17/11/2026 | Intégration de la décision D-033 : durées d'astreinte ventilées par découpage exact aux limites de période ; montants rattachés à la période de début (provisoire, à revoir avant le J5). Sections 3.8 et 11 mises à jour. |

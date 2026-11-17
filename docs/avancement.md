@@ -4,8 +4,8 @@
 
 ## État actuel (mis à jour le 17/11/2026)
 - **En cours** : J3 · étape 3.0 (décisions et spécifications, projet Claude).
-- **Dernière étape terminée** : D-032, identification des interventions.
-- **Prochaine action** : suite de l'étape 3.0 : ventilation des activités à cheval sur deux semaines ou deux mois (section 3.8, point ouvert de la section 11), puis docs/specifications_ecrans.md v1.3.
+- **Dernière étape terminée** : D-033, ventilation des activités à cheval sur plusieurs périodes.
+- **Prochaine action** : docs/specifications_ecrans.md v1.3 (Accueil, Astreintes, Rémunération, mise en avant des interventions dans la liste, case « Est une intervention » dans l'administration des natures), rédigée dans le projet Claude.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
@@ -14,9 +14,15 @@
   - Désactiver l'inscription publique en production (J4) : `enable_signup` est gardé actif en local, car les tests créent leurs comptes par signUp.
   - Intégration continue GitHub Actions à envisager (lint, build, tests).
   - J3 (étape 3.1) : jeu de démonstration pour `demo@example.com` — activités fictives sur les 3 mois précédents et le mois en cours, dates relatives à la date de recréation de la       base, cas variés (astreintes nuit/week-end, interventions pendant et hors astreinte, activités à cheval sur deux semaines et deux mois, changement d'heure, promotion de grade,       taux manquant).
+  - À revoir avant le J5 (D-033) : rattachement des montants d'une activité à cheval sur deux périodes et taux d'une activité qui traverse un changement de taux ou de grade ; chercher une règle du SDIS.
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 17/11/2026 — Décision : ventilation des activités à cheval sur plusieurs périodes
+- **Fait** : D-033 consignée ; cahier des charges v1.20 (sections 3.8, 11, 13).
+- **Branche** : docs/d033-ventilation
+- **Décisions liées** : D-033
 
 ### 17/11/2026 — Décision : identification des interventions
 - **Fait** : D-032 consignée ; cahier des charges v1.19 (sections 3.3, 7, 8, 11, 13).
