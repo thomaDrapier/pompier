@@ -123,10 +123,14 @@ Tout y est **fictif** :
   d'intervention au 01/07/2026. **Ces taux sont inventés** (valeurs rondes) et ne
   correspondent à aucun barème réel ;
 - un compte de test, `demo@example.com` / `demo-spv-local`, Sapeur depuis le
-  01/01/2025 puis Caporal au 01/07/2026.
+  01/01/2025 puis Caporal au 01/07/2026 ;
+- un compte administrateur de test, `admin@example.com` / `admin-spv-local`
+  (rôle `admin`, actif, sans historique de grade), pour les écrans
+  d'administration.
 
-Après un `db reset`, on peut donc se connecter directement avec ce compte sur
-http://localhost:5173.
+Après un `db reset`, on peut donc se connecter directement avec ces comptes sur
+http://localhost:5173. Comme le reste du seed, ils ne doivent **jamais** exister en
+production (point à traiter au J4).
 
 ```bash
 npx supabase db reset       # recrée la base locale et rejoue toutes les migrations
@@ -169,7 +173,7 @@ de s'exécuter si l'API ou la base visée n'est pas locale (127.0.0.1 / localhos
 | --- | --- |
 | `npm run test` | Tests unitaires Vitest (`src/**/*.test.ts(x)`), dans un DOM simulé, sans Supabase. |
 | `npm run test:rls` | Sécurité de la base (`tests/rls/`) : isolation des données entre utilisateurs, référentiel en lecture seule, rôle protégé, visiteur non connecté refusé, contraintes, refus du chevauchement de deux astreintes (D-010), requêtes de l'application (`src/data/requetes.ts`), règles du référentiel (`tests/rls/referentiel.test.ts` : doublons, taux négatif, suppression d'un élément utilisé, verrou de « est une astreinte », `nature_utilisee`, historique de grades, lecture du rôle). Passe par l'API avec la clé publique, comme l'application. |
-| `npm run test:e2e` | Parcours Playwright (`tests/e2e/`) sur l'application buildée (`vite preview`, port 4173), en format ordinateur et smartphone (Pixel 7) : authentification, réinitialisation du mot de passe par le lien reçu dans Mailpit, liste des activités, saisie, modification et suppression. Les tests d'activités créent leurs comptes et leur attribuent le grade « Sapeur » du seed : **le seed doit être présent** (`npx supabase db reset`). Première fois : `npx playwright install chromium`. Rapport : `npx playwright show-report`. |
+| `npm run test:e2e` | Parcours Playwright (`tests/e2e/`) sur l'application buildée (`vite preview`, port 4173), en format ordinateur et smartphone (Pixel 7) : authentification, réinitialisation du mot de passe par le lien reçu dans Mailpit, liste des activités, saisie, modification et suppression ; administration (menu et accès réservé, grades, natures, grille de taux, natures archivées dans la saisie). Les tests d'activités créent leurs comptes et leur attribuent le grade « Sapeur » du seed ; les tests d'administration créent leurs propres comptes administrateurs et un référentiel fictif suffixé, supprimé à la fin, et vérifient la connexion du compte `admin@example.com` : **le seed doit être présent** (`npx supabase db reset`). Première fois : `npx playwright install chromium`. Rapport : `npx playwright show-report`. |
 
 La base des tests RLS est lue dans `SUPABASE_DB_URL`, à défaut
 `postgresql://postgres:postgres@127.0.0.1:54322/postgres` (valeur de
@@ -191,9 +195,14 @@ Routage côté navigateur avec React Router (D-013) :
 | `/connexion`, `/mot-de-passe-oublie`, `/nouveau-mot-de-passe` | Authentification |
 | `/activites?mois=AAAA-MM&nature=<id>` | Liste des activités d'un mois, filtre facultatif |
 | `/activites/nouvelle`, `/activites/<id>` | Saisie, modification |
+| `/admin` | Administration : redirige vers `/admin/grades` |
+| `/admin/grades`, `/admin/natures` | Administration des grades, des natures |
+| `/admin/taux?grade=<id>&nature=<id>` | Grille de taux d'un grade ; avec `nature`, historique du couple |
 
-Les adresses d'activités sont protégées : sans session, l'application renvoie vers
-`/connexion`, puis ramène à l'adresse demandée. En production, l'hébergeur statique
+Les adresses d'activités et d'administration sont protégées : sans session,
+l'application renvoie vers `/connexion`, puis ramène à l'adresse demandée. Les
+adresses `/admin/…` affichent « Accès réservé à l'administrateur » à tout autre
+utilisateur (la base refuse de toute façon ses écritures, RLS). En production, l'hébergeur statique
 devra renvoyer `index.html` pour toute adresse (point à traiter au J4).
 
 ## Sauvegarde et restauration

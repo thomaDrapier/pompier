@@ -48,6 +48,23 @@ export function formaterMontant(centimes: number): string {
   return `${eurosTexte},${String(reste).padStart(2, '0')} €`
 }
 
+/**
+ * Taux horaire en euros (colonne `taux_horaire`, 2 décimales) → « 12,00 €/h »
+ * (spécifications des écrans, règles communes).
+ */
+export function formaterTaux(tauxHoraire: number): string {
+  return `${formaterMontant(Math.round(tauxHoraire * 100))}/h`
+}
+
+/**
+ * Date calendaire « 2026-01-01 » (date d'effet) → « 01/01/2026 ». Aucune
+ * conversion de fuseau : c'est déjà une date de Paris, pas un instant.
+ */
+export function formaterJour(date: string): string {
+  const [annee, mois, jour] = date.split('-')
+  return `${jour}/${mois}/${annee}`
+}
+
 /** Mois « 2026-06 » → « juin 2026 ». */
 export function formaterMois(mois: string): string {
   const [annee, numero] = mois.split('-').map(Number)

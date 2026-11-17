@@ -84,9 +84,11 @@ export function ListeActivitesScreen() {
           onChange={(e) => filtrer(e.target.value)}
         >
           <option value="">Toutes</option>
+          {/* Toutes les natures, archivées comprises, pour retrouver les
+              activités anciennes (D-018). */}
           {natures.map((nature) => (
             <option key={nature.id} value={nature.id}>
-              {nature.libelle}
+              {nature.actif ? nature.libelle : `${nature.libelle} (Archivée)`}
             </option>
           ))}
         </select>

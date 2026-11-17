@@ -188,8 +188,9 @@ function Formulaire({
   const occupe = verification || creer.isPending || modifier.isPending || supprimer.isPending
   const duree = dureeEnDirect(etat)
 
-  // Seules les natures actives sont proposées ; en modification, la nature
-  // d'origine reste affichée même si elle a été archivée.
+  // Seules les natures actives sont proposées à la création ; en
+  // modification, la nature de l'activité reste affichée même si elle a été
+  // archivée, signalée « Archivée », et peut être conservée (D-018).
   const naturesProposees = natures.filter(
     (nature) => nature.actif || nature.id === activite?.activity_type_id,
   )
@@ -312,7 +313,7 @@ function Formulaire({
             {etat.natureId === '' && <option value="">Choisir…</option>}
             {naturesProposees.map((nature) => (
               <option key={nature.id} value={nature.id}>
-                {nature.libelle}
+                {nature.actif ? nature.libelle : `${nature.libelle} (Archivée)`}
               </option>
             ))}
           </select>

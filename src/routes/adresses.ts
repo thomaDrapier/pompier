@@ -7,7 +7,22 @@ export const ADRESSES = {
   activites: '/activites',
   nouvelleActivite: '/activites/nouvelle',
   activite: (id: string) => `/activites/${id}`,
+  // Administration (administrateur uniquement, spécifications 6.1).
+  admin: '/admin',
+  adminGrades: '/admin/grades',
+  adminNatures: '/admin/natures',
+  adminTaux: '/admin/taux',
 } as const
+
+/**
+ * Adresse de la grille de taux pour un grade (?grade=<id>) et, au besoin,
+ * l'historique d'un couple grade × nature (&nature=<id>).
+ */
+export function adresseTaux(gradeId: string, natureId?: string | null): string {
+  const parametres = new URLSearchParams({ grade: gradeId })
+  if (natureId) parametres.set('nature', natureId)
+  return `${ADRESSES.adminTaux}?${parametres.toString()}`
+}
 
 /** Adresse de la liste pour un mois (« 2026-06 ») et, au besoin, un filtre de nature. */
 export function adresseListe(mois: string, natureId?: string | null): string {
