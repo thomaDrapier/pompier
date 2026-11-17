@@ -334,3 +334,13 @@
   - Le contrôle est appliqué dans l'interface et dans la base.
 - **Conséquences** : migration à l'étape 2.1 (contrainte `taux_horaire >= 0` sur `reference_rates` si elle n'existe pas déjà, test de refus d'un taux négatif, test d'acceptation d'un taux nul) ; moteur de calcul : vérifier par un test qu'un taux nul donne le statut « ok » et un montant nul (aucune autre modification attendue) ; écran de la grille de taux (étape 2.2) ; cahier des charges v1.17 (sections 3.5, 7 et 13).
 - **Statut** : intégrée au cahier des charges v1.17
+
+## D-028 — Unicité de la date d'effet dans l'historique de grades
+- **Date** : 17/11/2026
+- **Origine** : projet Claude
+- **Contexte** : étape 2.0 du J2, spécification de l'écran Paramètres. Rien n'interdisait deux lignes de `user_grade_history` d'un même utilisateur à la même date d'effet ; le grade en vigueur à cette date serait alors ambigu et le résultat du calcul imprévisible.
+- **Décision** :
+  - Pour un même utilisateur, deux lignes de l'historique de grades ne peuvent pas avoir la même date d'effet. La règle s'applique à l'ajout comme à la correction.
+  - L'unicité est contrôlée dans la base ; l'interface affiche « Un grade est déjà enregistré à cette date. »
+- **Conséquences** : migration à l'étape 2.1 (contrainte d'unicité sur `user_grade_history (user_id, date_effet)`, test de refus, vérification que le seed la respecte et qu'aucune donnée locale existante ne la viole avant de l'appliquer) ; écran Paramètres (étape 2.3) ; cahier des charges v1.18 (sections 3.7, 7 et 13).
+- **Statut** : intégrée au cahier des charges v1.18
