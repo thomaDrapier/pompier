@@ -4,8 +4,8 @@
 
 ## État actuel (mis à jour le 17/11/2026)
 - **En cours** : J2 · étape 2.0 (spécifications des écrans, projet Claude).
-- **Dernière étape terminée** : D-027, taux horaire nul autorisé.
-- **Prochaine action** : fin de docs/specifications_ecrans.md v1.2 dans le projet Claude. Validés, à consigner avec la v1.2 : navigation (menu Activités / Paramètres / Administration ; adresses /parametres, /admin/grades, /admin/natures, /admin/taux ; « Accès réservé à l'administrateur »), Administration › Grades, Administration › Natures, Administration › Grille de taux. Reste : Paramètres.
+- **Dernière étape terminée** : D-028, unicité de la date d'effet dans l'historique de grades.
+- **Prochaine action** : rédaction de docs/specifications_ecrans.md v1.2 (bloc fourni par le projet Claude). Validés : navigation (menu Activités / Paramètres / Administration ; adresses /parametres, /admin/grades, /admin/natures, /admin/taux ; « Accès réservé à l'administrateur »), Administration › Grades, Natures, Grille de taux. Proposé, à valider : Paramètres.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
@@ -18,6 +18,11 @@
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 17/11/2026 — Décision : date d'effet unique dans l'historique de grades
+- **Fait** : D-028 consignée ; cahier des charges v1.18 (sections 3.7, 7, 13).
+- **Branche** : docs/d028-date-effet-grade
+- **Décisions liées** : D-028
 
 ### 17/11/2026 — Décision : taux horaire nul
 - **Fait** : D-027 consignée ; cahier des charges v1.17 (sections 3.5, 7, 13).

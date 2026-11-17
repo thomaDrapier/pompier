@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Version** | 1.17 |
+| **Version** | 1.18 |
 | **Date** | 17/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
@@ -183,7 +183,7 @@ flowchart TD
 
 ### 3.7 Paramètres utilisateur
 
-- Grade actuel, avec historique (promotions) et date d'effet.
+- Grade actuel, avec historique (promotions) et date d'effet ; une seule ligne par date d'effet (D-028).
 - Consultation, en lecture seule, des taux du référentiel applicables à son grade (transparence du calcul).
 - Aucun taux n'est modifiable par l'utilisateur.
 
@@ -387,7 +387,7 @@ erDiagram
 | `user_grade_history` | Grade d'un utilisateur au fil du temps | id, user_id, grade_id, date_effet |
 | `activities` | Les activités saisies | id, user_id, activity_type_id, debut (timestamptz), fin (timestamptz), note (facultatif), cree_le, modifie_le |
 
-**Contraintes :** fin > début ; unicité des taux sur (grade, nature, date d'effet) ; unicité du code des natures, sans distinction de casse ; unicité du libellé des grades, sans distinction de casse (D-024) ; unicité du libellé des natures, sans distinction de casse (D-026) ; taux horaire positif ou nul (D-027) ; index sur (user_id, début).
+**Contraintes :** fin > début ; unicité des taux sur (grade, nature, date d'effet) ; unicité du code des natures, sans distinction de casse ; unicité du libellé des grades, sans distinction de casse (D-024) ; unicité du libellé des natures, sans distinction de casse (D-026) ; taux horaire positif ou nul (D-027) ; unicité de la date d'effet dans l'historique de grades d'un utilisateur (D-028) ; index sur (user_id, début).
 
 **Sécurité (Row Level Security) :** un utilisateur ne lit et n'écrit que ses lignes dans `activities` et `user_grade_history` ; le référentiel est en lecture seule pour tous ; son écriture est réservée à l'administrateur.
 
@@ -521,3 +521,4 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.15 | 17/11/2026 | Intégration de la décision D-025 : fusion dans `main` par Claude Code sans accord préalable du porteur ; pour le code, après réussite de lint, build et tests. Sections 12.2 et 12.3 mises à jour. |
 | 1.16 | 17/11/2026 | Intégration de la décision D-026 : libellé des natures obligatoire et unique sans distinction de casse, actives comme archivées, contrôlé en base. Sections 3.3 et 7 mises à jour. |
 | 1.17 | 17/11/2026 | Intégration de la décision D-027 : taux horaire positif ou nul ; un taux nul donne le statut « ok » et un montant nul. Sections 3.5 et 7 mises à jour. |
+| 1.18 | 17/11/2026 | Intégration de la décision D-028 : une seule ligne par date d'effet dans l'historique de grades d'un utilisateur, contrôlée en base. Sections 3.7 et 7 mises à jour. |
