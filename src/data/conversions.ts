@@ -63,3 +63,12 @@ export function versTaux(ligne: LigneTaux): Taux {
     dateEffet: ligne.date_effet,
   }
 }
+
+/**
+ * Administrateur : rôle `admin` ET compte actif, même règle que la fonction
+ * is_admin() de la base. Ne sert qu'à adapter l'interface (menu
+ * « Administration ») : la protection est assurée par la RLS.
+ */
+export function estAdministrateur(profil: { role: string; actif: boolean }): boolean {
+  return profil.role === 'admin' && profil.actif
+}

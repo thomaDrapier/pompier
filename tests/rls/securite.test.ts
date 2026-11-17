@@ -63,8 +63,8 @@ beforeAll(async () => {
   gradeTest = grade.rows[0].id
   const nature = await base.query<{ id: string }>(
     `insert into public.activity_types (code, libelle, est_astreinte, ordre)
-     values ($1, 'TEST', false, 9999) returning id`,
-    [`TEST-${suffixe}`],
+     values ($1, $2, false, 9999) returning id`,
+    [`TEST-${suffixe}`, `TEST ${suffixe}`],
   )
   natureTest = nature.rows[0].id
   const taux = await base.query<{ id: string }>(
@@ -209,7 +209,7 @@ describe('c. Référentiel en lecture seule pour un utilisateur', () => {
     const grade = await a.client.from('grades').insert({ libelle: `TEST A ${suffixe}`, ordre: 1 })
     const nature = await a.client
       .from('activity_types')
-      .insert({ code: `TEST-A-${suffixe}`, libelle: 'TEST', ordre: 1 })
+      .insert({ code: `TEST-A-${suffixe}`, libelle: `TEST A ${suffixe}`, ordre: 1 })
     const taux = await a.client.from('reference_rates').insert({
       grade_id: gradeTest,
       activity_type_id: natureTest,
@@ -320,7 +320,7 @@ describe('f. Droits de l’administrateur', () => {
 
     const nature = await admin.client
       .from('activity_types')
-      .insert({ code: `TEST-ADMIN-${suffixe}`, libelle: 'TEST', est_astreinte: true, ordre: 9998 })
+      .insert({ code: `TEST-ADMIN-${suffixe}`, libelle: `TEST admin ${suffixe}`, est_astreinte: true, ordre: 9998 })
       .select('id')
       .single()
     expect(nature.error).toBeNull()
@@ -340,7 +340,7 @@ describe('f. Droits de l’administrateur', () => {
 
     const modification = await admin.client
       .from('activity_types')
-      .update({ libelle: 'TEST modifié' })
+      .update({ libelle: `TEST modifié ${suffixe}` })
       .eq('id', nature.data!.id)
       .select('id')
     expect(modification.data).toHaveLength(1)

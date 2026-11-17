@@ -65,14 +65,14 @@ isOneToOne: false
                   ]
                 },"grades": {
                   Row: {
-                    "id": string,"libelle": string,"ordre": number
+                    "actif": boolean,"id": string,"libelle": string,"ordre": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "id"?: string,"libelle": string,"ordre": number
+                    "actif"?: boolean,"id"?: string,"libelle": string,"ordre": number
                   }
                   Update: {
-                    "id"?: string,"libelle"?: string,"ordre"?: number
+                    "actif"?: boolean,"id"?: string,"libelle"?: string,"ordre"?: number
                   }
                   Relationships: [
                     
@@ -151,6 +151,9 @@ isOneToOne: false
           Functions: {
             "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"nature_utilisee":
+{ Args: { "p_activity_type_id": string }; Returns: boolean
                            }
           }
           Enums: {
