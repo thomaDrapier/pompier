@@ -2,10 +2,10 @@
 
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
-## État actuel (mis à jour le 15/11/2026)
-- **En cours** : J2 · étape 2.0 (décisions de gestion du référentiel et spécifications des écrans, projet Claude).
-- **Dernière étape terminée** : D-023, code des natures. Les décisions de gestion du référentiel sont complètes (D-017 à D-023).
-- **Prochaine action** : docs/specifications_ecrans.md v1.2 (administration des grades, des natures et de la grille de taux ; écran Paramètres, y compris la confirmation éventuelle d'un grade à date d'effet passée), rédigée dans le projet Claude.
+## État actuel (mis à jour le 17/11/2026)
+- **En cours** : J2 · étape 2.0 (spécifications des écrans, projet Claude).
+- **Dernière étape terminée** : D-024 (unicité du libellé des grades) et D-025 (fusion dans main par Claude Code).
+- **Prochaine action** : suite de docs/specifications_ecrans.md v1.2 dans le projet Claude. Déjà validés, à consigner avec la v1.2 : navigation (menu Activités / Paramètres / Administration ; adresses /parametres, /admin/grades, /admin/natures, /admin/taux ; message « Accès réservé à l'administrateur ») et écran Administration › Grades. Restent : Natures, Grille de taux, Paramètres.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
@@ -15,9 +15,14 @@
   - Grade du porteur saisi à la main dans le Studio jusqu'à l'étape 2.3 (écran Paramètres).
   - Désactiver l'inscription publique en production (J4) : `enable_signup` est gardé actif en local, car les tests créent leurs comptes par signUp.
   - Intégration continue GitHub Actions à envisager (lint, build, tests).
-- **Branches ouvertes** : docs/d023-code-nature (docs/d022-verrou-astreinte est fusionnée).
+- **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 17/11/2026 — Décisions : libellé des grades et fusion par Claude Code
+- **Fait** : D-024 et D-025 consignées ; cahier des charges v1.15 (sections 3.6, 7, 12.2, 12.3, 13) ; CLAUDE.md (section Git).
+- **Branche** : docs/d024-d025-libelle-grade-fusion
+- **Décisions liées** : D-024, D-025
 
 ### 15/11/2026 — Décision : code des natures
 - **Fait** : D-023 consignée ; cahier des charges v1.13 (sections 3.3, 7, 13).
