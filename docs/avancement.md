@@ -19,6 +19,11 @@
 
 ## Journal
 
+### 17/11/2026 — Validation de D-031
+- **Fait** : choix de la date citée dans la confirmation d'une correction de l'historique de grades validé par le porteur.
+- **Branche** : docs/d031-validation
+- **Décisions liées** : D-031
+
 ### 17/11/2026 — J2 · étape 2.3 terminée : écran Paramètres (J2 terminé)
 - **Fait** : écran Paramètres `/parametres` (`src/features/parametres/ParametresScreen.tsx`), entrée « Paramètres » du menu entre « Activités » et « Administration », visible pour tout utilisateur connecté (`src/components/EnTete.tsx`, `src/App.tsx`, `src/routes/adresses.ts`). Mon grade : grade actuel ou « Aucun grade renseigné… », historique du plus récent au plus ancien (« Actuel », « À venir », « Archivé »), ajout (grades actifs, date du jour par défaut), correction (grade archivé conservable), suppression, confirmations de D-021 et doublon de date (D-028). Taux de mon grade en lecture seule, une ligne par nature active. Compte : e-mail en lecture seule, « Changer le mot de passe » par le lien de réinitialisation existant (`src/features/auth/reinitialisation.ts`, partagé avec « Mot de passe oublié », même `redirectTo`). Règles en fonctions pures (`regles-parametres.ts` : date à confirmer, contrôle du formulaire, grades proposés, messages). Mutualisation : éléments d'interface communs déplacés dans `src/components/communs.tsx`, messages communs dans `src/lib/messages.ts`, textes des taux (« depuis le », « à partir du ») dans `src/data/affichage-referentiel.ts`, lecture de Mailpit dans `tests/e2e/aides.ts`. Invalidations de D-029 vérifiées : après l'ajout d'un grade, la liste des activités se recalcule sans rechargement (test e2e b). README : le grade se renseigne dans Paramètres, plus dans le Studio. Tests : `npm run test` (285), `npm run test:rls` (81), `npm run test:e2e` (68, dont 16 nouveaux dans `tests/e2e/parametres.spec.ts`, parcours a à h sur ordinateur et Pixel 7), `npm run lint` et `npm run build` sans erreur. Vérification visuelle sur téléphone simulé (375 × 812).
 - **Branche** : feat/j2-3-parametres
