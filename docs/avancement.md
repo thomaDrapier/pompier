@@ -3,21 +3,25 @@
 > Point de reprise de toute nouvelle conversation (projet Claude ou Claude Code) : lire « État actuel », puis la fin du journal. « État actuel » est réécrit à chaque mise à jour ; le journal ne fait que s'allonger
 
 ## État actuel (mis à jour le 17/11/2026)
-- **En cours** : aucune étape. J2 terminé.
-- **Dernière étape terminée** : J2 · étape 2.3 — écran Paramètres (grade et historique de grades, taux du grade, compte). J2 terminé.
-- **Prochaine action** : J3 · Restitutions : plan et spécifications à préparer dans le projet Claude, en commençant par le point en attente « identification des interventions ».
+- **En cours** : J3 · étape 3.0 (décisions et spécifications, projet Claude).
+- **Dernière étape terminée** : D-032, identification des interventions.
+- **Prochaine action** : suite de l'étape 3.0 : ventilation des activités à cheval sur deux semaines ou deux mois (section 3.8, point ouvert de la section 11), puis docs/specifications_ecrans.md v1.3.
 - **En attente** :
   - Décision sur le critère « score PWA Lighthouse » (cahier des charges section 9) : la catégorie PWA a été retirée de Lighthouse.
   - Test de la PWA sur smartphone (HTTPS requis), cahier des charges section 11.
   - J4 : garantir que le seed et ses comptes de test (`demo@example.com` et l'administrateur `admin@example.com`) ne sont jamais appliqués en production.
   - J4 : l'hébergeur statique doit renvoyer index.html pour toute adresse (routage côté navigateur).
-  - Identification des interventions (mise en avant, nombre d'interventions de l'accueil) : aucun indicateur dans le modèle ; à trancher avant le J3.
   - Désactiver l'inscription publique en production (J4) : `enable_signup` est gardé actif en local, car les tests créent leurs comptes par signUp.
   - Intégration continue GitHub Actions à envisager (lint, build, tests).
   - J3 (étape 3.1) : jeu de démonstration pour `demo@example.com` — activités fictives sur les 3 mois précédents et le mois en cours, dates relatives à la date de recréation de la       base, cas variés (astreintes nuit/week-end, interventions pendant et hors astreinte, activités à cheval sur deux semaines et deux mois, changement d'heure, promotion de grade,       taux manquant).
 - **Branches ouvertes** : aucune.
 
 ## Journal
+
+### 17/11/2026 — Décision : identification des interventions
+- **Fait** : D-032 consignée ; cahier des charges v1.19 (sections 3.3, 7, 8, 11, 13).
+- **Branche** : docs/d032-interventions
+- **Décisions liées** : D-032
 
 ### 17/11/2026 — Validation de D-031
 - **Fait** : choix de la date citée dans la confirmation d'une correction de l'historique de grades validé par le porteur.

@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Version** | 1.18 |
+| **Version** | 1.19 |
 | **Date** | 17/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
@@ -98,6 +98,7 @@ Liste fixe, gérée uniquement par l'administrateur dans le référentiel. Liste
 
 - un libellé obligatoire et unique (sans distinction de casse, D-026) et un code court, obligatoire, unique (sans distinction de casse) et modifiable à tout moment ; le code est purement informatif : aucune règle ne s'appuie sur sa valeur (D-023) ;
 - un indicateur « est une astreinte » (c'est lui qui déclenche la règle de déduction). Il n'est modifiable que tant qu'aucune activité n'utilise la nature ; il est ensuite verrouillé, dans l'interface et dans la base. Pour changer de comportement, on crée une nouvelle nature et on archive l'ancienne (D-022) ;
+- un indicateur « est une intervention », qui sert uniquement aux restitutions (comptage et mise en avant des interventions, détail par nature) ; il est modifiable à tout moment et ne peut pas être coché avec « est une astreinte ». Les types d'interventions (par exemple VSAV, FPT, VRID) sont des natures distinctes (D-032) ;
 - un indicateur « actif / archivé » : une nature archivée n'est plus proposée à la saisie d'une nouvelle activité, mais reste visible dans l'historique, conservable en modification d'une activité existante et calculée normalement (D-018).
 
 ### 3.4 Règle de calcul des heures d'astreinte
@@ -352,6 +353,7 @@ erDiagram
         text code
         text libelle
         boolean est_astreinte
+        boolean est_intervention
         boolean actif
         int ordre
     }
@@ -382,12 +384,12 @@ erDiagram
 |---|---|---|
 | `profiles` | Un utilisateur | id (lié au compte d'authentification), nom_affichage, role (user \| admin), actif |
 | `grades` | Référentiel : les grades | id, libelle, ordre, actif |
-| `activity_types` | Référentiel : les natures d'activité | id, code, libelle, est_astreinte (booléen), actif, ordre |
+| `activity_types` | Référentiel : les natures d'activité | id, code, libelle, est_astreinte (booléen), est_intervention (booléen), actif, ordre |
 | `reference_rates` | Référentiel : taux horaire par grade et par nature | id, grade_id, activity_type_id, taux_horaire (2 décimales), date_effet |
 | `user_grade_history` | Grade d'un utilisateur au fil du temps | id, user_id, grade_id, date_effet |
 | `activities` | Les activités saisies | id, user_id, activity_type_id, debut (timestamptz), fin (timestamptz), note (facultatif), cree_le, modifie_le |
 
-**Contraintes :** fin > début ; unicité des taux sur (grade, nature, date d'effet) ; unicité du code des natures, sans distinction de casse ; unicité du libellé des grades, sans distinction de casse (D-024) ; unicité du libellé des natures, sans distinction de casse (D-026) ; taux horaire positif ou nul (D-027) ; unicité de la date d'effet dans l'historique de grades d'un utilisateur (D-028) ; index sur (user_id, début).
+**Contraintes :** fin > début ; unicité des taux sur (grade, nature, date d'effet) ; unicité du code des natures, sans distinction de casse ; unicité du libellé des grades, sans distinction de casse (D-024) ; unicité du libellé des natures, sans distinction de casse (D-026) ; taux horaire positif ou nul (D-027) ; unicité de la date d'effet dans l'historique de grades d'un utilisateur (D-028) ; une nature n'est pas à la fois astreinte et intervention (D-032) ; index sur (user_id, début).
 
 **Sécurité (Row Level Security) :** un utilisateur ne lit et n'écrit que ses lignes dans `activities` et `user_grade_history` ; le référentiel est en lecture seule pour tous ; son écriture est réservée à l'administrateur.
 
@@ -402,7 +404,7 @@ Cette section donne la liste des écrans. Le détail de chaque écran fait l'obj
 1. Connexion / inscription.
 2. Accueil : synthèse du mois, bouton de saisie rapide.
 3. Saisie / modification d'une activité.
-4. Liste des activités (filtres par période et nature), avec les interventions mises en avant.
+4. Liste des activités (filtres par période et nature), avec les interventions mises en avant (natures « est une intervention », D-032).
 5. Astreintes : déclarée, déduite, nette, par période.
 6. Rémunération : par activité, par semaine, historique mensuel avec graphique.
 7. Paramètres : grade et historique, consultation des taux de son grade (lecture seule), compte.
@@ -453,7 +455,7 @@ flowchart LR
 
 ## 11. Points ouverts à valider
 
-- Liste définitive des natures d'activité et lesquelles sont considérées comme « astreinte ».
+- Liste définitive des natures d'activité et lesquelles sont considérées comme « astreinte ». Interventions : une nature par type d'engin (VSAV, FPT, VRID), D-032.
 - ~~Qui renseigne le grade d'un utilisateur et ses promotions~~ : tranché par D-017, c'est l'utilisateur lui-même.
 - Règle d'arrondi : proratisation à la minute avec arrondi au centime par activité (hypothèse retenue), ou arrondi réglementaire du SDIS.
 - Règle de ventilation d'une activité à cheval sur deux semaines ou deux mois (voir 3.8).
@@ -522,3 +524,4 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.16 | 17/11/2026 | Intégration de la décision D-026 : libellé des natures obligatoire et unique sans distinction de casse, actives comme archivées, contrôlé en base. Sections 3.3 et 7 mises à jour. |
 | 1.17 | 17/11/2026 | Intégration de la décision D-027 : taux horaire positif ou nul ; un taux nul donne le statut « ok » et un montant nul. Sections 3.5 et 7 mises à jour. |
 | 1.18 | 17/11/2026 | Intégration de la décision D-028 : une seule ligne par date d'effet dans l'historique de grades d'un utilisateur, contrôlée en base. Sections 3.7 et 7 mises à jour. |
+| 1.19 | 17/11/2026 | Intégration de la décision D-032 : indicateur « est une intervention » sur les natures, une nature par type d'intervention (VSAV, FPT, VRID), exclusif de « est une astreinte », sans effet sur le calcul. Sections 3.3, 7, 8 et 11 mises à jour. |

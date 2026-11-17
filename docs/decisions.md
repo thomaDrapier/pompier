@@ -398,3 +398,18 @@
   - Recalcul des montants : les invalidations de D-029 suffisent (après une écriture de l'historique, le référentiel, les historiques de grades et les activités sont relus). Vérifié par un test de parcours : une activité en « taux manquant » prend son montant après l'ajout d'un grade, sans recharger la page.
 - **Conséquences** : `src/features/parametres/`, `src/components/EnTete.tsx`, `src/App.tsx`, `src/routes/adresses.ts`, `src/features/auth/`, `tests/e2e/parametres.spec.ts`, README. Seul impact métier possible : la date citée dans la confirmation d'une correction (texte affiché, sans effet sur le calcul).
 - **Statut** : validée
+
+## D-032 — Identification des interventions
+- **Date** : 17/11/2026
+- **Origine** : projet Claude
+- **Contexte** : ouverture du J3. L'accueil affiche le nombre d'interventions du mois et la liste des activités met les interventions en avant (sections 3.8 et 8), mais rien dans le modèle ne distingue une intervention ; D-023 interdit de s'appuyer sur le code d'une nature. Le porteur distingue trois types d'interventions selon l'engin (VSAV, le plus courant ; FPT ; VRID), qui ont aujourd'hui le même taux horaire.
+- **Décision** :
+  - Un indicateur « Est une intervention » (`activity_types.est_intervention`, booléen, non nul, faux par défaut) est ajouté aux natures. Il est géré par l'administrateur.
+  - Les types d'interventions sont des natures distinctes du référentiel (par exemple « Intervention VSAV », « Intervention FPT », « Intervention VRID »), chacune cochée « Est une intervention ». La saisie d'une activité reste inchangée (une seule nature).
+  - Chaque nature a ses propres lignes de taux : un changement de barème commun aux trois types s'enregistre par une ligne par nature. Des taux différents par engin restent possibles sans modification.
+  - Une nature ne peut pas être à la fois une astreinte et une intervention ; la base le contrôle.
+  - L'indicateur est modifiable à tout moment, y compris pour une nature déjà utilisée : il ne sert qu'aux restitutions (comptage, mise en avant, regroupement) et n'a aucun effet sur les durées ni sur les montants.
+  - Les restitutions comptent les interventions ensemble, avec un détail par nature.
+  - Aucune nature n'est fixée par cette décision : elles sont créées par l'administrateur depuis l'écran d'administration (en production, au J4). Le seed peut en créer avec des taux fictifs.
+- **Conséquences** : migration au J3 (colonne, contrainte d'exclusion astreinte / intervention, tests) ; écran d'administration des natures (case « Est une intervention ») et restitutions, à décrire dans docs/specifications_ecrans.md v1.3 ; seed et jeu de démonstration (étape 3.1) ; cahier des charges v1.19 (sections 3.3, 7, 8, 11 et 13).
+- **Statut** : intégrée au cahier des charges v1.19
