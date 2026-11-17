@@ -4,8 +4,8 @@
 
 | | |
 |---|---|
-| **Version** | 1.13 |
-| **Date** | 15/11/2026 |
+| **Version** | 1.15 |
+| **Date** | 17/11/2026 |
 | **Statut** | Brouillon à valider |
 | **Statut du porteur** | Sapeur-pompier volontaire (SPV) |
 | **Destinataire** | Projet de développement (projet Claude et Claude Code) |
@@ -169,7 +169,7 @@ flowchart TD
 
 ### 3.6 Référentiel unique (espace administrateur)
 
-- Création, modification, archivage et réactivation des grades (libellé, ordre hiérarchique, actif / archivé).
+- Création, modification, archivage et réactivation des grades (libellé obligatoire et unique sans distinction de casse, ordre hiérarchique, actif / archivé) (D-024).
 - Création, modification, archivage et réactivation des natures d'activité (voir 3.3).
 - Un grade ou une nature ne peut être supprimé que s'il n'a jamais servi (aucune activité, aucun taux, aucun historique de grade) ; sinon il est archivé. L'archivage n'a aucun effet sur le calcul (D-018).
 - Grille de taux : un taux horaire par couple (grade × nature), avec date d'effet et historique consultable.
@@ -385,7 +385,7 @@ erDiagram
 | `user_grade_history` | Grade d'un utilisateur au fil du temps | id, user_id, grade_id, date_effet |
 | `activities` | Les activités saisies | id, user_id, activity_type_id, debut (timestamptz), fin (timestamptz), note (facultatif), cree_le, modifie_le |
 
-**Contraintes :** fin > début ; unicité des taux sur (grade, nature, date d'effet) ; unicité du code des natures, sans distinction de casse ; index sur (user_id, début).
+**Contraintes :** fin > début ; unicité des taux sur (grade, nature, date d'effet) ; unicité du code des natures, sans distinction de casse ; unicité du libellé des grades, sans distinction de casse (D-024) ; index sur (user_id, début).
 
 **Sécurité (Row Level Security) :** un utilisateur ne lit et n'écrit que ses lignes dans `activities` et `user_grade_history` ; le référentiel est en lecture seule pour tous ; son écriture est réservée à l'administrateur.
 
@@ -476,7 +476,7 @@ flowchart LR
 
 1. **Projet Claude :** discussion, puis validation par le porteur.
 2. **Projet Claude :** production d'un bloc prêt à transmettre à Claude Code : entrée `D-xxx` pour `docs/decisions.md`, modification du cahier des charges et de `CLAUDE.md` si nécessaire, mise à jour de `docs/avancement.md`.
-3. **Claude Code :** sur une branche `docs/…`, mise à jour des fichiers, commit, push, puis fusion dans `main` après accord du porteur.
+3. **Claude Code :** sur une branche `docs/…`, mise à jour des fichiers, commit, push, puis fusion dans `main` par Claude Code (D-025).
 4. **Projet Claude :** le porteur clique sur « Sync now ».
 
 Ce cycle est réalisé juste après chaque décision, sans en accumuler plusieurs.
@@ -486,7 +486,7 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 ### 12.3 Règles de développement
 
 - Développer par jalons, dans l'ordre J0 à J5. Le jalon 0 ne comporte aucune interface métier ; le jalon 1 commence par le moteur de calcul et ses tests, avant tout écran de saisie.
-- Ne jamais committer directement sur `main` : une branche par tâche (`feat/…`, `fix/…`, `docs/…`), fusionnée après validation du porteur. Les modifications de documentation passent par des branches `docs/…` courtes, fusionnées dès validation, séparément du code.
+- Ne jamais committer directement sur `main` : une branche par tâche (`feat/…`, `fix/…`, `docs/…`), fusionnée dans `main` par Claude Code, après réussite des contrôles pour le code (D-025). Les modifications de documentation passent par des branches `docs/…` courtes, fusionnées dès que les fichiers sont à jour, séparément du code.
 - Toute tâche se termine par la mise à jour de `docs/avancement.md` (« État actuel » réécrit, entrée ajoutée au journal). Par exception à la règle des branches `docs/…`, ce fichier est mis à jour dans la branche de la tâche qu'il décrit, afin que `main` reflète toujours exactement ce qui a été fusionné.
 - Avant toute fonctionnalité non triviale : résumer le plan en quelques lignes et attendre l'accord du porteur du projet.
 - Fournir du code complet (jamais de « ... »), le chemin de chaque fichier et la façon de le tester.
@@ -515,3 +515,5 @@ En fin de séance dans le projet Claude, si la discussion a avancé sans produir
 | 1.11 | 15/11/2026 | Intégration des décisions D-019 (« Nouveau taux » comme action normale ; correction et suppression d'une ligne de taux avec confirmation, sans traçabilité), D-020 (date d'effet passée autorisée avec confirmation, date d'effet future sans confirmation) et D-021 (portée rétroactive des dates d'effet des taux et des grades). Sections 3.5 et 3.6 mises à jour. |
 | 1.12 | 15/11/2026 | Intégration de la décision D-022 : l'indicateur « est une astreinte » est verrouillé dès qu'une activité utilise la nature, contrôle en base indépendant de la RLS. Section 3.3 mise à jour. |
 | 1.13 | 15/11/2026 | Intégration de la décision D-023 : code des natures obligatoire, unique sans distinction de casse, modifiable et purement informatif. Sections 3.3 et 7 mises à jour. |
+| 1.14 | 17/11/2026 | Intégration de la décision D-024 : libellé des grades obligatoire et unique sans distinction de casse, actifs comme archivés, contrôlé en base. Sections 3.6 et 7 mises à jour. |
+| 1.15 | 17/11/2026 | Intégration de la décision D-025 : fusion dans `main` par Claude Code sans accord préalable du porteur ; pour le code, après réussite de lint, build et tests. Sections 12.2 et 12.3 mises à jour. |

@@ -287,3 +287,28 @@
   - Il est purement informatif (libellé court pour l'affichage). Aucune règle de calcul ni de restitution, présente ou future, ne doit s'appuyer sur la valeur d'un code ; le moteur et l'application utilisent l'identifiant interne. Un besoin de classement (par exemple l'identification des interventions, à trancher avant le J3) passera par un indicateur dédié, pas par un code.
 - **Conséquences** : migration à l'étape 2.1 (contrainte d'unicité insensible à la casse, si elle n'existe pas déjà ; test de refus d'un doublon) ; écran d'administration des natures (étape 2.2) ; vérifier qu'aucun code existant ne dépend de la valeur d'un code (seed compris) ; cahier des charges v1.13 (sections 3.3, 7 et 13).
 - **Statut** : intégrée au cahier des charges v1.13
+
+## D-024 — Unicité du libellé des grades
+- **Date** : 17/11/2026
+- **Origine** : projet Claude
+- **Contexte** : étape 2.0 du J2, spécification de l'écran d'administration des grades. Ni l'unicité ni la casse du libellé d'un grade n'étaient définies (section 7). Deux grades de même libellé seraient indiscernables dans les listes de choix (écran Paramètres, grille de taux).
+- **Décision** :
+  - Le libellé d'un grade est obligatoire et unique, sans distinction entre majuscules et minuscules, sur le modèle du code des natures (D-023).
+  - L'unicité porte sur tous les grades, actifs comme archivés, afin qu'une réactivation ne crée jamais de doublon.
+  - L'unicité est contrôlée dans la base ; l'interface affiche « Un grade porte déjà ce libellé. »
+- **Conséquences** : migration à l'étape 2.1 (contrainte d'unicité insensible à la casse sur `grades.libelle`, test de refus d'un doublon, vérification que le seed la respecte) ; écran d'administration des grades (étape 2.2) ; cahier des charges v1.14 (sections 3.6, 7 et 13).
+- **Statut** : intégrée au cahier des charges v1.14
+
+## D-025 — Fusion dans main par Claude Code
+- **Date** : 17/11/2026
+- **Origine** : projet Claude
+- **Contexte** : le porteur souhaite réduire les interactions. Jusqu'ici, toute fusion dans `main` attendait son accord (cahier des charges, sections 12.2 et 12.3 ; CLAUDE.md, section Git).
+- **Décision** :
+  - Claude Code fusionne lui-même sa branche dans `main` à la fin de chaque tâche, sans attendre l'accord du porteur, puis pousse `main` et supprime la branche (locale et distante).
+  - On ne committe toujours jamais directement sur `main` : une branche par tâche (`feat/…`, `fix/…`, `docs/…`).
+  - Branches `docs/…` : fusion dès que les fichiers sont à jour.
+  - Branches `feat/…` et `fix/…` : fusion seulement si `npm run lint`, `npm run build`, `npm run test`, `npm run test:rls` et `npm run test:e2e` passent sans erreur. Sinon, pas de fusion : Claude Code s'arrête et rend compte au porteur.
+  - Après chaque fusion, Claude Code donne au porteur un compte rendu court (branche, contenu, résultat des contrôles) et lui rappelle de cliquer sur « Sync now » dans le projet Claude.
+  - En cas d'incident sur un conflit de fusion, Claude Code s'arrête et demande au porteur.
+- **Conséquences** : cahier des charges v1.15 (sections 12.2, 12.3 et 13) ; CLAUDE.md (section Git) ; instructions du projet Claude (mises à jour par le porteur). Si une décision antérieure exige l'accord du porteur avant la fusion, la signaler au porteur dans le compte rendu sans la modifier.
+- **Statut** : intégrée au cahier des charges v1.15

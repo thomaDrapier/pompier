@@ -98,12 +98,15 @@ date-fns (fuseau Europe/Paris) · Vitest (unitaires) · Playwright (parcours).
 - Ne jamais committer directement sur `main`. Une branche par tâche :
   `feat/<jalon>-<sujet>` (ex. `feat/j0-2-pwa`), `fix/<sujet>`, `docs/<sujet>`.
 - Toute modification de `CLAUDE.md` ou de `docs/` passe par une branche `docs/…`
-  courte, fusionnée dans `main` dès validation, séparément du code.
+  courte, fusionnée dans `main` dès que les fichiers sont à jour, séparément du code.
 - En fin de tâche : mettre à jour `docs/avancement.md` (« État actuel » réécrit, entrée
-  ajoutée au journal) dans la branche de la tâche, puis commit, push, et demander
-  l'accord du porteur avant la fusion dans `main`. Après une fusion qui touche
-  `CLAUDE.md` ou `docs/`, rappeler au porteur de cliquer sur « Sync now » dans le
-  projet Claude.
+  ajoutée au journal) dans la branche de la tâche, puis commit, push et fusion dans
+  `main` sans attendre l'accord du porteur (D-025). Pour `feat/…` et `fix/…`, ne
+  fusionner que si `npm run lint`, `npm run build`, `npm run test`,
+  `npm run test:rls` et `npm run test:e2e` passent ; sinon s'arrêter et rendre
+  compte. Après la fusion : pousser `main`, supprimer la branche, donner un compte
+  rendu court. Après une fusion qui touche `CLAUDE.md` ou `docs/`, rappeler au
+  porteur de cliquer sur « Sync now » dans le projet Claude.
 - Exception à la règle des branches `docs/…` : `docs/avancement.md` est toujours mis à
   jour dans la branche de la tâche qu'il décrit.
 
